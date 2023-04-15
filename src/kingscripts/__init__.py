@@ -1,1 +1,1 @@
-__all__ = ['production']
+__all__ = ['production', 'random']
