@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from enverus_developer_api import DeveloperAPIv3
 import os
 
+# load .env file
 load_dotenv()
 
 
