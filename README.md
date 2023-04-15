@@ -1,2 +1,1 @@
-Welcome
-This is a test
+Welcome This is a test
