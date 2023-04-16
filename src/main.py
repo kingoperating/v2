@@ -7,6 +7,7 @@ Developed by: Michael Tanner
 # KOC v2 Python Packages
 from kingscripts.production import greasebook, combocurve
 from kingscripts.random import enverus
+from kingscripts.afe import afe
 
 # Python Packages
 from dotenv import load_dotenv
@@ -24,7 +25,11 @@ serviceAccount = ServiceAccount.from_file(os.getenv("API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("API_KEY_PASS_LIVE")
 
 # Enverus Stack
-enverus.getWellData(comboCurveApi, "42033325890000")
+enverus.getWellData(
+    api=comboCurveApi,
+    wellApi="42033325890000"
+)
+
 enverus.checkWellStatus(
     akiKey=comboCurveApi,
     operatorName="BROWNING OIL",
@@ -44,7 +49,8 @@ combocurve.putWellProductionData(
 greasebook.getProductionData(
     pullProd=False,
     days=30,
-    greasebookApi=greasebookApiKey)
+    greasebookApi=greasebookApiKey
+)
 
 
 print("Main Script Complete")
