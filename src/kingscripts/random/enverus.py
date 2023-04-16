@@ -14,9 +14,9 @@ import datetime as dt
 import re
 
 
-def getWellData(api, wellApi):
+def getWellData(apiKey, wellApi):
     # Checks mos recent data from Browning Oil FLuvanna Unit
-    for row in api.query("production", API_UWI_14_UNFORMATTED=wellApi):
+    for row in apiKey.query("production", API_UWI_14_UNFORMATTED=wellApi):
         totalProdMonths = row['ProducingDays']
         totalOil = row['Prod_OilBBL']
         updateDate = row['UpdatedDate']
@@ -27,7 +27,7 @@ def getWellData(api, wellApi):
         print("Daily Oil Rate: " + str(totalOil/totalProdMonths))
 
 
-def checkWellStatus(akiKey, operatorName, basin):
+def checkWellStatus(apiKey, operatorName, basin):
 
     # gets relvent date values
     dateToday = dt.datetime.today()
@@ -43,7 +43,7 @@ def checkWellStatus(akiKey, operatorName, basin):
     browningDate = []
     apiList = []
 
-    for row in akiKey.query("detected-well-pads", ENVOperator=operatorName, ENVBasin=basin):
+    for row in apiKey.query("detected-well-pads", ENVOperator=operatorName, ENVBasin=basin):
         updateDateWells = row['UpdatedDate']
     if "T" in updateDateWells:
         index = updateDateWells.index("T")
@@ -58,7 +58,7 @@ def checkWellStatus(akiKey, operatorName, basin):
         year = int(splitDate[0])  # gets the correct
 
         if year == todayYear and month == todayMonth and day == todayDay:
-            for row in akiKey.query("wells", ENVOperator="BROWNING OIL", ENVBasin="MIDLAND"):
+            for row in apiKey.query("wells", ENVOperator="BROWNING OIL", ENVBasin="MIDLAND"):
                 apiNumber = row['API_UWI_14_Unformatted']
                 browningDates = row['UpdatedDate']
                 apiList.append(apiNumber)

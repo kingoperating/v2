@@ -5,7 +5,7 @@ Developed by: Michael Tanner
 
 """
 # KOC v2 Python Packages
-from kingscripts.production import greasebook, combocurve
+from kingscripts.operations import greasebook, combocurve
 from kingscripts.random import enverus
 from kingscripts.afe import afe
 
@@ -19,19 +19,19 @@ import os
 load_dotenv()
 
 # getting API keys
-comboCurveApi = DeveloperAPIv3(secret_key=os.getenv('ENVERUS_API'))
+enverusApi = DeveloperAPIv3(secret_key=os.getenv('ENVERUS_API'))
 greasebookApiKey = str(os.getenv('GREASEBOOK_API_KEY'))
 serviceAccount = ServiceAccount.from_file(os.getenv("API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("API_KEY_PASS_LIVE")
 
 # Enverus Stack
 enverus.getWellData(
-    api=comboCurveApi,
+    apiKey=enverusApi,
     wellApi="42033325890000"
 )
 
 enverus.checkWellStatus(
-    akiKey=comboCurveApi,
+    apiKey=enverusApi,
     operatorName="BROWNING OIL",
     basin="MIDLAND"
 )
