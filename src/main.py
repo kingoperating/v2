@@ -36,14 +36,9 @@ enverus.checkWellStatus(
     basin="MIDLAND"
 )
 
-# ComboCurve Stack
-combocurve.putWellProductionData(
-    pullFromAllocation=False,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey,
-    greasebookApi=greasebookApiKey,
-    daysToPull=60
-)
+# AFE Stack
+afe.dailyCost(name="millerranchb501mh")
+afe.variance(name="millerranchb501mh")
 
 # Greasebook Stack
 greasebook.getProductionData(
@@ -52,5 +47,13 @@ greasebook.getProductionData(
     greasebookApi=greasebookApiKey
 )
 
+# ComboCurve Stack
+combocurve.putWellProductionData(
+    pullFromAllocation=False,
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey,
+    greasebookApi=greasebookApiKey,
+    daysToPull=60
+)
 
 print("Main Script Complete")
