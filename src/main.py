@@ -56,7 +56,7 @@ combocurve.putWellProductionData(
     daysToPull=60
 )
 
-combocurve.getLastestScenario(
+combocurve.getLatestScenario(
     projectIdKey="612fc3d36880c20013a885df",
     scenarioIdKey="632e70eefcea66001337cd43",
     serviceAccount=serviceAccount,

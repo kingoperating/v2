@@ -55,7 +55,7 @@ Two (2) packages `greasebook` and `combocurve` and four (4) functions
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
      - `daysToPull`: Number of days to pull, if `pullFromAllocation=True` set to 0 `int`
 
-3. `combocurve.getLastestScenario` - pull the latest scenerio given a projectId and scenerioId
+3. `combocurve.getLatestScenario` - pull the latest scenerio given a projectId and scenerioId
    - Arguments
      - `projectIdKey`: ComboCurve specific project id - get through front-end UI `str`
      - `scenarioIdKey`: ComboCurve specific scenerio id - get through front-end UI `str`

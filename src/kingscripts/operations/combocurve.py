@@ -402,7 +402,7 @@ def putWellProductionData(pullFromAllocation, serviceAccount, comboCurveApi, gre
     """
 
 
-def getLastestScenario(projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
+def getLatestScenario(projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
 
     load_dotenv()
 
