@@ -20,7 +20,7 @@ load_dotenv()
 
 # getting API keys
 enverusApi = DeveloperAPIv3(secret_key=os.getenv('ENVERUS_API'))
-greasebookApiKey = str(os.getenv('GREASEBOOK_API_KEY'))
+greasebookApiKey = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(os.getenv("API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("API_KEY_PASS_LIVE")
 
@@ -35,10 +35,6 @@ enverus.checkWellStatus(
     operatorName="BROWNING OIL",
     basin="MIDLAND"
 )
-
-# AFE Stack
-afe.dailyCost(name="millerranchb501mh")
-afe.variance(name="millerranchb501mh")
 
 # Greasebook Stack
 greasebook.getProductionData(
@@ -62,5 +58,9 @@ combocurve.getLatestScenario(
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
+
+# AFE Stack
+afe.dailyCost(name="millerranchb501mh")
+afe.variance(name="millerranchb501mh")
 
 print("Main Script Complete")
