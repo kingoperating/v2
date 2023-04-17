@@ -12,7 +12,7 @@ from kingscripts.afe import afe
 # Python Packages
 from dotenv import load_dotenv
 from enverus_developer_api import DeveloperAPIv3
-from combocurve_api_v1 import ServiceAccount, ComboCurveAuth
+from combocurve_api_v1 import ServiceAccount
 import os
 
 # load .env file
@@ -23,6 +23,10 @@ enverusApi = DeveloperAPIv3(secret_key=os.getenv('ENVERUS_API'))
 greasebookApiKey = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(os.getenv("API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("API_KEY_PASS_LIVE")
+
+# AFE Stack
+afe.dailyCost(name="millerranchb501mh")
+afe.variance(name="millerranchb501mh")
 
 # Enverus Stack
 enverus.getWellData(
@@ -59,8 +63,5 @@ combocurve.getLatestScenario(
     comboCurveApi=comboCurveApiKey
 )
 
-# AFE Stack
-afe.dailyCost(name="millerranchb501mh")
-afe.variance(name="millerranchb501mh")
 
 print("Main Script Complete")

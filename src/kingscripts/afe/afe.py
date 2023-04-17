@@ -22,8 +22,6 @@ def dailyCost(name):
     nameOfWell = name
 
     # Load in all files needed
-    pathOfDailyReport = '.\\kingoperating\\data\\afe' + \
-        '\\' + nameOfWell + "\\" + "daily"
     pathOfAfe = r".\kingoperating\data\afe" + "\\" + nameOfWell
     plannedCostFile = pathOfAfe + "\\" + nameOfWell + "planned.xlsx"
     plannedCostDepth = pd.read_excel(plannedCostFile)
@@ -172,6 +170,7 @@ def dailyCost(name):
 
     cumulativeCost = cumulativeCost + totalDailyCost
 
+    # handles the exception that there is not data in the masterAfe file
     try:
         day = day
         lastDate = date
@@ -180,7 +179,7 @@ def dailyCost(name):
         lastDate = dt.datetime.today()
         lastMeasuredDepth = 0
 
-    row = plannedCostDepth.iloc[day]
+    row = plannedCostDepth.iloc[day]  # finds the next planned cost and depth
     lastDateClean = lastDate.strftime("%m/%d/%Y")
     if lastDate in descriptionDateList:
         index = descriptionDateList.index(lastDate)
@@ -243,11 +242,15 @@ def dailyCost(name):
     dailyItemCostFp.close()
     daysVsDepthFp.close()
 
-    """
+    print("Days vs Depth vs Cost and Daily Item Cost Updated")
+
+
+"""
     
-   AFE vs Actual Spend
-   
-    """
+ AFE vs Actual Spend
+ 
+ 
+ """
 
 
 def variance(name):
@@ -256,8 +259,6 @@ def variance(name):
     nameOfWell = name
 
     # Load in all files needed
-    pathOfDailyReport = '.\\kingoperating\\data\\afe' + \
-        '\\' + nameOfWell + "\\" + "daily"
     pathOfAfe = r".\kingoperating\data\afe" + "\\" + nameOfWell
     plannedCostFile = pathOfAfe + "\\" + nameOfWell + "planned.xlsx"
     plannedCostDepth = pd.read_excel(plannedCostFile)
@@ -269,19 +270,6 @@ def variance(name):
     masterAfe = pd.read_excel(pathOfMasterFile)
     actualWellCostWolfepak = pd.read_excel(actualSpendString)
     budgetRawFile = pd.read_excel(budgetRawString)
-    drillingDayDescriptionPath = "C:\\Users\\mtanner\\OneDrive - King Operating\\Drilling - KOC\\daysdepthdescription.xlsx"
-    descriptionFile = pd.read_excel(
-        drillingDayDescriptionPath, sheet_name=nameOfWell)
-    # Create all clean export files needed and write the header strings
-    dailyItemCostFileName = pathOfAfe + "\\" + nameOfWell + "dailyItemCost.csv"
-    dailyItemCostFp = open(dailyItemCostFileName, "w")
-    daysVsDepthFileName = pathOfAfe + "\\" + nameOfWell + "daysvsdepth.csv"
-    daysVsDepthFp = open(daysVsDepthFileName, "w")
-    headerString = "Date, Account Number, Depth, Daily Cost Estimate, Description\n"
-    dailyItemCostFp.write(headerString)
-    headerString = "Date, Days, Hours, Planned Depth, Planned Cost, Daily, Daily Cost Estimated, Actual Depth, Cumulative Cost,Daily Description\n"
-    daysVsDepthFp.write(headerString)
-
     masterAfe = masterAfe.fillna(0)  # fill all emptys with 0
 
     wolfepakActualDesc = masterMatchFile["Description WolfePak"].tolist()
@@ -292,7 +280,6 @@ def variance(name):
     # Begin AFE Variance
 
     actualAccountCodeList = actualWellCostWolfepak["Account"].tolist()
-    actualAccountDescList = actualWellCostWolfepak["{Account Desc}"].tolist()
     actualCostList = actualWellCostWolfepak["Amount"].tolist()
 
     # create empty lists needed for loop
