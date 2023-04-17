@@ -1,6 +1,6 @@
 # King Operating Corporation Python Package
 
-This package allows for easy access to the majority of KOC data products. Currently on version 2.0.0.
+This package allows for easy access to the majority of KOC data products. Currently on version 2.0.4
 
 Developed and Maintained by Michael Tanner. Please email mtanner@kingoperating.com with any questions.
 
