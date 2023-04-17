@@ -18,6 +18,9 @@ import os
 # load .env file
 load_dotenv()
 
+# Working Directory
+workingDirectory = os.getenv("WORKING_DIRECTORY")
+
 # getting API keys
 enverusApi = DeveloperAPIv3(secret_key=os.getenv('ENVERUS_API'))
 greasebookApiKey = os.getenv('GREASEBOOK_API_KEY')
@@ -72,9 +75,15 @@ combocurve.putWellProductionData(
     comboCurveApi=comboCurveApiKey
 ) '''
 
-''' # AFE Stack
-afe.dailyCost(name=afeWellName)
-afe.variance(name=afeWellName) '''
+# AFE Stack
+afe.dailyCost(
+    workingDirectory=workingDirectory,
+    name=afeWellName
+)
+afe.variance(
+    workingDirectory=workingDirectory,
+    name=afeWellName
+)
 
 
 print("Main Script Complete")

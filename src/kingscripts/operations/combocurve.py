@@ -1,23 +1,16 @@
-from ast import keyword
-from http import client
-from posixpath import split
-from time import strftime
-from black import out
 import requests
-import os
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 import datetime as dt
-import glob
 import re
 from dotenv import load_dotenv
 import json
 import pandas as pd
 import numpy as np
-from combocurve_api_v1 import ServiceAccount, ComboCurveAuth
+from combocurve_api_v1 import ComboCurveAuth
 from combocurve_api_v1.pagination import get_next_page_url
 
 
-def putWellProductionData(pullFromAllocation, serviceAccount, comboCurveApi, greasebookApi, daysToPull):
+def putWellProductionData(workingDirectory, pullFromAllocation, serviceAccount, comboCurveApi, greasebookApi, daysToPull):
     load_dotenv()  # load enviroment variables
 
     pullFromAllocation = pullFromAllocation
@@ -31,14 +24,12 @@ def putWellProductionData(pullFromAllocation, serviceAccount, comboCurveApi, gre
 
     print("Authentication Worked")
 
-    # adding the Master Battery List for Analysis
-    masterBatteryList = pd.read_csv(
-        r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\masterBatteryList.csv", encoding="windows-1252"
-    )
+    # adding the Master Allocation List for Analysis
+    workingDir = workingDirectory
+    masterAllocationListFileName = workingDir + \
+        r"\kingoperating\data\masterWellAllocation.xlsx"
 
-    masterAllocationList = pd.read_excel(
-        r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\masterWellAllocation.xlsx"
-    )
+    masterAllocationList = pd.read_excel(masterAllocationListFileName)
 
     # set some date variables we will need later
     dateToday = dt.datetime.today()
@@ -396,20 +387,20 @@ def putWellProductionData(pullFromAllocation, serviceAccount, comboCurveApi, gre
     print("Finished Put Production Data to ComboCurve")
 
     """
-    
     Get the latest scenerio from a given ComboCurve project
     
     """
 
 
-def getLatestScenario(projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
+def getLatestScenario(workingDirectory, projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
 
     load_dotenv()
 
-    # adding the Master Battery List for Analysis
-    masterAllocationList = pd.read_excel(
-        r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\masterWellAllocation.xlsx"
-    )
+    workingDir = workingDirectory
+    masterAllocationListFileName = workingDir + \
+        r"\kingoperating\data\masterWellAllocation.xlsx"
+
+    masterAllocationList = pd.read_excel(masterAllocationListFileName)
 
     # connect to service account
     service_account = serviceAccount
@@ -516,7 +507,6 @@ def getLatestScenario(projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi
 
         eurData = eurData.append(printRow, ignore_index=True)
 
-    eurData.csv(
-        r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\eurData.csv", index=False)
-
+    eurDataFileName = workingDir + r"\kingoperating\data\eurData.csv"
+    eurData.to_csv(eurDataFileName, index=False)
     print('Pulled EUR Data')

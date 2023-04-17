@@ -3,13 +3,12 @@ from datetime import datetime
 import pandas as pd
 
 
-def dailyCost(name):
-
+def dailyCost(workingDirectory, name):
     # Set Well Name To Whatever well is needed:
     nameOfWell = name
-
     # Load in all files needed
-    pathOfAfe = r".\kingoperating\data\afe" + "\\" + nameOfWell
+    pathOfWorkingDir = workingDirectory
+    pathOfAfe = pathOfWorkingDir + r".\kingoperating\data\afe" + "\\" + nameOfWell
     plannedCostFile = pathOfAfe + "\\" + nameOfWell + "planned.xlsx"
     plannedCostDepth = pd.read_excel(plannedCostFile)
     budgetRawString = pathOfAfe + "\\" + nameOfWell + "AfeOg.xlsx"
@@ -227,22 +226,19 @@ def dailyCost(name):
 
 
 """
-    
+
  AFE vs Actual Spend
  
- 
- """
+"""
 
 
-def variance(name):
-
+def variance(workingDirectory, name):
     # Set Well Name To Whatever well is needed:
     nameOfWell = name
-
     # Load in all files needed
-    pathOfAfe = r".\kingoperating\data\afe" + "\\" + nameOfWell
+    pathOfWorkingDir = workingDirectory
+    pathOfAfe = pathOfWorkingDir + r".\kingoperating\data\afe" + "\\" + nameOfWell
     plannedCostFile = pathOfAfe + "\\" + nameOfWell + "planned.xlsx"
-    plannedCostDepth = pd.read_excel(plannedCostFile)
     budgetRawString = pathOfAfe + "\\" + nameOfWell + "AfeOg.xlsx"
     actualSpendString = pathOfAfe + "\\" + nameOfWell + "ActualSpend.xlsx"
     masterMatchFile = pd.read_excel(
