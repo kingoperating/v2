@@ -1,19 +1,6 @@
 # Import packages needed
-from ast import keyword
-from http import client
-from posixpath import split
-from time import strftime
-from black import out
-import requests
-import os
-from datetime import date, datetime, timedelta
-import datetime as dt
-import glob
-import re
-from dotenv import load_dotenv
+from datetime import datetime
 import pandas as pd
-import numpy as np
-from openpyxl import Workbook
 
 
 def dailyCost(name):
@@ -53,12 +40,6 @@ def dailyCost(name):
     welldriveBudgetAccounts = masterMatchFile["Code WellDrive"].tolist()
     wolfepakActualAccounts = masterMatchFile["Code WolfePak"].tolist()
     wellEzAccounts = masterMatchFile["Code Wellez"].tolist()
-
-    costItemListClean = []
-    totalCostAllFile = []
-    totalDateAllFile = []
-    totalDepthAllFile = []
-    totalCumulativeCost = []
 
     descriptionDateList = descriptionFile["Date"].tolist()
 

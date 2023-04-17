@@ -24,9 +24,7 @@ greasebookApiKey = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(os.getenv("API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("API_KEY_PASS_LIVE")
 
-# AFE Stack
-afe.dailyCost(name="millerranchb501mh")
-afe.variance(name="millerranchb501mh")
+print(type(enverusApi))
 
 # Enverus Stack
 enverus.getWellData(
@@ -62,6 +60,10 @@ combocurve.getLatestScenario(
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
+
+# AFE Stack
+afe.dailyCost(name="millerranchb501mh")
+afe.variance(name="millerranchb501mh")
 
 
 print("Main Script Complete")

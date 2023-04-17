@@ -6,15 +6,25 @@ Developed by: Michael Tanner
 """
 
 from enverus_developer_api import DeveloperAPIv3
-import requests
-import os
-import pandas as pd
-from datetime import date, datetime, timedelta
 import datetime as dt
 import re
 
 
 def getWellData(apiKey, wellApi):
+
+    # CHECKS FOR ARGUMENTS
+
+    # Checks if API is 14 digits long
+    if len(wellApi) != 14:
+        lengthOfApi = len(wellApi)
+        print("API is not 14 digits long. It is " +
+              str(lengthOfApi) + " digits long.")
+        return
+    # checks to ensure correct class for Enverus API
+    if type(apiKey) != DeveloperAPIv3:
+        print("API Key is not the correct class")
+        return
+
     for row in apiKey.query("production", API_UWI_14_UNFORMATTED=wellApi):
         totalProdMonths = row['ProducingDays']
         totalOil = row['Prod_OilBBL']
@@ -27,6 +37,19 @@ def getWellData(apiKey, wellApi):
 
 
 def checkWellStatus(apiKey, operatorName, basin):
+
+    # checks to ensure correct class for Enverus API
+    if type(apiKey) != DeveloperAPIv3:
+        print("API Key is not the correct class")
+        return
+    # checks to ensure operatorName is string
+    if type(operatorName) != str:
+        print("Operator Name is not a string")
+        return
+    # checks to ensure basin is string
+    if type(basin) != str:
+        print("Basin is not a string")
+        return
 
     # gets relvent date values
     dateToday = dt.datetime.today()
