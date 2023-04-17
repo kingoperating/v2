@@ -4,7 +4,7 @@ Main Script for KOC v2 Python Packages
 Developed by: Michael Tanner
 
 """
-# KOC v2 Python Packages
+# KOC v2.0.2 Python Packages
 from kingscripts.operations import greasebook, combocurve
 from kingscripts.analytics import enverus
 from kingscripts.afe import afe
@@ -24,18 +24,29 @@ greasebookApiKey = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(os.getenv("API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("API_KEY_PASS_LIVE")
 
-print(type(enverusApi))
+# Important Variables for scripts
+enverusWellApiNumber = "42033325890000"
+browningOperatorName = "BROWNING OIL"
+basin = "MIDLAND"
+comboCurveProjectId = "612fc3d36880c20013a885df"
+comboCurveScenarioId = "632e70eefcea66001337cd43"
+afeWellName = "millerranchb501mh"
+
+'''
+MAIN SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mainAFE.py for more details
+
+'''
 
 # Enverus Stack
 enverus.getWellData(
     apiKey=enverusApi,
-    wellApi="42033325890000"
+    wellApi=enverusWellApiNumber
 )
 
 enverus.checkWellStatus(
     apiKey=enverusApi,
-    operatorName="BROWNING OIL",
-    basin="MIDLAND"
+    operatorName=browningOperatorName,
+    basin=basin
 )
 
 # Greasebook Stack
@@ -54,16 +65,16 @@ combocurve.putWellProductionData(
     daysToPull=60
 )
 
-combocurve.getLatestScenario(
-    projectIdKey="612fc3d36880c20013a885df",
-    scenarioIdKey="632e70eefcea66001337cd43",
+''' combocurve.getLatestScenario(
+    projectIdKey=comboCurveProjectId,
+    scenarioIdKey=comboCurveScenarioId,
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
-)
+) '''
 
-# AFE Stack
-afe.dailyCost(name="millerranchb501mh")
-afe.variance(name="millerranchb501mh")
+''' # AFE Stack
+afe.dailyCost(name=afeWellName)
+afe.variance(name=afeWellName) '''
 
 
 print("Main Script Complete")

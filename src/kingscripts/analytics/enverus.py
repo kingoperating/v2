@@ -87,4 +87,5 @@ def checkWellStatus(apiKey, operatorName, basin):
                 browningDate.append(browningDates)
             print("SOMETHING HAS BEEN UPDATED.....")
 
-    print("Completed Looking for Updates on Browning Oil FLuvanna Unit")
+    print("Completed Looking for Updates on " +
+          str(operatorName) + " in " + str(basin) + " Basin")
