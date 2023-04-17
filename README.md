@@ -16,7 +16,7 @@ Then, import the packages below:
 
 ```python
 from kingscripts.operations import greasebook, combocurve
-from kingscripts.random import enverus
+from kingscripts.analytics import enverus
 from kingscripts.afe import afe
 ```
 
