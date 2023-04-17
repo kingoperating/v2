@@ -15,7 +15,6 @@ import re
 
 
 def getWellData(apiKey, wellApi):
-    # Checks mos recent data from Browning Oil FLuvanna Unit
     for row in apiKey.query("production", API_UWI_14_UNFORMATTED=wellApi):
         totalProdMonths = row['ProducingDays']
         totalOil = row['Prod_OilBBL']
