@@ -8,7 +8,7 @@ Visit [KOC Development Site](https://mtanner161.github.io/kingdashboard/#/kingda
 
 ## Documentation
 
-Use `git clone` download and access packages. There are 3 different modules withing `kingscripts` - `afe`, `operations` and `random`. Each of these packages connect with different data products within the King ecosystem.
+Use `git clone` download and access packages. There are 3 different modules withing `kingscripts` - `afe`, `operations` and `analytics`. Each of these packages connect with different data products within the King ecosystem.
 
 To import these modules, first `git clone https://github.com/kingoperating/v2.git`
 
@@ -48,13 +48,21 @@ Two (2) packages `greasebook` and `combocurve` and four (4) functions
      - `greasebookApi`: Greasebook API key `str`
 
 2. `combocurve.putWellProductionData` - requests data from Greasebooks and inserts into ComboCurve
+
    - Arguments
      - `pullFromAllocation`: `True` to pull all GB production data, `False` to pull limited number and update master file
      - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
      - `daysToPull`: Number of days to pull, if `pullFromAllocation=True` set to 0 `int`
 
-## random Module
+3. `combocurve.getLastestScenario` - pull the latest scenerio given a projectId and scenerioId
+   - Arguments
+     - `projectIdKey`: ComboCurve specific project id - get through front-end UI `str`
+     - `scenarioIdKey`: ComboCurve specific scenerio id - get through front-end UI `str`
+     - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
+     - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
+
+## analytics Module
 
 One package `enverus` and two (2) functions
 
