@@ -3,12 +3,12 @@ from datetime import datetime
 import pandas as pd
 
 
-def dailyCost(workingDirectory, name):
+def dailyCost(workingDataDirectory, name):
     # Set Well Name To Whatever well is needed:
     nameOfWell = name
     # Load in all files needed
-    pathOfWorkingDir = workingDirectory
-    pathOfAfe = pathOfWorkingDir + r".\kingoperating\data\afe" + "\\" + nameOfWell
+    pathOfWorkingDir = workingDataDirectory
+    pathOfAfe = pathOfWorkingDir + r"\afe" + "\\" + nameOfWell
     plannedCostFile = pathOfAfe + "\\" + nameOfWell + "planned.xlsx"
     plannedCostDepth = pd.read_excel(plannedCostFile)
     budgetRawString = pathOfAfe + "\\" + nameOfWell + "AfeOg.xlsx"
@@ -232,17 +232,17 @@ def dailyCost(workingDirectory, name):
 """
 
 
-def variance(workingDirectory, name):
+def variance(workingDataDirectory, name):
     # Set Well Name To Whatever well is needed:
     nameOfWell = name
     # Load in all files needed
-    pathOfWorkingDir = workingDirectory
-    pathOfAfe = pathOfWorkingDir + r".\kingoperating\data\afe" + "\\" + nameOfWell
-    plannedCostFile = pathOfAfe + "\\" + nameOfWell + "planned.xlsx"
+
+    pathOfWorkingDir = workingDataDirectory
+    pathOfAfe = pathOfWorkingDir + r"\afe" + "\\" + nameOfWell
     budgetRawString = pathOfAfe + "\\" + nameOfWell + "AfeOg.xlsx"
     actualSpendString = pathOfAfe + "\\" + nameOfWell + "ActualSpend.xlsx"
     masterMatchFile = pd.read_excel(
-        r".\kingoperating\data\afe\welldriveWolfepakMatch.xlsx")
+        pathOfWorkingDir + r"\afe\welldriveWolfepakMatch.xlsx")
     pathOfMasterFile = pathOfAfe + "\\" + "fullreport.xlsx"
     masterAfe = pd.read_excel(pathOfMasterFile)
     actualWellCostWolfepak = pd.read_excel(actualSpendString)
@@ -252,7 +252,6 @@ def variance(workingDirectory, name):
     wolfepakActualDesc = masterMatchFile["Description WolfePak"].tolist()
     welldriveBudgetAccounts = masterMatchFile["Code WellDrive"].tolist()
     wolfepakActualAccounts = masterMatchFile["Code WolfePak"].tolist()
-    wellEzAccounts = masterMatchFile["Code Wellez"].tolist()
 
     # Begin AFE Variance
 

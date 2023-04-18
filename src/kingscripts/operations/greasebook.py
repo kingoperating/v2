@@ -8,16 +8,16 @@ import numpy as np
 import json
 
 
-def getBatteryProductionData(workingDirectory, pullProd, days, greasebookApi):
+def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi):
 
     fullProductionPull = pullProd
     numberOfDaysToPull = days
 
-    workingDir = workingDirectory
+    workingDir = workingDataDirectory
     fileNameAssetProduction = workingDir + \
-        r"\kingoperating\data\totalAssetsProduction.csv"
+        r"\totalAssetsProduction.csv"
     fileNameMasterBatteryList = workingDir + \
-        r"\kingoperating\data\masterBatteryList.csv"
+        r"\masterBatteryList.csv"
 
     # adding the Master Battery List for Analysis
     masterBatteryList = pd.read_csv(
@@ -78,7 +78,7 @@ def getBatteryProductionData(workingDirectory, pullProd, days, greasebookApi):
 
     urlAccounting = (
         "https://integration.greasebook.com/api/v1/batteries/daily-production?apiKey="
-        + str(os.getenv("GREASEBOOK_API_KEY"))
+        + greasebookApi
         + productionInterval
         + todayYear
         + "-"
@@ -683,7 +683,7 @@ def getBatteryProductionData(workingDirectory, pullProd, days, greasebookApi):
     # setting to length of results
     numEntries = len(results)
 
-    fp = open(r".\kingoperating\data\oilSoldAccouting.csv", "w")
+    fp = open(workingDir + r"\oilSoldAccouting.csv", "w")
     headerString = "Date, Battery Name, Oil Sold Volume\n"
     fp.write(headerString)
 
@@ -738,11 +738,17 @@ def getBatteryProductionData(workingDirectory, pullProd, days, greasebookApi):
     print("Production Pulled From Greasebook")
 
 
-def getComments(workingDirectory, apiKey):
+'''
+GET COMMENTS FROM GREASEBOOK and returns a clean JSON file ready to loading into ComboCurve
 
-    workingDir = workingDirectory
+'''
+
+
+def getComments(workingDataDirectory, greasebookApi):
+
+    workingDir = workingDataDirectory
     fileNameMasterAllocationList = workingDir + \
-        r"\kingoperating\data\masterWellAllocation.xlsx"
+        r"\masterWellAllocation.xlsx"
 
     # set some date variables we will need later
     dateToday = dt.datetime.today()
@@ -760,7 +766,7 @@ def getComments(workingDirectory, apiKey):
     # Master API call to Greasebooks
     url = (
         "https://integration.greasebook.com/api/v1/comments/read?apiKey="
-        + apiKey
+        + greasebookApi
         + productionInterval
         + todayYear
         + "-"
@@ -845,5 +851,3 @@ def getComments(workingDirectory, apiKey):
     cleanTotalCommentComboCurveJson = json.loads(totalCommentComboCurveJson)
 
     return cleanTotalCommentComboCurveJson
-
-    print("yay")

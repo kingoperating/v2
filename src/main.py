@@ -19,11 +19,11 @@ import os
 load_dotenv()
 
 # Working Directory
-workingDirectory = os.getenv("WORKING_DIRECTORY")
+workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
 
 # getting API keys
 enverusApi = DeveloperAPIv3(secret_key=os.getenv('ENVERUS_API'))
-greasebookApiKey = os.getenv('GREASEBOOK_API_KEY')
+greasebookApi = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(os.getenv("API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("API_KEY_PASS_LIVE")
 
@@ -40,18 +40,6 @@ WORKING ZONE
 
 '''
 
-pdpModel = combocurve.getLatestScenario(
-    workingDirectory=workingDirectory,
-    projectIdKey=comboCurveProjectId,
-    scenarioIdKey=comboCurveScenarioId,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey
-)
-
-pdpModel.to_excel(workingDirectory +
-                  "\kingoperating\data\eurData.xlsx", index=False)
-
-
 '''
 MAIN SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mainAFE.py for more details
 
@@ -60,7 +48,7 @@ MAIN SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mai
 # Enverus Stack
 browingWell = enverus.getWellData(
     apiKey=enverusApi,
-    wellApi=browning518H
+    wellApi14=browning518H
 )
 
 enverus.checkWellStatus(
@@ -71,45 +59,48 @@ enverus.checkWellStatus(
 
 # Greasebook Stack
 greasebook.getBatteryProductionData(
-    workingDirectory=workingDirectory,
+    workingDataDirectory=workingDirectoryData,
     pullProd=False,
     days=30,
-    greasebookApi=greasebookApiKey
+    greasebookApi=greasebookApi
 )
 
 # ComboCurve Stack
 combocurve.putWellProductionData(
-    workingDirectory=workingDirectory,
+    workingDataDirectory=workingDirectoryData,
     pullFromAllocation=False,
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey,
-    greasebookApi=greasebookApiKey,
+    greasebookApi=greasebookApi,
     daysToPull=60
 )
 
-combocurve.getLatestScenario(
-    workingDirectory=workingDirectory,
+pdpModel = combocurve.getLatestScenario(
+    workingDataDirectory=workingDirectoryData,
     projectIdKey=comboCurveProjectId,
     scenarioIdKey=comboCurveScenarioId,
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
 
+pdpModel.to_excel(workingDirectoryData +
+                  r"\eurData.xlsx", index=False)
+
 # AFE Stack
 afe.dailyCost(
-    workingDirectory=workingDirectory,
+    workingDataDirectory=workingDirectoryData,
     name=afeWellName
 )
 afe.variance(
-    workingDirectory=workingDirectory,
+    workingDataDirectory=workingDirectoryData,
     name=afeWellName
 )
 
 # WELL COMMENTS
 
 greasebookComments = greasebook.getComments(
-    workingDirectory=workingDirectory,
-    apiKey=greasebookApiKey
+    workingDataDirectory=workingDirectoryData,
+    greasebookApi=greasebookApi
 )
 
 combocurve.putWellComments(
@@ -117,5 +108,3 @@ combocurve.putWellComments(
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
-
-print("Main Script Complete")

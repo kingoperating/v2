@@ -17,10 +17,10 @@ Returns a dataframe for a specific API of the monthly production data
 '''
 
 
-def getWellData(apiKey, wellApi):
+def getWellData(apiKey, wellApi14):
     # Checks if API is 14 digits long
-    if len(wellApi) != 14:
-        lengthOfApi = len(wellApi)
+    if len(wellApi14) != 14:
+        lengthOfApi = len(wellApi14)
         print("API is not 14 digits long. It is " +
               str(lengthOfApi) + " digits long.")
         return
@@ -31,7 +31,7 @@ def getWellData(apiKey, wellApi):
     # creates a dataframe for the well production data
     wellData = pd.DataFrame(columns=["API", "Date", "Oil", "Gas", "Water"])
 
-    for row in apiKey.query("production", API_UWI_14_UNFORMATTED=wellApi):
+    for row in apiKey.query("production", API_UWI_14_UNFORMATTED=wellApi14):
         totalProdMonths = row['ProducingDays']
         totalOil = row['Prod_OilBBL']
         totalGas = row['Prod_MCFE']
@@ -45,7 +45,7 @@ def getWellData(apiKey, wellApi):
         month = int(splitDate2[1])
         day = int(splitDate2[2])
         dateString = str(month) + "/" + str(day) + "/" + str(year)
-        wellRow = [wellApi, dateString, totalOil, totalGas, totalWater]
+        wellRow = [wellApi14, dateString, totalOil, totalGas, totalWater]
         wellData.loc[len(wellData)+1] = wellRow
 
     # Reserve Dataframe

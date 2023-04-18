@@ -10,7 +10,7 @@ from combocurve_api_v1 import ComboCurveAuth
 from combocurve_api_v1.pagination import get_next_page_url
 
 
-def putWellProductionData(workingDirectory, pullFromAllocation, serviceAccount, comboCurveApi, greasebookApi, daysToPull):
+def putWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccount, comboCurveApi, greasebookApi, daysToPull):
     load_dotenv()  # load enviroment variables
 
     pullFromAllocation = pullFromAllocation
@@ -25,9 +25,9 @@ def putWellProductionData(workingDirectory, pullFromAllocation, serviceAccount, 
     print("Authentication Worked")
 
     # adding the Master Allocation List for Analysis
-    workingDir = workingDirectory
+    workingDir = workingDataDirectory
     masterAllocationListFileName = workingDir + \
-        r"\kingoperating\data\masterWellAllocation.xlsx"
+        r"\masterWellAllocation.xlsx"
 
     masterAllocationList = pd.read_excel(masterAllocationListFileName)
 
@@ -380,13 +380,13 @@ Get the latest scenerio from a given ComboCurve project and return a pandas data
 """
 
 
-def getLatestScenario(workingDirectory, projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
+def getLatestScenario(workingDataDirectory, projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
 
     load_dotenv()
 
-    workingDir = workingDirectory
+    workingDir = workingDataDirectory
     masterAllocationListFileName = workingDir + \
-        r"\kingoperating\data\masterWellAllocation.xlsx"
+        r"\masterWellAllocation.xlsx"
 
     masterAllocationList = pd.read_excel(masterAllocationListFileName)
 
