@@ -11,9 +11,6 @@ import re
 
 
 def getWellData(apiKey, wellApi):
-
-    # CHECKS FOR ARGUMENTS
-
     # Checks if API is 14 digits long
     if len(wellApi) != 14:
         lengthOfApi = len(wellApi)
@@ -37,7 +34,6 @@ def getWellData(apiKey, wellApi):
 
 
 def checkWellStatus(apiKey, operatorName, basin):
-
     # checks to ensure correct class for Enverus API
     if type(apiKey) != DeveloperAPIv3:
         print("API Key is not the correct class")
