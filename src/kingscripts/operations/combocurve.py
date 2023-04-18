@@ -375,7 +375,7 @@ def putWellProductionData(workingDirectory, pullFromAllocation, serviceAccount, 
 
 
 """
-Get the latest scenerio from a given ComboCurve project 
+Get the latest scenerio from a given ComboCurve project and return a pandas dataframe
 
 """
 
@@ -489,11 +489,9 @@ def getLatestScenario(workingDirectory, projectIdKey, scenarioIdKey, serviceAcco
             printRow = {"API": apiNumber, "Abandonment Date": abandonmentDate,
                         "Gross Oil Well Head Volume": grossOilWellHeadVolume, "Gross Gas Well Head Volume": grossGasWellHeadVolume}
 
-        eurData = eurData.append(printRow, ignore_index=True)
+        eurData.loc[len(eurData)+1] = printRow
 
-    eurDataFileName = workingDir + r"\kingoperating\data\eurData.csv"
-    eurData.to_csv(eurDataFileName, index=False)
-    print('Pulled EUR Data')
+    return eurData
 
 
 def putWellComments(cleanJson, serviceAccount, comboCurveApi):
@@ -524,4 +522,4 @@ def putWellComments(cleanJson, serviceAccount, comboCurveApi):
         indexOfSuccessFail = responseText.index("successCount")
         print(responseText[indexOfSuccessFail:])
 
-    print("yay")
+    print("PUT COMPLETE")

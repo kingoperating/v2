@@ -36,6 +36,23 @@ comboCurveScenarioId = "632e70eefcea66001337cd43"
 afeWellName = "millerranchb501mh"
 
 '''
+WORKING ZONE
+
+'''
+
+pdpModel = combocurve.getLatestScenario(
+    workingDirectory=workingDirectory,
+    projectIdKey=comboCurveProjectId,
+    scenarioIdKey=comboCurveScenarioId,
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
+
+pdpModel.to_excel(workingDirectory +
+                  "\kingoperating\data\eurData.xlsx", index=False)
+
+
+'''
 MAIN SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mainAFE.py for more details
 
 '''
