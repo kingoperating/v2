@@ -1,6 +1,6 @@
 # King Operating Corporation Python Package
 
-This package allows for easy access to the majority of KOC data products. Currently on version 2.0.4
+This package allows for easy access to the majority of KOC data products. Currently on version 2.0.3
 
 Developed and Maintained by Michael Tanner. Please email mtanner@kingoperating.com with any questions.
 
@@ -10,7 +10,7 @@ Visit [KOC Development Site](https://mtanner161.github.io/kingdashboard/#/kingda
 
 Use `git clone` download and access packages. There are 3 different modules withing `kingscripts` - `afe`, `operations` and `analytics`. Each of these packages connect with different data products within the King ecosystem.
 
-To import these modules, first `git clone https://github.com/kingoperating/v2.git`
+To import these modules, first create a working directory and `git clone https://github.com/kingoperating/v2.git` into that working directory. Create a `kingoperating\data` sub folder to house all data, with subfolders of `afe` and `loe`
 
 Then, import the packages below:
 
