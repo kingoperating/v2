@@ -8,7 +8,7 @@ import numpy as np
 import json
 
 
-def getProductionData(workingDirectory, pullProd, days, greasebookApi):
+def getBatteryProductionData(workingDirectory, pullProd, days, greasebookApi):
 
     fullProductionPull = pullProd
     numberOfDaysToPull = days

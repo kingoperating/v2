@@ -53,22 +53,11 @@ enverus.checkWellStatus(
 )
 
 # Greasebook Stack
-greasebook.getProductionData(
+greasebook.getBatteryProductionData(
     workingDirectory=workingDirectory,
     pullProd=False,
     days=30,
     greasebookApi=greasebookApiKey
-)
-
-greasebookComments = greasebook.getComments(
-    workingDirectory=workingDirectory,
-    apiKey=greasebookApiKey
-)
-
-combocurve.putWellComments(
-    cleanJson=greasebookComments,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey
 )
 
 # ComboCurve Stack
@@ -99,5 +88,17 @@ afe.variance(
     name=afeWellName
 )
 
+# WELL COMMENTS
+
+greasebookComments = greasebook.getComments(
+    workingDirectory=workingDirectory,
+    apiKey=greasebookApiKey
+)
+
+combocurve.putWellComments(
+    cleanJson=greasebookComments,
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
 
 print("Main Script Complete")
