@@ -28,35 +28,45 @@ One (1) package `afe.py` and two (2) functions
 
     - Note: see `afe.py` to set correct paths to data folder
     - Arguments
+      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
       - `name`: Name of the well, see masterWellList for details `str`
 
 2.  `afe.variance`
 
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments
+        - `workingDataDirectory`: Data directory where all exports and imports come from `str`
         - `name`: Name of the well, see masterWellList for details
 
 ## production Module
 
 Two (2) packages `greasebook` and `combocurve` and four (4) functions
 
-1. `greasebook.getProductionData` - pulls production data from Greasebook, formats and exports clean CSV
+1. `greasebook.getProductionData` - pulls production data from Greasebook, formats and exports CSV into working data folder
 
    - Arguments
+     - `workingDataDirectory`: Data directory where all exports and imports come from `str`
      - `pullProd`: `True` to pull all GB production data, `False` to pull limited number and update master file
      - `days`: Number of days to pull - if `pullProd=True` set to 0 `int`
      - `greasebookApi`: Greasebook API key `str`
 
-2. `combocurve.putWellProductionData` - requests data from Greasebooks and inserts into ComboCurve
+2. `greasebook.getComments` - returns a JSON object of all comments within greasebook within 150 days up to 250
+
+   - Arguments -`workingDataDirectory`: Data directory where all exports and imports come from `str`
+     - `greasebookApi`: Greasebook API key `str`
+
+3. `combocurve.putWellProductionData` - requests data from Greasebooks and inserts into ComboCurve
 
    - Arguments
+     - `workingDataDirectory`: Data directory where all exports and imports come from `str`
      - `pullFromAllocation`: `True` to pull all GB production data, `False` to pull limited number and update master file
      - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
      - `daysToPull`: Number of days to pull, if `pullFromAllocation=True` set to 0 `int`
 
-3. `combocurve.getLatestScenario` - pull the latest scenerio given a projectId and scenerioId
+4. `combocurve.getLatestScenario` - returns pandas dataframe of the latest scenerio given a projectId and scenerioId
    - Arguments
+     - `workingDataDirectory`: Data directory where all exports and imports come from `str`
      - `projectIdKey`: ComboCurve specific project id - get through front-end UI `str`
      - `scenarioIdKey`: ComboCurve specific scenerio id - get through front-end UI `str`
      - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
@@ -66,14 +76,13 @@ Two (2) packages `greasebook` and `combocurve` and four (4) functions
 
 One package `enverus` and two (2) functions
 
-1. `enverus.getWellData` - gets latest daily production for given well
+1.  `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
+1.  - Arguments:
+      - `apiKey`: Enverus API authentication `object`
+      - `wellApi14`: Well API14 of interest `str`
 
-   - Arguments:
-     - `apiKey`: Enverus API authentication `object`
-     - `wellApi`: Well API14 of interest `str`
-
-2. `enverus.checkWellStatus` - chekcs the status a specific operator in a specific basin
-   - Arguments:
-     - `apiKey`: Enverus API authentication `object`
-     - `operatorName`: Name of operator of interest `str`
-     - `basin`: Name of basin of interest `str
+1.  `enverus.checkWellStatus` - chekcs the status a specific operator in a specific basin
+    - Arguments:
+      - `apiKey`: Enverus API authentication `object`
+      - `operatorName`: Name of operator of interest `str`
+      - `basin`: Name of basin of interest `str
