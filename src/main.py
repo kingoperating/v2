@@ -54,13 +54,26 @@ enverus.checkWellStatus(
 
 # Greasebook Stack
 greasebook.getProductionData(
+    workingDirectory=workingDirectory,
     pullProd=False,
     days=30,
     greasebookApi=greasebookApiKey
 )
 
+greasebookComments = greasebook.getComments(
+    workingDirectory=workingDirectory,
+    apiKey=greasebookApiKey
+)
+
+combocurve.putWellComments(
+    cleanJson=greasebookComments,
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
+
 # ComboCurve Stack
 combocurve.putWellProductionData(
+    workingDirectory=workingDirectory,
     pullFromAllocation=False,
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey,
@@ -68,12 +81,13 @@ combocurve.putWellProductionData(
     daysToPull=60
 )
 
-''' combocurve.getLatestScenario(
+combocurve.getLatestScenario(
+    workingDirectory=workingDirectory,
     projectIdKey=comboCurveProjectId,
     scenarioIdKey=comboCurveScenarioId,
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
-) '''
+)
 
 # AFE Stack
 afe.dailyCost(

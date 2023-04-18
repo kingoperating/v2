@@ -37,7 +37,6 @@ def putWellProductionData(workingDirectory, pullFromAllocation, serviceAccount, 
     todayMonth = dateToday.strftime("%m")
     todayDay = dateToday.strftime("%d")
     dateYes = dateToday - timedelta(days=1)
-    yesDayString = dateYes.strftime("%d")
 
     if pullFromAllocation == False:
 
@@ -105,14 +104,7 @@ def putWellProductionData(workingDirectory, pullFromAllocation, serviceAccount, 
         totalComboCurveAllocatedProduction = pd.DataFrame(
             columns=headerCombocurve)
 
-        wellIdList = []
-        wellNameList = []
-        wellIdOilSoldList = []
-        wellVolumeOilSoldList = []
-        gotDayData = np.full([200], False)
-        totalOilVolume = 0
-        totalGasVolume = 0
-        totalWaterVolume = 0
+        # set some intial variables for core logic
         welopOilVolume = 0
         welopGasVolume = 0
         welopWaterVolume = 0
@@ -144,10 +136,6 @@ def putWellProductionData(workingDirectory, pullFromAllocation, serviceAccount, 
         startingIndex = 0  # variable for loop
 
         lastDate = ""
-
-        # gets length of totalAllocatedProduction
-        initalSizeOfTotalAllocatedProduction = len(
-            totalComboCurveAllocatedProduction)
 
         # MASTER loop that goes through each of the items in the response
         for currentRow in range(numEntries - 1, 0, -1):
@@ -218,7 +206,6 @@ def putWellProductionData(workingDirectory, pullFromAllocation, serviceAccount, 
             subAccountId = []  # empty list for subaccount id
             allocationRatioOil = []  # empty list for allocation ratio oil
             allocationRatioGas = []  # empty list for allocation ratio gas
-            subAccountIdIndex = []  # empty list for index of subaccount id INDEX - used for matching
 
             wellAccountingName = []
 
@@ -386,10 +373,11 @@ def putWellProductionData(workingDirectory, pullFromAllocation, serviceAccount, 
 
     print("Finished Put Production Data to ComboCurve")
 
-    """
-    Get the latest scenerio from a given ComboCurve project
-    
-    """
+
+"""
+Get the latest scenerio from a given ComboCurve project 
+
+"""
 
 
 def getLatestScenario(workingDirectory, projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
@@ -472,10 +460,6 @@ def getLatestScenario(workingDirectory, projectIdKey, scenarioIdKey, serviceAcco
 
     numEntries = len(resultsList)
 
-    listOfBatteryIds = masterAllocationList["Id in Greasebooks"].tolist()
-    wellNameAccountingList = masterAllocationList["Name in Accounting"].tolist(
-    )
-    accountingIdList = masterAllocationList["Subaccount"].tolist()
     apiList = masterAllocationList["API"].tolist()
     wellIdScenariosList = masterAllocationList["Well Id"].tolist()
 
@@ -510,3 +494,34 @@ def getLatestScenario(workingDirectory, projectIdKey, scenarioIdKey, serviceAcco
     eurDataFileName = workingDir + r"\kingoperating\data\eurData.csv"
     eurData.to_csv(eurDataFileName, index=False)
     print('Pulled EUR Data')
+
+
+def putWellComments(cleanJson, serviceAccount, comboCurveApi):
+    # connect to service account
+    service_account = serviceAccount
+    # set API Key from enviroment variable
+    api_key = comboCurveApi
+    # specific Python ComboCurve authentication
+    combocurve_auth = ComboCurveAuth(service_account, api_key)
+
+    print("Authentication Worked")
+
+    url = "https://api.combocurve.com/v1/daily-productions"
+    auth_headers = combocurve_auth.get_auth_headers()  # authenticates ComboCurve
+
+    # put request to ComboCurve
+    response = requests.put(url, headers=auth_headers,
+                            json=cleanJson)
+
+    responseCode = response.status_code  # sets response code to the current state
+    responseText = response.text  # sets response text to the current state
+
+    print("Response Code: " + str(responseCode))  # prints response code
+
+    if "successCount" in responseText:  # checks if the response text contains successCount
+        # finds the index of successCount
+        # prints the successCount and the number of data points sent
+        indexOfSuccessFail = responseText.index("successCount")
+        print(responseText[indexOfSuccessFail:])
+
+    print("yay")

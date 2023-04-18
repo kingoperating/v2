@@ -1,31 +1,27 @@
-from ast import keyword
-from http import client
-from posixpath import split
-from time import strftime
-from black import out
 import requests
 import os
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 import datetime as dt
-import glob
 import re
-from dotenv import load_dotenv
 import pandas as pd
 import numpy as np
+import json
 
 
-def getProductionData(pullProd, days, greasebookApi):
+def getProductionData(workingDirectory, pullProd, days, greasebookApi):
 
     fullProductionPull = pullProd
     numberOfDaysToPull = days
 
-    fileName = (
-        r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\totalAssetsProduction.csv"
-    )
+    workingDir = workingDirectory
+    fileNameAssetProduction = workingDir + \
+        r"\kingoperating\data\totalAssetsProduction.csv"
+    fileNameMasterBatteryList = workingDir + \
+        r"\kingoperating\data\masterBatteryList.csv"
 
     # adding the Master Battery List for Analysis
     masterBatteryList = pd.read_csv(
-        r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\masterBatteryList.csv", encoding="windows-1252"
+        fileNameMasterBatteryList, encoding="windows-1252"
     )
 
     # set some date variables we will need later
@@ -34,7 +30,6 @@ def getProductionData(pullProd, days, greasebookApi):
     todayMonth = dateToday.strftime("%m")
     todayDay = dateToday.strftime("%d")
     dateYes = dateToday - timedelta(days=1)
-    yesDayString = dateYes.strftime("%d")
 
     # Set production interval based on boolen
     if fullProductionPull == True:
@@ -114,7 +109,7 @@ def getProductionData(pullProd, days, greasebookApi):
     # checks if we need to pull all the data or just last specificed
     if fullProductionPull == False:
         # Opening Master CSV for total asset production
-        totalAssetProduction = pd.read_csv(fileName)
+        totalAssetProduction = pd.read_csv(fileNameAssetProduction)
     else:
         headerList = [
             "Date",
@@ -142,8 +137,6 @@ def getProductionData(pullProd, days, greasebookApi):
     wellGasVolumeTwoDayAgo = np.zeros([200], dtype=object)
     avgOilList = []
     avgGasList = []
-    last14DayListOil = []
-    last14DayListGas = []
     fourteenDayOilData = np.zeros([200, 14], dtype=float)
     sevenDayOilData = np.zeros([200, 7], dtype=float)
     fourteenDayGasData = np.zeros([200, 14], dtype=float)
@@ -160,7 +153,6 @@ def getProductionData(pullProd, days, greasebookApi):
     totalWaterVolume = 0
     yesTotalOilVolume = 0
     yesTotalGasVolume = 0
-    yesTotalWaterVolume = 0
     twoDayOilVolume = 0
     twoDayGasVolume = 0
     threeDayOilVolume = 0
@@ -617,7 +609,7 @@ def getProductionData(pullProd, days, greasebookApi):
         increaseDecreaseGas = "Decline"
 
     totalAssetProduction.to_csv(
-        fileName,
+        fileNameAssetProduction,
         index=False,
     )
 
@@ -744,3 +736,114 @@ def getProductionData(pullProd, days, greasebookApi):
     fp.close()
 
     print("Production Pulled From Greasebook")
+
+
+def getComments(workingDirectory, apiKey):
+
+    workingDir = workingDirectory
+    fileNameMasterAllocationList = workingDir + \
+        r"\kingoperating\data\masterWellAllocation.xlsx"
+
+    # set some date variables we will need later
+    dateToday = dt.datetime.today()
+    todayYear = dateToday.strftime("%Y")
+    todayMonth = dateToday.strftime("%m")
+    todayDay = dateToday.strftime("%d")
+    dateYes = dateToday - timedelta(days=1)
+
+    masterAllocationList = pd.read_excel(
+        fileNameMasterAllocationList
+    )
+
+    productionInterval = "&start=2023-01-01&end="
+
+    # Master API call to Greasebooks
+    url = (
+        "https://integration.greasebook.com/api/v1/comments/read?apiKey="
+        + apiKey
+        + productionInterval
+        + todayYear
+        + "-"
+        + todayMonth
+        + "-"
+        + todayDay
+        + "&pageSize=250"
+    )
+
+    # make the API call
+    response = requests.request(
+        "GET",
+        url,
+    )
+
+    responseCode = response.status_code  # sets response code to the current state
+
+    # parse as json string
+    results = response.json()
+
+    # checks to see if the GB API call was successful
+    if responseCode == 200:
+        print("Status Code is 200")
+        print(str(len(results)) + " entries read")
+    else:
+        print("The Status Code: " + str(response.status_code))
+
+    # gets all API's from the master allocation list
+    apiList = masterAllocationList["API"].tolist()
+    listOfBatteryIds = masterAllocationList["Id in Greasebooks"].tolist()
+
+    headerCombocurve = ["Date", "API", "Comment", "Data Source"]
+
+    # create a dataframe to hold the results
+    totalCommentComboCurve = pd.DataFrame(columns=headerCombocurve)
+
+    for currentRow in range(0, len(results)):
+        row = results[currentRow]
+        keys = list(row.items())
+
+        message = ""
+        batteryName = ""
+        batteryId = 0
+        dateOfComment = ""
+
+        for idx, key in enumerate(keys):
+            if key[0] == "message":
+                message = row["message"]
+            elif key[0] == "batteryId":
+                batteryId = row["batteryId"]
+            elif key[0] == "dateTime":
+                dateOfComment = row["dateTime"]
+
+        # spliting date correctly
+        splitDate = re.split("T", dateOfComment)
+        splitDate2 = re.split("-", splitDate[0])
+        year = int(splitDate2[0])
+        month = int(splitDate2[1])
+        day = int(splitDate2[2])
+
+        dateString = str(month) + "/" + str(day) + "/" + str(year)
+        dateStringComboCurve = datetime.strptime(dateString, "%m/%d/%Y")
+
+        batteryIdIndex = listOfBatteryIds.index(batteryId)
+        api = apiList[batteryIdIndex]
+
+        apiIdLength = len(str(api))
+
+        if apiIdLength != 14:
+            api = "0" + str(api)
+
+        row = [dateStringComboCurve, str(api), str(message), "di"]
+
+        totalCommentComboCurve.loc[len(totalCommentComboCurve)] = row
+
+    totalCommentComboCurve = totalCommentComboCurve.astype({"Date": "string"})
+    totalCommentComboCurve.rename(columns={
+        "Date": "date", "API": "chosenID", "Comment": "operationalTag", "Data Source": "dataSource"}, inplace=True)
+
+    totalCommentComboCurveJson = totalCommentComboCurve.to_json(
+        orient="records")
+    cleanTotalCommentComboCurveJson = json.loads(totalCommentComboCurveJson)
+
+    return cleanTotalCommentComboCurveJson
+
+    print("yay")
