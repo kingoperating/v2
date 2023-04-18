@@ -28,7 +28,7 @@ serviceAccount = ServiceAccount.from_file(os.getenv("API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("API_KEY_PASS_LIVE")
 
 # Important Variables for scripts
-browning518H = "42033325890000"
+browning518H = "17047210530000"
 browningOperatorName = "BROWNING OIL"
 basin = "MIDLAND"
 comboCurveProjectId = "612fc3d36880c20013a885df"
@@ -41,7 +41,7 @@ MAIN SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mai
 '''
 
 # Enverus Stack
-enverus.getWellData(
+browingWell = enverus.getWellData(
     apiKey=enverusApi,
     wellApi=browning518H
 )
