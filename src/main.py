@@ -18,17 +18,25 @@ import os
 # load .env file
 load_dotenv()
 
+'''
+FIRST - MAKE SURE ALL THE ENVIRONMENT VARIABLES ARE SET IN THE .ENV FILE 
+
+SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER. 
+
+'''
+
 # Working Directory
 workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
 
 # getting API keys
 enverusApi = DeveloperAPIv3(secret_key=os.getenv('ENVERUS_API'))
 greasebookApi = os.getenv('GREASEBOOK_API_KEY')
-serviceAccount = ServiceAccount.from_file(os.getenv("API_SEC_CODE_LIVE"))
-comboCurveApiKey = os.getenv("API_KEY_PASS_LIVE")
+serviceAccount = ServiceAccount.from_file(
+    os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
+comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
 
 # Important Variables for scripts
-browning518H = "17047210530000"
+browning518H = "33053054370000"
 browningOperatorName = "BROWNING OIL"
 basin = "MIDLAND"
 comboCurveProjectId = "612fc3d36880c20013a885df"
@@ -40,6 +48,50 @@ WORKING ZONE
 
 '''
 
+browingWell = enverus.getWellData(
+    apiKey=enverusApi,
+    wellApi14=browning518H
+)
+
+browingWell.to_excel(workingDirectoryData + r"\browningWell.xlsx", index=False)
+updateDate = browingWell["Date"][1]
+print("Last update date: " + updateDate)
+
+enverus.checkWellStatus(
+    apiKey=enverusApi,
+    operatorName=browningOperatorName,
+    basin=basin
+)
+
+# Greasebook Stack
+greasebook.getBatteryProductionData(
+    workingDataDirectory=workingDirectoryData,
+    pullProd=False,
+    days=30,
+    greasebookApi=greasebookApi
+)
+
+# AFE Stack
+afe.dailyCost(
+    workingDataDirectory=workingDirectoryData,
+    name=afeWellName
+)
+afe.variance(
+    workingDataDirectory=workingDirectoryData,
+    name=afeWellName
+)
+
+# ComboCurve Stack
+combocurve.putWellProductionData(
+    workingDataDirectory=workingDirectoryData,
+    pullFromAllocation=False,
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey,
+    greasebookApi=greasebookApi,
+    daysToPull=25
+)
+
+
 '''
 MAIN SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mainAFE.py for more details
 
@@ -50,6 +102,10 @@ browingWell = enverus.getWellData(
     apiKey=enverusApi,
     wellApi14=browning518H
 )
+
+browingWell.to_excel(workingDirectoryData + r"\browningWell.xlsx", index=False)
+updateDate = browingWell["Date"][1]
+print("Last update date: " + updateDate)
 
 enverus.checkWellStatus(
     apiKey=enverusApi,
