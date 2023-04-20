@@ -156,7 +156,7 @@ def dailyCost(workingDataDirectory, name):
         lastDate = date
     except NameError:
         day = 0
-        lastDate = dt.datetime.today()
+        lastDate = datetime.today()
         lastMeasuredDepth = 0
 
     row = plannedCostDepth.iloc[day]  # finds the next planned cost and depth

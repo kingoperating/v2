@@ -36,7 +36,7 @@ serviceAccount = ServiceAccount.from_file(
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
 
 # Important Variables for scripts
-browning518H = "33053054370000"
+browning5181H = "42033325890000"
 browningOperatorName = "BROWNING OIL"
 basin = "MIDLAND"
 comboCurveProjectId = "612fc3d36880c20013a885df"
@@ -50,7 +50,7 @@ WORKING ZONE
 
 browingWell = enverus.getWellData(
     apiKey=enverusApi,
-    wellApi14=browning518H
+    wellApi14=browning5181H
 )
 
 browingWell.to_excel(workingDirectoryData + r"\browningWell.xlsx", index=False)
@@ -71,16 +71,6 @@ greasebook.getBatteryProductionData(
     greasebookApi=greasebookApi
 )
 
-# AFE Stack
-afe.dailyCost(
-    workingDataDirectory=workingDirectoryData,
-    name=afeWellName
-)
-afe.variance(
-    workingDataDirectory=workingDirectoryData,
-    name=afeWellName
-)
-
 # ComboCurve Stack
 combocurve.putWellProductionData(
     workingDataDirectory=workingDirectoryData,
@@ -89,6 +79,16 @@ combocurve.putWellProductionData(
     comboCurveApi=comboCurveApiKey,
     greasebookApi=greasebookApi,
     daysToPull=25
+)
+
+# AFE Stack
+afe.dailyCost(
+    workingDataDirectory=workingDirectoryData,
+    name=afeWellName
+)
+afe.variance(
+    workingDataDirectory=workingDirectoryData,
+    name=afeWellName
 )
 
 
@@ -100,7 +100,7 @@ MAIN SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mai
 # Enverus Stack
 browingWell = enverus.getWellData(
     apiKey=enverusApi,
-    wellApi14=browning518H
+    wellApi14=browning5181H
 )
 
 browingWell.to_excel(workingDirectoryData + r"\browningWell.xlsx", index=False)
