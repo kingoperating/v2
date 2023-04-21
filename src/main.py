@@ -11,7 +11,6 @@ from kingscripts.afe import afe
 
 # Python Packages
 from dotenv import load_dotenv
-from enverus_developer_api import DeveloperAPIv3
 from combocurve_api_v1 import ServiceAccount
 import os
 
@@ -29,7 +28,7 @@ SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER.
 workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
 
 # getting API keys
-enverusApi = DeveloperAPIv3(secret_key=os.getenv('ENVERUS_API'))
+enverusApi = os.getenv('ENVERUS_API')
 greasebookApi = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(
     os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
@@ -48,16 +47,14 @@ WORKING ZONE
 
 '''
 
-browingWell = enverus.getWellData(
+browingWell = enverus.getWellProductionData(
     apiKey=enverusApi,
     wellApi14=browning5181H
 )
 
 browingWell.to_excel(workingDirectoryData + r"\browningWell.xlsx", index=False)
-updateDate = browingWell["Date"][1]
-print("Last update date: " + updateDate)
 
-enverus.checkWellStatus(
+file = enverus.checkWellStatus(
     apiKey=enverusApi,
     operatorName=browningOperatorName,
     basin=basin

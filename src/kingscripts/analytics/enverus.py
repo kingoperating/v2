@@ -10,14 +10,16 @@ import datetime as dt
 import re
 import pandas as pd
 import datetime
+import os
+import requests
 
 '''
-Returns a dataframe for a specific API of the monthly production data
+Returns a dataframe for a specific API14 of the monthly production data
 
 '''
 
 
-def getWellData(apiKey, wellApi14):
+def getWellProductionData(apiKey, wellApi14):
     # Checks if API is 14 digits long
     if len(wellApi14) != 14:
         lengthOfApi = len(wellApi14)
@@ -25,32 +27,42 @@ def getWellData(apiKey, wellApi14):
               str(lengthOfApi) + " digits long.")
         return
     # checks to ensure correct class for Enverus API
-    if type(apiKey) != DeveloperAPIv3:
+    if type(apiKey) != str:
         print("API Key is not the correct class")
         return
-    # creates a dataframe for the well production data
-    wellData = pd.DataFrame(columns=["API", "Date", "Oil", "Gas", "Water"])
 
-    for row in apiKey.query("production", API_UWI_14_UNFORMATTED=wellApi14):
-        totalProdMonths = row['ProducingDays']
-        totalOil = row['Prod_OilBBL']
-        totalGas = row['Prod_MCFE']
-        totalWater = row['WaterProd_BBL']
-        updateDate = row['ProducingMonth']
+    # POST request to get token
+    session = requests.Session()
+    url = 'https://api.enverus.com/v3/direct-access/tokens'
+    secret_key = os.getenv('ENVERUS_API')
+    headers = {'Content-Type': 'application/json', }
+    data = {'secretKey': secret_key}
+    response_token = session.post(url, headers=headers, json=data)
+    token = response_token.json()['token']
 
-        # spliting date correctly
-        splitDate = re.split("T", updateDate)
-        splitDate2 = re.split("-", splitDate[0])
-        year = int(splitDate2[0])
-        month = int(splitDate2[1])
-        day = int(splitDate2[2])
-        dateString = str(month) + "/" + str(day) + "/" + str(year)
-        wellRow = [wellApi14, dateString, totalOil, totalGas, totalWater]
-        wellData.loc[len(wellData)+1] = wellRow
+    # GET request to get data
+    headers['Authorization'] = "Bearer {}".format(token)
 
-    # Reserve Dataframe
-    wellDataSorted = wellData.iloc[::-1]
-    return wellDataSorted
+    url = "https://api.enverus.com/v3/direct-access/"
+    dataset = 'production'
+    query_url = os.path.join(url, dataset)
+    headers['Authorization'] = "Bearer {}".format(token)
+    params = dict(deleteddate="null",
+                  pagesize=100000, API_UWI_14_Unformatted=wellApi14)
+
+    response = session.get(query_url, headers=headers, params=params)
+    wellProdData = pd.DataFrame(response.json())
+
+    dataLength = 1
+
+    while dataLength > 0:
+        response = session.get(
+            url[:-1] + response.links['next']['url'], headers=headers)
+        wellProdDataResponse = pd.DataFrame(response.json())
+        wellProdData = pd.concat([wellProdData, wellProdDataResponse])
+        dataLength = len(wellProdDataResponse)
+
+    return wellProdData
 
 
 '''
@@ -61,7 +73,7 @@ Returns a dataframe of the updated well status for a specific operator and basin
 
 def checkWellStatus(apiKey, operatorName, basin):
     # checks to ensure correct class for Enverus API
-    if type(apiKey) != DeveloperAPIv3:
+    if type(apiKey) != str:
         print("API Key is not the correct class")
         return
     # checks to ensure operatorName is string
@@ -73,48 +85,33 @@ def checkWellStatus(apiKey, operatorName, basin):
         print("Basin is not a string")
         return
 
-    # gets relvent date values
-    dateToday = dt.datetime.today()
-    todayYear = dateToday.strftime("%Y")
-    todayMonth = dateToday.strftime("%m")
-    todayDay = dateToday.strftime("%d")
+    session = requests.Session()
+    url = 'https://api.enverus.com/v3/direct-access/tokens'
+    secret_key = os.getenv('ENVERUS_API')
+    headers = {'Content-Type': 'application/json', }
+    data = {'secretKey': secret_key}
+    response_token = session.post(url, headers=headers, json=data)
+    token = response_token.json()['token']
 
-    todayYear = int(dateToday.strftime("%Y"))
-    todayMonth = int(dateToday.strftime("%m"))
-    todayDay = int(dateToday.strftime("%d"))
+    headers['Authorization'] = "Bearer {}".format(token)
 
-    dateList = []
-    statusDateList = []
-    apiList = []
+    url = "https://api.enverus.com/v3/direct-access/"
+    dataset = 'detected-well-pads'
+    query_url = os.path.join(url, dataset)
+    headers['Authorization'] = "Bearer {}".format(token)
+    params = dict(deleteddate="null",
+                  pagesize=100000, ENVBasin=basin, ENVOperator=operatorName)
 
-    wellStatus = pd.DataFrame(columns=["API", "Date", "Status"])
+    response = session.get(query_url, headers=headers, params=params)
+    wellStatusData = pd.DataFrame(response.json())
 
-    for row in apiKey.query("detected-well-pads", ENVOperator=operatorName, ENVBasin=basin):
-        updateDateWells = row['UpdatedDate']
-    if "T" in updateDateWells:
-        index = updateDateWells.index("T")
-        updateDateWells = updateDateWells[0:index]
-        dateList.append(updateDateWells)
+    linkLength = 1
 
-    for i in range(0, len(dateList)):
-        stringDate = dateList[i]
-        splitDate = re.split("-", stringDate)
-        day = int(splitDate[2])  # gets the correct day
-        month = int(splitDate[1])  # gets the correct month
-        year = int(splitDate[0])  # gets the correct
+    while linkLength > 0:
+        response = session.get(
+            url[:-1] + response.links['next']['url'], headers=headers)
+        wellStatusDataResponse = pd.DataFrame(response.json())
+        wellStatusData = pd.concat([wellStatusData, wellStatusDataResponse])
+        linkLength = len(wellStatusDataResponse)
 
-        if year == todayYear and month == todayMonth and day == todayDay:
-            for row in apiKey.query("wells", ENVOperator="BROWNING OIL", ENVBasin="MIDLAND"):
-                apiNumber = row['API_UWI_14_Unformatted']
-                statusDate = row['UpdatedDate']
-                apiList.append(apiNumber)
-                statusDateList.append(statusDate)
-                dateString = str(month) + "/" + str(day) + "/" + str(year)
-                statusRow = [apiNumber, dateString, "New Well"]
-                wellStatus.loc[len(wellStatus)+1] = statusRow
-
-        print("SOMETHING HAS BEEN UPDATED")
-    print("Completed Looking for Updates on " +
-          str(operatorName) + " in " + str(basin) + " Basin")
-
-    return wellStatus
+    return wellStatusData
