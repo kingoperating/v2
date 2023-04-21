@@ -5,11 +5,7 @@ Developed by: Michael Tanner
 
 """
 
-from enverus_developer_api import DeveloperAPIv3
-import datetime as dt
-import re
 import pandas as pd
-import datetime
 import os
 import requests
 
