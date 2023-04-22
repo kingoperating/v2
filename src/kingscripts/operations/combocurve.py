@@ -7,7 +7,6 @@ import json
 import pandas as pd
 import numpy as np
 from combocurve_api_v1 import ComboCurveAuth
-from combocurve_api_v1.pagination import get_next_page_url
 
 
 def putWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccount, comboCurveApi, greasebookApi, daysToPull):
@@ -403,7 +402,7 @@ def getLatestScenario(workingDataDirectory, projectIdKey, scenarioIdKey, service
     # This code chunk gets the Monthly Cash Flow for given Scenerio
     # Call Stack - Get Econ Id
 
-    auth_headers = combocurve_auth.get_auth_headers()
+    authComboCurveHeaders = combocurve_auth.get_auth_headers()
     # URl econid
     url = (
         "https://api.combocurve.com/v1/projects/"
@@ -414,7 +413,7 @@ def getLatestScenario(workingDataDirectory, projectIdKey, scenarioIdKey, service
     )
 
     response = requests.request(
-        "GET", url, headers=auth_headers
+        "GET", url, headers=authComboCurveHeaders
     )  # GET request to pull economic ID for next query
 
     jsonStr = response.text  # convert to JSON string
@@ -423,10 +422,8 @@ def getLatestScenario(workingDataDirectory, projectIdKey, scenarioIdKey, service
     row = dataObjBetter[0]  # sets row equal to first string set (aka ID)
     econId = row["id"]  # set ID equal to variable
 
-    print(econId)  # check that varaible is passed correctly
-
     # Reautenticated client
-    auth_headers = combocurve_auth.get_auth_headers()
+    authComboCurveHeaders = combocurve_auth.get_auth_headers()
     # set new url with econRunID, skipping zero
 
     urltwo = (
@@ -442,7 +439,16 @@ def getLatestScenario(workingDataDirectory, projectIdKey, scenarioIdKey, service
     resultsList = []
     wellIdList = []
 
-    def process_page(response_json):
+    # Get the next page URL from the response headers for pagination
+    def getNextPageUrlComboCurve(response_headers: dict) -> str:
+        urlHeader = response_headers.get('Link', "")
+        matchComboCurve = re.findall("<([^<>]+)>;rel=\"([^\"]+)\"", urlHeader)
+        for linkComboCurve, rel in matchComboCurve:
+            if rel == 'next':
+                return linkComboCurve
+        return None
+
+    def processNextPageUrlComboCurve(response_json):
         for i in range(0, len(response_json)):
             results = response_json[i]
             wellId = results["well"]
@@ -450,15 +456,33 @@ def getLatestScenario(workingDataDirectory, projectIdKey, scenarioIdKey, service
             wellIdList.append(wellId)
             resultsList.append(output)
 
-    has_more = True
+    # boolean to check if there is a next page for pagination
+    hasNextLink = True
 
-    while has_more:
-        response = requests.request("GET", urltwo, headers=auth_headers)
-        urltwo = get_next_page_url(response.headers)
-        process_page(response.json())
-        has_more = urltwo is not None
+    while hasNextLink:
+        response = requests.request(
+            "GET", urltwo, headers=authComboCurveHeaders)
+        urltwo = getNextPageUrlComboCurve(response.headers)
+        processNextPageUrlComboCurve(response.json())
+        hasNextLink = urltwo is not None
 
     numEntries = len(resultsList)
+
+    # GET request to get Well ID to API14
+    def getWellApi(wellIdComboCurve):
+        authComboCurveHeaders = combocurve_auth.get_auth_headers()
+        url = "https://api.combocurve.com/v1/wells/" + wellIdComboCurve
+        responseApi = requests.request(
+            "GET", url, headers=authComboCurveHeaders)
+        jsonStr = responseApi.text
+        dataObjBetter = json.loads(jsonStr)
+        return dataObjBetter["chosenID"]
+
+    apiListBest = []
+
+    for i in range(0, len(wellIdList)):
+        apiNumber = getWellApi(wellIdList[i])
+        apiListBest.append(apiNumber)
 
     apiList = masterAllocationList["API"].tolist()
     wellIdScenariosList = masterAllocationList["Well Id"].tolist()
@@ -468,6 +492,16 @@ def getLatestScenario(workingDataDirectory, projectIdKey, scenarioIdKey, service
         "Abandonment Date",
         "Gross Oil Well Head Volume",
         "Gross Gas Well Head Volume"
+    ]
+
+    comboCurveHeaders = [
+        "Ad Valorem Tax",
+        "After Income Tax Cash Flow",
+        "Before Income Tax Cash Flow",
+        "Depreciation",
+        "Drip Condensate Differentials - 1",
+        "Drip Condensate Differentials - 2",
+        "Drip Condensate Gathering Expense"
     ]
 
     eurData = pd.DataFrame(columns=headers)
