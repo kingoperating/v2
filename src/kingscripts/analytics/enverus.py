@@ -1,7 +1,7 @@
-""" 
+"""
 Pulling specific data from Enervus API
 
-Developed by: Michael Tanner 
+Developed by: Michael Tanner
 
 """
 
@@ -26,6 +26,15 @@ def getWellProductionData(apiKey, wellApi14):
     if type(apiKey) != str:
         print("API Key is not the correct class")
         return
+
+    def convertDateEnv(dateList):
+        length = len(dateList)
+        for i in range(0, length):
+            if "T" in dateList[i]:
+                index = dateList[i].index("T")
+                dateList[i] = dateList[i][0:index]
+
+        return dateList
 
     # POST request to get token
     session = requests.Session()
@@ -57,6 +66,9 @@ def getWellProductionData(apiKey, wellApi14):
         wellProdDataResponse = pd.DataFrame(response.json())
         wellProdData = pd.concat([wellProdData, wellProdDataResponse])
         dataLength = len(wellProdDataResponse)
+
+    dateList = wellProdData['ProducingMonth'].tolist()
+    dateListClean = convertDateEnv(dateList)
 
     return wellProdData
 
