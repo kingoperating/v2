@@ -40,12 +40,23 @@ browningOperatorName = "BROWNING OIL"
 basin = "MIDLAND"
 comboCurveProjectId = "612fc3d36880c20013a885df"
 comboCurveScenarioId = "632e70eefcea66001337cd43"
-afeWellName = "millerranchb501mh"
+afeWellName = "wu108"
 
 '''
 WORKING ZONE
 
 '''
+
+# AFE Stack
+afe.dailyCost(
+    workingDataDirectory=workingDirectoryData,
+    name=afeWellName
+)
+afe.variance(
+    workingDataDirectory=workingDirectoryData,
+    name=afeWellName
+)
+
 
 browingWell = enverus.getWellProductionData(
     apiKey=enverusApi,
