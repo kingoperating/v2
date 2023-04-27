@@ -1,4 +1,4 @@
-# King Operating Corporation Python Package HI GABE
+# King Operating Corporation Python Package
 
 This package allows for easy access to the majority of KOC data products. Currently on version 2.0.3
 
