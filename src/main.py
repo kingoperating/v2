@@ -40,7 +40,8 @@ browningOperatorName = "BROWNING OIL"
 basin = "MIDLAND"
 comboCurveProjectId = "612fc3d36880c20013a885df"
 comboCurveScenarioId = "632e70eefcea66001337cd43"
-afeWellName = "millerranchb501mh"
+millerranchb501mh = "millerranchb501mh"
+millerrancha501mh = "millerrancha501mh"
 
 '''
 WORKING ZONE
@@ -81,11 +82,21 @@ combocurve.putWellProductionData(
 # AFE Stack
 afe.dailyCost(
     workingDataDirectory=workingDirectoryData,
-    name=afeWellName
+    name=millerranchb501mh
 )
 afe.variance(
     workingDataDirectory=workingDirectoryData,
-    name=afeWellName
+    name=millerranchb501mh
+)
+
+# AFE Stack
+afe.dailyCost(
+    workingDataDirectory=workingDirectoryData,
+    name=millerrancha501mh
+)
+afe.variance(
+    workingDataDirectory=workingDirectoryData,
+    name=millerrancha501mh
 )
 
 
@@ -142,11 +153,11 @@ pdpModel.to_excel(workingDirectoryData +
 # AFE Stack
 afe.dailyCost(
     workingDataDirectory=workingDirectoryData,
-    name=afeWellName
+    name=millerranchb501mh
 )
 afe.variance(
     workingDataDirectory=workingDirectoryData,
-    name=afeWellName
+    name=millerranchb501mh
 )
 
 # WELL COMMENTS
