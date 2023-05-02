@@ -79,7 +79,7 @@ combocurve.putWellProductionData(
     daysToPull=25
 )
 
-# AFE Stack
+# AFE Stack Miller Ranch B501MH
 afe.dailyCost(
     workingDataDirectory=workingDirectoryData,
     name=millerranchb501mh
@@ -89,7 +89,7 @@ afe.variance(
     name=millerranchb501mh
 )
 
-# AFE Stack
+# AFE Stack Miller Ranch A501MH
 afe.dailyCost(
     workingDataDirectory=workingDirectoryData,
     name=millerrancha501mh
