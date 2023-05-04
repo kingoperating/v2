@@ -42,12 +42,12 @@ comboCurveProjectId = "612fc3d36880c20013a885df"
 comboCurveScenarioId = "632e70eefcea66001337cd43"
 millerranchb501mh = "millerranchb501mh"
 millerrancha501mh = "millerrancha501mh"
+nameOfWell = "millerrancha502v"
 
 '''
 WORKING ZONE
 
 '''
-
 browingWell = enverus.getWellProductionData(
     apiKey=enverusApi,
     wellApi14=browning5181H
