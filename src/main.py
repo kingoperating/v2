@@ -28,7 +28,7 @@ SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER.
 workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
 
 # getting API keys
-enverusApi = os.getenv('ENVERUS_API')
+enverusApiKey = os.getenv('ENVERUS_API')
 greasebookApi = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(
     os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
@@ -42,31 +42,39 @@ comboCurveProjectId = "612fc3d36880c20013a885df"
 comboCurveScenarioId = "632e70eefcea66001337cd43"
 millerranchb501mh = "millerranchb501mh"
 millerrancha501mh = "millerrancha501mh"
-nameOfWell = "millerrancha502v"
+nameOfWell = "millerranchb501mh"
 
 '''
 WORKING ZONE
 
 '''
+
 browingWell = enverus.getWellProductionData(
-    apiKey=enverusApi,
+    apiKey=enverusApiKey,
     wellApi14=browning5181H
 )
 
 browingWell.to_excel(workingDirectoryData + r"\browningWell.xlsx", index=False)
 
 file = enverus.checkWellStatus(
-    apiKey=enverusApi,
+    apiKey=enverusApiKey,
     operatorName=browningOperatorName,
     basin=basin
 )
 
 # Greasebook Stack
-greasebook.getBatteryProductionData(
+pumperNotReportedList = greasebook.getBatteryProductionData(
     workingDataDirectory=workingDirectoryData,
     pullProd=False,
     days=30,
     greasebookApi=greasebookApi
+)
+
+greasebook.allocateWells(
+    days=30,
+    workingDataDirectory=workingDirectoryData,
+    greasebookApi=greasebookApi,
+    pullProd=False
 )
 
 # ComboCurve Stack
@@ -107,7 +115,7 @@ MAIN SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mai
 
 # Enverus Stack
 browingWell = enverus.getWellData(
-    apiKey=enverusApi,
+    apiKey=enverusApiKey,
     wellApi14=browning5181H
 )
 
@@ -116,7 +124,7 @@ updateDate = browingWell["Date"][1]
 print("Last update date: " + updateDate)
 
 enverus.checkWellStatus(
-    apiKey=enverusApi,
+    apiKey=enverusApiKey,
     operatorName=browningOperatorName,
     basin=basin
 )
@@ -127,6 +135,13 @@ greasebook.getBatteryProductionData(
     pullProd=False,
     days=30,
     greasebookApi=greasebookApi
+)
+
+greasebook.allocateWells(
+    days=30,
+    workingDataDirectory=workingDirectoryData,
+    greasebookApi=greasebookApi,
+    pullProd=False
 )
 
 # ComboCurve Stack
