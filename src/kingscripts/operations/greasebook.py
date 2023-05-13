@@ -6,18 +6,18 @@ import re
 import pandas as pd
 import numpy as np
 import json
-from ast import keyword
-from http import client
-from posixpath import split
-from time import strftime
-from black import out
 import requests
-import os
-from datetime import date, timedelta
+from datetime import timedelta
 import datetime as dt
-import glob
 import re
 from dotenv import load_dotenv
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import os.path
+from datetime import datetime
 
 
 def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi):
@@ -113,8 +113,8 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     numEntries = len(results)
 
     if responseCode == 200:
-        print("Status Code is 200")
-        print(str(numEntries) + " entries read")
+        print("Sucessful API Call")
+        print(str(numEntries) + " rows")
     else:
         print("The Status Code: " + str(response.status_code))
 
@@ -145,8 +145,8 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     runningTotalOil = []
     runningTotalGas = []
     numberOfDaysBattery = []
-    wellOilVolumeTwoDayAgo = np.zeros([200], dtype=object)
-    wellGasVolumeTwoDayAgo = np.zeros([200], dtype=object)
+    wellOilVolumeOneDayAgo = np.zeros([200], dtype=object)
+    wellGasVolumeOneDayAgo = np.zeros([200], dtype=object)
     avgOilList = []
     avgGasList = []
     fourteenDayOilData = np.zeros([200, 14], dtype=float)
@@ -313,9 +313,9 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
                         fourteenDayGasData[counter]) / (14)
                     rollingFourteenDayPerWellOil[counter] = lastFourteenDayTotalOil
                     rollingFourteenDayPerWellGas[counter] = lastFourteenDayTotalGas
-                    if year == twoDayYear and month == twoDayMonth and day == twoDayDay:
-                        wellOilVolumeTwoDayAgo[counter] = "No Data Reported"
-                        wellGasVolumeTwoDayAgo[counter] = "No Data Reported"
+                    if year == yesYear and month == yesMonth and day == yesDay:
+                        wellOilVolumeOneDayAgo[counter] = "No Data Reported"
+                        wellGasVolumeOneDayAgo[counter] = "No Data Reported"
                     if batteryIdCounterFourteen[counter] < 13:
                         batteryIdCounterFourteen[counter] = batteryIdCounterFourteen[counter] + 1
                     else:
@@ -411,38 +411,21 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
             twoDayOilVolume = twoDayOilVolume + oilVolumeClean
             twoDayGasVolume = twoDayGasVolume + gasVolumeClean
 
-            # adds Read 34-2H production as a variable
-            if batteryId == 24944:
-                read342OilProd = oilVolumeClean
-                read342GasProd = gasVolumeClean
-
-            if batteryId == 27179:
-                thurman23VOilProd = oilVolumeClean
-                thurman23VGasProd = gasVolumeClean
-
-            if batteryId == 23054:
-                irs531OilProd = oilVolumeClean
-                irs531GasProd = gasVolumeClean
-
-            if batteryId == 23498:
-                pshigoda752OilProd = oilVolumeClean
-                pshigoda752GasProd = gasVolumeClean
-
-            # for two day ago - checks if batteryId is in wellIdList
-            if batteryId in wellIdList:  # if yes, does data exisit and logs correct boolean
-                if oilDataExist == True:
-                    wellOilVolumeTwoDayAgo[index] = oilVolumeClean
-                else:
-                    wellOilVolumeTwoDayAgo[index] = "No Data Reported"
-                if gasDataExist == True:
-                    wellGasVolumeTwoDayAgo[index] = gasVolumeClean
-                else:
-                    wellGasVolumeTwoDayAgo[index] = "No Data Reported"
-
         # Checks to see if the parsed day is equal to yesterday days ago - adds oil/gas volume to counter
         if year == yesYear and month == yesMonth and day == yesDay:
             yesTotalOilVolume = yesTotalOilVolume + oilVolumeClean
             yesTotalGasVolume = yesTotalGasVolume + gasVolumeClean
+
+            # for one day ago - checks if batteryId is in wellIdList
+            if batteryId in wellIdList:  # if yes, does data exisit and logs correct boolean
+                if oilDataExist == True:
+                    wellOilVolumeOneDayAgo[index] = oilVolumeClean
+                else:
+                    wellOilVolumeOneDayAgo[index] = "No Data Reported"
+                if gasDataExist == True:
+                    wellGasVolumeOneDayAgo[index] = gasVolumeClean
+                else:
+                    wellGasVolumeOneDayAgo[index] = "No Data Reported"
 
         # Checks to see if the parsed day is equal to three days ago - adds oil/gas volume to counter
         if year == threeDayYear and month == threeDayMonth and day == threeDayDay:
@@ -531,9 +514,8 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
         avgOilList.insert(i, runningTotalOil[i] / numberOfDaysBattery[i])
         avgGasList.insert(i, runningTotalGas[i] / numberOfDaysBattery[i])
 
-    fpReported = open(
-        r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\yesterdayWellReport.csv", "w"
-    )
+    yesWellReportFileName = workingDataDirectory + r"\yesterdayWellReport.csv"
+    fpReported = open(yesWellReportFileName, "w")
     headerString = "Battery ID,Battery Name,Oil Production,14-day Oil Average,Gas Production,14-day Gas Average, Oil Sold\n"
     fpReported.write(headerString)
 
@@ -544,11 +526,11 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
                 + ","
                 + wellNameList[i]
                 + ","
-                + str(wellOilVolumeTwoDayAgo[i])
+                + str(wellOilVolumeOneDayAgo[i])
                 + ","
                 + str(rollingFourteenDayPerWellOil[i])
                 + ","
-                + str(wellGasVolumeTwoDayAgo[i])
+                + str(wellGasVolumeOneDayAgo[i])
                 + ","
                 + str(rollingFourteenDayPerWellGas[i])
                 + "\n"
@@ -580,7 +562,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     numberOfNotReported = 0
 
     for i in range(0, len(wellIdList)):
-        if wellOilVolumeTwoDayAgo[i] == "No Data Reported" and rollingFourteenDayPerWellOil[i] > 0:
+        if wellOilVolumeOneDayAgo[i] == "No Data Reported" and rollingFourteenDayPerWellOil[i] > 0:
             index = listOfBatteryIds.index(wellIdList[i])
             goodBatteryNameWrite = goodBatteryNames[index]
             notReportedListOil.append(goodBatteryNameWrite)
@@ -588,7 +570,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
             numberOfNotReported = numberOfNotReported + 1
             if pumperName not in pumperNotReportedList:
                 pumperNotReportedList.append(pumperName)
-        if wellGasVolumeTwoDayAgo[i] == "No Data Reported" and rollingFourteenDayPerWellGas[i] > 0:
+        if wellGasVolumeOneDayAgo[i] == "No Data Reported" and rollingFourteenDayPerWellGas[i] > 0:
             index = listOfBatteryIds.index(wellIdList[i])
             goodBatteryNameWrite = goodBatteryNames[index]
             notReportedListGas.append(goodBatteryNameWrite)
@@ -663,91 +645,10 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
                                   for num in wellVolumeOilSoldList]
 
     # print out the volumes for data check while model is running
-    print("Today Oil Volume: " + str(totalOilVolume))
-    print("Today Gas Volume: " + str(totalGasVolume))
     print("Yesterday Oil Volume: " + str(yesTotalOilVolume))
     print("Yesterday Gas Volume: " + str(yesTotalGasVolume))
-    print("Two Day Ago Oil Volume: " + str(twoDayOilVolume))
-    print("Two Day Ago Gas Volume: " + str(twoDayGasVolume))
-    # print("Three Day Ago Oil Volume: " + str(threeDayOilVolume))
-    # print("Three Day Ago Gas Volume: " + str(threeDayGasVolume))
-    # print("Last Week Oil Volume: " + str(lastWeekTotalOilVolume))
-    # print("Last Week Gas Volume: " + str(lastWeekTotalGasVolume))
-    # print("Daily Change Oil Volume: " + str(oilChangeDaily))
-    # print("Daily Change Gas Volume: " + str(gasChangeDaily))
-    # print("Percent Oil Volume: " + str(oilSevenDayPercent))
-    # print("Percent Gas Volume: " + str(gasSevenDayPercent))
     print("Oil Sales Volume Last 30 days: " + str(thrityDayOilSalesVolume))
     print("Oil Sales Volume This Month: " + str(monthlyOilSales))
-
-    ### API Call for Oil Sold List for Accouting ###
-
-    # make the API call
-    response = requests.request(
-        "GET",
-        urlAccounting,
-    )
-
-    responseCode = response.status_code  # sets response code to the current state
-
-    # parse as json string
-    results = response.json()
-    # setting to length of results
-    numEntries = len(results)
-
-    fp = open(workingDir + r"\oilSoldAccouting.csv", "w")
-    headerString = "Date, Battery Name, Oil Sold Volume\n"
-    fp.write(headerString)
-
-    for currentRow in range(numEntries - 1, 0, -1):
-        row = results[currentRow]  # get row i in results
-        keys = list(row.items())  # pull out the headers
-
-        oilSalesDataExist = False
-        oilSalesDataClean = 0
-
-        # Loops through each exposed API variable. If it exisits - get to correct variable
-        for idx, key in enumerate(keys):
-            if key[0] == "batteryId":
-                batteryId = row["batteryId"]
-            elif key[0] == "batteryName":
-                batteryName = row["batteryName"]
-            elif key[0] == "date":
-                date = row["date"]
-            # if reported, set to True, otherwise leave false
-            elif key[0] == "oilSales":
-                oilSalesDataExist = True
-                oilSalesDataRaw = row["oilSales"]
-                if oilSalesDataRaw == "":
-                    oilSalesDataClean = 0
-                else:
-                    oilSalesDataClean = oilSalesDataRaw
-
-        # spliting date correctly
-        splitDate = re.split("T", date)
-        splitDate2 = re.split("-", splitDate[0])
-        year = int(splitDate2[0])
-        month = int(splitDate2[1])
-        day = int(splitDate2[2])
-        dateString = str(month) + "/" + str(day) + "/" + str(year)
-
-        index = listOfBatteryIds.index(batteryId)
-        goodBatteryNameWrite = goodBatteryNames[index]
-
-        if oilSalesDataClean > 0:
-            outputString = (
-                dateString
-                + ","
-                + goodBatteryNameWrite
-                + ","
-                + str(oilSalesDataClean)
-                + "\n"
-            )
-            fp.write(outputString)
-
-    fp.close()
-
-    print("Production Pulled From Greasebook")
 
     return pumperNotReportedList
 
@@ -1048,6 +949,8 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
         totalAccountingAllocatedProduction)
 
     lastDate = ""
+    wellsWithoutForecastCounter = 0
+    wellsWithoutForecast = []
 
     # MASTER loop that goes through each of the items in the response
     for currentRow in range(numEntries - 1, 0, -1):
@@ -1268,4 +1171,97 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
     totalComboCurveAllocatedProduction.to_json(
         r".\kingoperating\data\comboCurveAllocatedProduction.json", orient="records")
 
-    print("Check 2: Allocation Done")
+    print("Wells Allocation Done")
+
+# This function is used to send Operations an email of the pumpers who have not gotten their data in for the day
+
+
+def sendPumperEmail(pumperNotReportedList, workingDataDirectory):
+
+    dateToday = dt.datetime.today()
+    dateYes = dateToday - timedelta(days=1)
+
+    # create today's string
+    yesterdayDateString = dateYes.strftime("%m/%d/%Y")
+
+    # CREATE ATTACHMENT FILE
+    oilGasReportedFileName = workingDataDirectory + r"\yesterdayWellReport.csv"
+
+    # SEND EMAIL FUNCTION
+    def send_email(emailRecipient, emailRecipientName, emailSubject, emailMessage, attachmentOne):
+        email_sender = os.getenv("USERNAME_KING")
+        msg = MIMEMultipart()
+        msg["From"] = email_sender
+        msg["To"] = emailRecipient
+        msg["Subject"] = emailSubject
+        msg.attach(MIMEText(emailMessage, "plain"))
+
+        # OPENS EACH ATTACHMENTS
+        with open(attachmentOne, "rb") as attachment:
+            # Add file as application/octet-stream
+            # Email client can usually download this automatically as attachment
+            partTwo = MIMEBase("application", "octet-stream")
+            partTwo.set_payload(attachment.read())
+
+        # Encode file in ASCII characters to send by email
+        encoders.encode_base64(partTwo)
+
+        partTwo.add_header(
+            "Content-Disposition",
+            f"attachment; filename= yesterdayWellReport.csv",
+        )
+
+        # ATTACHES EACH FILE TO EMAIL
+
+        msg.attach(partTwo)
+
+        text = msg.as_string()
+
+        try:
+            server = smtplib.SMTP("smtp.office365.com", 587)
+            server.ehlo()
+            server.starttls()
+            server.login(os.getenv("USERNAME_KING"),
+                         os.getenv("PASSWORD_KING"))
+            server.sendmail(email_sender, emailRecipient, text)
+            print("Email sent successfully to " + emailRecipientName + "")
+            server.quit()
+        except:
+            print("SMPT server connection error")
+
+        return True
+
+    # Body of the email
+    message = ""
+    message = message + "Pumpers To Check In With:" + \
+        "\n" + "---------" + "\n"
+
+    for i in range(0, len(pumperNotReportedList)):
+        message = message + pumperNotReportedList[i] + "\n"
+
+    # email subject
+    subject = "Daily Pumper Not Reported List - " + yesterdayDateString
+
+    # Potenital users to send to
+    michaelTanner = os.getenv("MICHAEL_TANNER_EMAIL")
+    michaelTannerName = os.getenv("MICHAEL_TANNER_NAME")
+    gabeTatman = os.getenv("GABE_TATMAN")
+    jayYoung = os.getenv("JAY_YOUNG")
+    rexGifford = os.getenv("REX_GIFFORD")
+    chandlerKnox = os.getenv("CHANDLER_KNOX")
+    paulGerome = os.getenv("PAUL_GEROME")
+    peterSnell = os.getenv("PETER_SNELL")
+    garretStacey = os.getenv("GARRET_STACEY")
+    grahamPatterson = os.getenv("GRAHAM_PATTERSON")
+    wesMinshall = os.getenv("WES_MINSHALL")
+
+    # LIST TO SEND TO
+    send_email(
+        emailRecipient=michaelTanner,
+        emailRecipientName=michaelTannerName,
+        emailSubject=subject,
+        emailMessage=message,
+        attachmentOne=oilGasReportedFileName
+    )
+
+    print("Completed Sending Pumper Not Reported List")

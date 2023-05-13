@@ -44,6 +44,19 @@ millerranchb501mh = "millerranchb501mh"
 millerrancha501mh = "millerrancha501mh"
 nameOfWell = "millerranchb501mh"
 
+
+pumperNotReportedList = greasebook.getBatteryProductionData(
+    workingDataDirectory=workingDirectoryData,
+    pullProd=False,
+    days=30,
+    greasebookApi=greasebookApi
+)
+
+greasebook.sendPumperEmail(
+    pumperNotReportedList=pumperNotReportedList, workingDataDirectory=workingDirectoryData
+)
+
+
 '''
 WORKING ZONE
 
@@ -68,6 +81,10 @@ pumperNotReportedList = greasebook.getBatteryProductionData(
     pullProd=False,
     days=30,
     greasebookApi=greasebookApi
+)
+
+greasebook.sendPumperEmail(
+    pumperNotReportedList=pumperNotReportedList, workingDataDirectory=workingDirectoryData
 )
 
 greasebook.allocateWells(
@@ -135,6 +152,10 @@ greasebook.getBatteryProductionData(
     pullProd=False,
     days=30,
     greasebookApi=greasebookApi
+)
+
+greasebook.sendPumperEmail(
+    pumperNotReportedList=pumperNotReportedList, workingDataDirectory=workingDirectoryData
 )
 
 greasebook.allocateWells(
