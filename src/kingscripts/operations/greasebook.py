@@ -31,7 +31,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     fileNameAssetProduction = workingDir + \
         r"\totalAssetsProduction.csv"
     fileNameMasterBatteryList = workingDir + \
-        r"\masterBatteryList.csv"
+        r"\master\masterBatteryList.csv"
 
     # adding the Master Battery List for Analysis
     masterBatteryList = pd.read_csv(
@@ -659,7 +659,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
 
     print("Finish Rolling Up Production - Bad Pumper List Ready to Send")
 
-    return pumperNotReportedList
+    return pumperNotReportedList, totalAssetProduction
 
 
 '''
@@ -672,7 +672,7 @@ def getComments(workingDataDirectory, greasebookApi):
 
     workingDir = workingDataDirectory
     fileNameMasterAllocationList = workingDir + \
-        r"\masterWellAllocation.xlsx"
+        r"\master\masterWellAllocation.xlsx"
 
     # set some date variables we will need later
     dateToday = dt.datetime.today()
@@ -792,7 +792,7 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
                           r"\comboCurveAllocatedProduction.csv")
     fileNameForecast = (workingDataDirectory + r"\forecastWells.csv")
     fileNameMasterAllocationList = (
-        workingDataDirectory + r"\masterWellAllocation.xlsx")
+        workingDataDirectory + r"\master\masterWellAllocation.xlsx")
     load_dotenv()  # load ENV
 
     # adding the Master Battery List for Analysis

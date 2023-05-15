@@ -26,6 +26,7 @@ SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER.
 
 # Working Directory
 workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
+kocDatawarehouse = os.getenv("KOC_DATAWAREHOUSE")
 
 # getting API keys
 enverusApiKey = os.getenv('ENVERUS_API')
@@ -60,6 +61,9 @@ print("Number of Records in Fluvanna 518H: " +
 browing518HProductionMonthtlyData.to_excel(
     workingDirectoryData + r"\browningWell.xlsx", index=False)
 
+browing518HProductionMonthtlyData.to_excel(
+    kocDatawarehouse + r"\browningWell.xlsx", index=False)
+
 newBrowningFluvannaActivity = enverus.checkWellStatus(
     apiKey=enverusApiKey,
     operatorName=browningOperatorName,
@@ -67,20 +71,24 @@ newBrowningFluvannaActivity = enverus.checkWellStatus(
 )
 
 pumperNotReportedList = greasebook.getBatteryProductionData(
-    workingDataDirectory=workingDirectoryData,
+    workingDataDirectory=kocDatawarehouse,
     pullProd=False,
     days=30,
     greasebookApi=greasebookApi
 )
 
 greasebook.sendPumperEmail(
-    pumperNotReportedList=pumperNotReportedList,
-    workingDataDirectory=workingDirectoryData
+    pumperNotReportedList=pumperNotReportedList[0],
+    workingDataDirectory=kocDatawarehouse
 )
+
+totalAssetProduction = pumperNotReportedList[1]
+totalAssetProduction.to_csv(
+    r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\totalAssetProduction.csv", index=False)
 
 allocatedProductionData = greasebook.allocateWells(
     days=30,
-    workingDataDirectory=workingDirectoryData,
+    workingDataDirectory=kocDatawarehouse,
     greasebookApi=greasebookApi,
     pullProd=False
 )
