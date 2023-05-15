@@ -26,7 +26,7 @@ def putWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccou
     # adding the Master Allocation List for Analysis
     workingDir = workingDataDirectory
     masterAllocationListFileName = workingDir + \
-        r"\masterWellAllocation.xlsx"
+        r"\master\masterWellAllocation.xlsx"
 
     masterAllocationList = pd.read_excel(masterAllocationListFileName)
 
@@ -385,7 +385,7 @@ def getLatestScenario(workingDataDirectory, projectIdKey, scenarioIdKey, service
 
     workingDir = workingDataDirectory
     masterAllocationListFileName = workingDir + \
-        r"\masterWellAllocation.xlsx"
+        r"\master\masterWellAllocation.xlsx"
 
     masterAllocationList = pd.read_excel(masterAllocationListFileName)
 
