@@ -9,7 +9,6 @@ import numpy as np
 from combocurve_api_v1 import ComboCurveAuth
 
 
-
 def putWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccount, comboCurveApi, greasebookApi, daysToPull):
     load_dotenv()  # load enviroment variables
 
@@ -22,7 +21,7 @@ def putWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccou
     # specific Python ComboCurve authentication
     combocurve_auth = ComboCurveAuth(service_account, api_key)
 
-    print("Authentication Worked")
+    print("Successful ComboCurve Authentication")
 
     # adding the Master Allocation List for Analysis
     workingDir = workingDataDirectory
@@ -83,8 +82,8 @@ def putWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccou
 
         # checks to see if the GB API call was successful
         if responseCode == 200:
-            print("Status Code is 200")
-            print(str(numEntries) + " entries read")
+            print("Sucessful Greasebook API Call")
+            print(str(numEntries) + " total number of rows")
         else:
             print("The Status Code: " + str(response.status_code))
 

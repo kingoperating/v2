@@ -4,7 +4,7 @@ Main Script for KOC v2 Python Packages
 Developed by: Michael Tanner
 
 """
-# KOC v2.0.2 Python Packages
+# KOC v2.0.6 Python Packages
 from kingscripts.operations import greasebook, combocurve
 from kingscripts.analytics import enverus
 from kingscripts.afe import afe
@@ -45,37 +45,27 @@ millerrancha501mh = "millerrancha501mh"
 nameOfWell = "millerranchb501mh"
 
 
-pumperNotReportedList = greasebook.getBatteryProductionData(
-    workingDataDirectory=workingDirectoryData,
-    pullProd=False,
-    days=30,
-    greasebookApi=greasebookApi
-)
-
-greasebook.sendPumperEmail(
-    pumperNotReportedList=pumperNotReportedList, workingDataDirectory=workingDirectoryData
-)
-
-
 '''
 WORKING ZONE
 
 '''
 
-browingWell = enverus.getWellProductionData(
+browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
     wellApi14=browning5181H
 )
 
-browingWell.to_excel(workingDirectoryData + r"\browningWell.xlsx", index=False)
+print("Number of Records in Fluvanna 518H: " +
+      str(len(browing518HProductionMonthtlyData)))
+browing518HProductionMonthtlyData.to_excel(
+    workingDirectoryData + r"\browningWell.xlsx", index=False)
 
-file = enverus.checkWellStatus(
+newBrowningFluvannaActivity = enverus.checkWellStatus(
     apiKey=enverusApiKey,
     operatorName=browningOperatorName,
     basin=basin
 )
 
-# Greasebook Stack
 pumperNotReportedList = greasebook.getBatteryProductionData(
     workingDataDirectory=workingDirectoryData,
     pullProd=False,
@@ -84,17 +74,24 @@ pumperNotReportedList = greasebook.getBatteryProductionData(
 )
 
 greasebook.sendPumperEmail(
-    pumperNotReportedList=pumperNotReportedList, workingDataDirectory=workingDirectoryData
+    pumperNotReportedList=pumperNotReportedList,
+    workingDataDirectory=workingDirectoryData
 )
 
-greasebook.allocateWells(
+allocatedProductionData = greasebook.allocateWells(
     days=30,
     workingDataDirectory=workingDirectoryData,
     greasebookApi=greasebookApi,
     pullProd=False
 )
 
-# ComboCurve Stack
+allocatedProductionData.to_json(
+    workingDirectoryData + r"\comboCurveAllocatedProduction.json", orient="records")
+allocatedProductionData.to_csv(
+    workingDirectoryData + r"\comboCurveAllocatedProduction.csv", index=False)
+allocatedProductionData.to_csv(
+    r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\comboCurveAllocatedProduction.csv", index=False)
+
 combocurve.putWellProductionData(
     workingDataDirectory=workingDirectoryData,
     pullFromAllocation=False,
@@ -131,13 +128,14 @@ MAIN SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mai
 '''
 
 # Enverus Stack
-browingWell = enverus.getWellData(
+browing518HProductionMonthtlyData = enverus.getWellData(
     apiKey=enverusApiKey,
     wellApi14=browning5181H
 )
 
-browingWell.to_excel(workingDirectoryData + r"\browningWell.xlsx", index=False)
-updateDate = browingWell["Date"][1]
+browing518HProductionMonthtlyData.to_excel(
+    workingDirectoryData + r"\browningWell.xlsx", index=False)
+updateDate = browing518HProductionMonthtlyData["Date"][1]
 print("Last update date: " + updateDate)
 
 enverus.checkWellStatus(

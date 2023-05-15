@@ -16,6 +16,7 @@ Returns a dataframe for a specific API14 of the monthly production data
 
 
 def getWellProductionData(apiKey, wellApi14):
+    print("Begin Getting Well Production Data")
     # Checks if API is 14 digits long
     if len(wellApi14) != 14:
         lengthOfApi = len(wellApi14)
@@ -80,6 +81,7 @@ Returns a dataframe of the updated well status for a specific operator and basin
 
 
 def checkWellStatus(apiKey, operatorName, basin):
+    print("Begin Getting Well Status Data")
     # checks to ensure correct class for Enverus API
     if type(apiKey) != str:
         print("API Key is not the correct class")
@@ -122,4 +124,5 @@ def checkWellStatus(apiKey, operatorName, basin):
         wellStatusData = pd.concat([wellStatusData, wellStatusDataResponse])
         linkLength = len(wellStatusDataResponse)
 
+    print("Finished Getting Well Status Data")
     return wellStatusData

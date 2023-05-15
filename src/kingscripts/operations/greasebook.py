@@ -22,6 +22,8 @@ from datetime import datetime
 
 def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi):
 
+    print("Begin Pulling Battery Production Data From Greasebook")
+
     fullProductionPull = pullProd
     numberOfDaysToPull = days
 
@@ -113,8 +115,8 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     numEntries = len(results)
 
     if responseCode == 200:
-        print("Sucessful API Call")
-        print(str(numEntries) + " rows")
+        print("Sucessful Greasebook API Call")
+        print(str(numEntries) + " total number of rows")
     else:
         print("The Status Code: " + str(response.status_code))
 
@@ -516,11 +518,12 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
 
     yesWellReportFileName = workingDataDirectory + r"\yesterdayWellReport.csv"
     fpReported = open(yesWellReportFileName, "w")
-    headerString = "Battery ID,Battery Name,Oil Production,14-day Oil Average,Gas Production,14-day Gas Average, Oil Sold\n"
+    headerString = "Battery ID,Battery Name,Oil Production,14-day Oil Average,Gas Production,14-day Gas Average, Pumper Name\n"
     fpReported.write(headerString)
 
     for i in range(0, len(wellIdList)):
         if i < len(rollingFourteenDayPerWellOil) and i < len(rollingFourteenDayPerWellGas):
+            index = listOfBatteryIds.index(wellIdList[i])
             outputString = (
                 str(wellIdList[i])
                 + ","
@@ -533,6 +536,8 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
                 + str(wellGasVolumeOneDayAgo[i])
                 + ","
                 + str(rollingFourteenDayPerWellGas[i])
+                + ","
+                + str(pumperNames[index])
                 + "\n"
             )
         else:
@@ -548,6 +553,8 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
                 + "-"
                 + ","
                 + str(avgGasList[i])
+                + ","
+                + str(pumperNames.index(wellIdList[i]))
                 + "\n"
             )
 
@@ -649,6 +656,8 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     print("Yesterday Gas Volume: " + str(yesTotalGasVolume))
     print("Oil Sales Volume Last 30 days: " + str(thrityDayOilSalesVolume))
     print("Oil Sales Volume This Month: " + str(monthlyOilSales))
+
+    print("Finish Rolling Up Production - Bad Pumper List Ready to Send")
 
     return pumperNotReportedList
 
@@ -770,6 +779,9 @@ def getComments(workingDataDirectory, greasebookApi):
 
 # This function will allocated production by both SubAccount ID (accounting purposes) and API14 (engineering purposes)
 def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
+
+    print("Begin Allocation of Production")
+
     # 30 Day Or Full? If False - only looking at last 30 days and appending.
     fullProductionPull = pullProd
     numberOfDaysToPull = days
@@ -839,8 +851,8 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
     numEntries = len(results)
 
     if responseCode == 200:
-        print("Status Code is 200")
-        print(str(numEntries) + " entries read")
+        print("Sucessful Greasebook API Call")
+        print(str(numEntries) + " total number of rows")
     else:
         print("The Status Code: " + str(response.status_code))
 
@@ -1167,11 +1179,11 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
 
     # Output final dataframes to csv and json
     totalAccountingAllocatedProduction.to_csv(fileNameAccounting, index=False)
-    totalComboCurveAllocatedProduction.to_csv(fileNameComboCurve, index=False)
-    totalComboCurveAllocatedProduction.to_json(
-        r".\kingoperating\data\comboCurveAllocatedProduction.json", orient="records")
 
-    print("Wells Allocation Done")
+    print("Completed Allocation Process")
+
+    return totalComboCurveAllocatedProduction
+
 
 # This function is used to send Operations an email of the pumpers who have not gotten their data in for the day
 
@@ -1189,6 +1201,7 @@ def sendPumperEmail(pumperNotReportedList, workingDataDirectory):
 
     # SEND EMAIL FUNCTION
     def send_email(emailRecipient, emailRecipientName, emailSubject, emailMessage, attachmentOne):
+        counter = 0
         email_sender = os.getenv("USERNAME_KING")
         msg = MIMEMultipart()
         msg["From"] = email_sender
@@ -1224,12 +1237,14 @@ def sendPumperEmail(pumperNotReportedList, workingDataDirectory):
             server.login(os.getenv("USERNAME_KING"),
                          os.getenv("PASSWORD_KING"))
             server.sendmail(email_sender, emailRecipient, text)
-            print("Email sent successfully to " + emailRecipientName + "")
+            print("Bad Pumper Email sent successfully to " +
+                  emailRecipientName + "")
             server.quit()
+            counter = counter + 1
         except:
             print("SMPT server connection error")
 
-        return True
+        return True, counter
 
     # Body of the email
     message = ""
@@ -1245,7 +1260,8 @@ def sendPumperEmail(pumperNotReportedList, workingDataDirectory):
     # Potenital users to send to
     michaelTanner = os.getenv("MICHAEL_TANNER_EMAIL")
     michaelTannerName = os.getenv("MICHAEL_TANNER_NAME")
-    gabeTatman = os.getenv("GABE_TATMAN")
+    gabeTatman = os.getenv("GABE_TATMAN_EMAIL")
+    gabeTatmanName = os.getenv("GABE_TATMAN_NAME")
     jayYoung = os.getenv("JAY_YOUNG")
     rexGifford = os.getenv("REX_GIFFORD")
     chandlerKnox = os.getenv("CHANDLER_KNOX")
@@ -1256,7 +1272,7 @@ def sendPumperEmail(pumperNotReportedList, workingDataDirectory):
     wesMinshall = os.getenv("WES_MINSHALL")
 
     # LIST TO SEND TO
-    send_email(
+    counter = send_email(
         emailRecipient=michaelTanner,
         emailRecipientName=michaelTannerName,
         emailSubject=subject,
@@ -1264,4 +1280,13 @@ def sendPumperEmail(pumperNotReportedList, workingDataDirectory):
         attachmentOne=oilGasReportedFileName
     )
 
-    print("Completed Sending Pumper Not Reported List")
+    counter = send_email(
+        emailRecipient=gabeTatman,
+        emailRecipientName=gabeTatmanName,
+        emailSubject=subject,
+        emailMessage=message,
+        attachmentOne=oilGasReportedFileName
+    )
+
+    print("Completed Sending Pumper Not Reported List to " +
+          str(counter[1]) + " people")
