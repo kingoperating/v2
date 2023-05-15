@@ -101,7 +101,7 @@ allocatedProductionData.to_csv(
     r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\comboCurveAllocatedProduction.csv", index=False)
 
 combocurve.putWellProductionData(
-    workingDataDirectory=workingDirectoryData,
+    workingDataDirectory=kocDatawarehouse,
     pullFromAllocation=False,
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey,
