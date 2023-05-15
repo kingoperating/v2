@@ -19,7 +19,7 @@ def dailyCost(workingDataDirectory, name):
     masterAfe = pd.read_excel(pathOfMasterFile)
     actualWellCostWolfepak = pd.read_excel(actualSpendString)
     budgetRawFile = pd.read_excel(budgetRawString)
-    drillingDayDescriptionPath = "C:\\Users\\mtanner\\OneDrive - King Operating\\Drilling - KOC\\daysdepthdescription.xlsx"
+    drillingDayDescriptionPath = workingDataDirectory + r"\daysdepthdescription.xlsx"
     descriptionFile = pd.read_excel(
         drillingDayDescriptionPath, sheet_name=nameOfWell)
 

@@ -111,21 +111,21 @@ combocurve.putWellProductionData(
 
 # AFE Stack Miller Ranch B501MH
 afe.dailyCost(
-    workingDataDirectory=workingDirectoryData,
+    workingDataDirectory=kocDatawarehouse,
     name=millerranchb501mh
 )
 afe.variance(
-    workingDataDirectory=workingDirectoryData,
+    workingDataDirectory=kocDatawarehouse,
     name=millerranchb501mh
 )
 
 # AFE Stack Miller Ranch A501MH
 afe.dailyCost(
-    workingDataDirectory=workingDirectoryData,
+    workingDataDirectory=kocDatawarehouse,
     name=millerrancha501mh
 )
 afe.variance(
-    workingDataDirectory=workingDirectoryData,
+    workingDataDirectory=kocDatawarehouse,
     name=millerrancha501mh
 )
 
