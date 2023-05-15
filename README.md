@@ -55,7 +55,21 @@ Two (2) packages `greasebook` and `combocurve` and four (4) functions
    - Arguments -`workingDataDirectory`: Data directory where all exports and imports come from `str`
      - `greasebookApi`: Greasebook API key `str`
 
-3. `combocurve.putWellProductionData` - requests data from Greasebooks and inserts into ComboCurve
+3. `greasebook.allocateWells` - returns a dataframe containing allocated well volumes
+
+   - Arguments
+     - `pullProd`: `True` to pull all GB production data, `False` to pull limited number and update master file
+     - `days`: Number of days to pull - if `pullProd=True` set to 0 `int`
+     - `workingDataDirectory`: Data directory where all exports and imports come from `str`
+     - `greasebookApi`: Greasebook API key `str`
+
+4. `greasebook.sendPumperEmail` - sends email to specific users for pumpers who have missed there data
+
+   - Arugments:
+     - `pumperNotReportedList`: list of `str` that represent pumpers who have failed to submit production data
+     - `workingDataDirectory`: Data directory where all exports and imports come from `str`
+
+5. `combocurve.putWellProductionData` - requests data from Greasebooks and inserts into ComboCurve
 
    - Arguments
      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
@@ -64,7 +78,7 @@ Two (2) packages `greasebook` and `combocurve` and four (4) functions
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
      - `daysToPull`: Number of days to pull, if `pullFromAllocation=True` set to 0 `int`
 
-4. `combocurve.getLatestScenario` - returns pandas dataframe of the latest scenerio given a projectId and scenerioId
+6. `combocurve.getLatestScenario` - returns pandas dataframe of the latest scenerio given a projectId and scenerioId
    - Arguments
      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
      - `projectIdKey`: ComboCurve specific project id - get through front-end UI `str`
@@ -77,11 +91,12 @@ Two (2) packages `greasebook` and `combocurve` and four (4) functions
 One package `enverus` and two (2) functions
 
 1.  `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
-1.  - Arguments:
-      - `apiKey`: Enverus API authentication `object`
-      - `wellApi14`: Well API14 of interest `str`
 
-1.  `enverus.checkWellStatus` - chekcs the status a specific operator in a specific basin
+- Arguments:
+  - `apiKey`: Enverus API authentication `object`
+  - `wellApi14`: Well API14 of interest `str`
+
+2.  `enverus.checkWellStatus` - chekcs the status a specific operator in a specific basin
     - Arguments:
       - `apiKey`: Enverus API authentication `object`
       - `operatorName`: Name of operator of interest `str`
