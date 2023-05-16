@@ -29,7 +29,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
 
     workingDir = workingDataDirectory
     fileNameAssetProduction = workingDir + \
-        r"\totalAssetsProduction.csv"
+        r"\totalAssetProduction.csv"
     fileNameMasterBatteryList = workingDir + \
         r"\master\masterBatteryList.csv"
 
@@ -152,11 +152,11 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     avgOilList = []
     avgGasList = []
     fourteenDayOilData = np.zeros([200, 14], dtype=float)
-    sevenDayOilData = np.zeros([200, 7], dtype=float)
+    rollingDayOilData = np.zeros([200, 7], dtype=float)
     fourteenDayGasData = np.zeros([200, 14], dtype=float)
-    sevenDayGasData = np.zeros([200, 7], dtype=float)
+    rollingDayGasData = np.zeros([200, 7], dtype=float)
     batteryIdCounterFourteen = np.zeros([200], dtype=int)
-    batteryIdCounterSeven = np.zeros([200], dtype=int)
+    batteryIdCounterrolling = np.zeros([200], dtype=int)
     rollingFourteenDayPerWellOil = np.zeros([200], dtype=float)
     rollingFourteenDayPerWellGas = np.zeros([200], dtype=float)
     wellIdOilSoldList = []
@@ -307,8 +307,8 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
                 if gotDayData[counter] != True:
                     fourteenDayOilData[counter][batteryIdCounterFourteen[counter]] = 0
                     fourteenDayGasData[counter][batteryIdCounterFourteen[counter]] = 0
-                    sevenDayOilData[counter][batteryIdCounterSeven[counter]] = 0
-                    sevenDayGasData[counter][batteryIdCounterSeven[counter]] = 0
+                    rollingDayOilData[counter][batteryIdCounterrolling[counter]] = 0
+                    rollingDayGasData[counter][batteryIdCounterrolling[counter]] = 0
                     lastFourteenDayTotalOil = sum(
                         fourteenDayOilData[counter]) / (14)
                     lastFourteenDayTotalGas = sum(
@@ -322,10 +322,10 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
                         batteryIdCounterFourteen[counter] = batteryIdCounterFourteen[counter] + 1
                     else:
                         batteryIdCounterFourteen[counter] = 0
-                    if batteryIdCounterSeven[counter] < 6:
-                        batteryIdCounterSeven[counter] = batteryIdCounterSeven[counter] + 1
+                    if batteryIdCounterrolling[counter] < 6:
+                        batteryIdCounterrolling[counter] = batteryIdCounterrolling[counter] + 1
                     else:
-                        batteryIdCounterSeven[counter] = 0
+                        batteryIdCounterrolling[counter] = 0
 
         # resets gotDayData to False as we loop the current day
         if newDay == True:
@@ -373,18 +373,18 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
             else:
                 batteryIdCounterFourteen[index] = 0
 
-            # seven day running average code
-            sevenDayOilData[index][batteryIdCounterSeven[index]
-                                   ] = oilVolumeClean
-            sevenDayGasData[index][batteryIdCounterSeven[index]
-                                   ] = gasVolumeClean
-            lastSevenDayTotalOil = sum(sevenDayOilData[index]) / (7)
-            lastSevenDayTotalGas = sum(sevenDayGasData[index]) / (7)
+            # rolling day running average code
+            rollingDayOilData[index][batteryIdCounterrolling[index]
+                                     ] = oilVolumeClean
+            rollingDayGasData[index][batteryIdCounterrolling[index]
+                                     ] = gasVolumeClean
+            lastrollingDayTotalOil = sum(rollingDayOilData[index]) / (7)
+            lastrollingDayTotalGas = sum(rollingDayGasData[index]) / (7)
 
-            if batteryIdCounterSeven[index] < 6:
-                batteryIdCounterSeven[index] = batteryIdCounterSeven[index] + 1
+            if batteryIdCounterrolling[index] < 6:
+                batteryIdCounterrolling[index] = batteryIdCounterrolling[index] + 1
             else:
-                batteryIdCounterSeven[index] = 0
+                batteryIdCounterrolling[index] = 0
         else:  # if batteryId is not in list, then add to list and roll up
             wellIdList.append(batteryId)
             index = wellIdList.index(batteryId)
@@ -392,9 +392,9 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
             runningTotalGas.insert(index, gasVolumeClean)
             numberOfDaysBattery.insert(index, 1)
             wellNameList.insert(index, batteryName)
-            lastSevenDayTotalOil = oilVolumeClean
+            lastrollingDayTotalOil = oilVolumeClean
             lastFourteenDayTotalOil = oilVolumeClean
-            lastSevenDayTotalGas = gasVolumeClean
+            lastrollingDayTotalGas = gasVolumeClean
             lastFourteenDayTotalGas = gasVolumeClean
             if newDay == False or currentRow == (numEntries - 1):
                 gotDayData[index] = True
@@ -489,9 +489,9 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
                 str(oilVolumeClean),
                 str(gasVolumeClean),
                 str(waterVolumeClean),
-                str(lastSevenDayTotalOil),
+                str(lastrollingDayTotalOil),
                 str(lastFourteenDayTotalOil),
-                str(lastSevenDayTotalGas),
+                str(lastrollingDayTotalGas),
                 str(lastFourteenDayTotalGas),
             ]
             # STARTING HERE WITH IF STATEMENT
@@ -592,10 +592,10 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     # Oil and gas daily change numbers
     oilChangeDaily = round((twoDayOilVolume - threeDayOilVolume), 2)
     gasChangeDaily = round((twoDayGasVolume - threeDayGasVolume), 2)
-    oilSevenDayPercent = round(
+    oilrollingDayPercent = round(
         (twoDayOilVolume - lastWeekTotalOilVolume) / lastWeekTotalOilVolume, 1
     )
-    gasSevenDayPercent = round(
+    gasrollingDayPercent = round(
         (twoDayGasVolume - lastWeekTotalGasVolume) / lastWeekTotalGasVolume, 1
     )
 
@@ -629,9 +629,9 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
         + ","
         + str(gasChangeDaily)
         + ","
-        + str(oilSevenDayPercent)
+        + str(oilrollingDayPercent)
         + ","
-        + str(gasSevenDayPercent)
+        + str(gasrollingDayPercent)
         + ","
         + str(twoDayOilVolume)
         + ","
@@ -801,11 +801,14 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
 
     # set some date variables we will need later
     dateToday = dt.datetime.today()
+    dateYesterday = dateToday - timedelta(days=1)
     todayYear = dateToday.strftime("%Y")
     todayMonth = dateToday.strftime("%m")
     todayDay = dateToday.strftime("%d")
-    dateYes = dateToday - timedelta(days=1)
-    yesDayString = dateYes.strftime("%d")
+
+    yesYear = int(dateYesterday.strftime("%Y"))
+    yesMonth = int(dateYesterday.strftime("%m"))
+    yesDay = int(dateYesterday.strftime("%d"))
 
     # Set production interval based on boolen
     if fullProductionPull == True:
@@ -900,7 +903,7 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
     wellNameList = []
     wellIdOilSoldList = []
     wellVolumeOilSoldList = []
-    gotDayData = np.full([200], False)
+
     totalOilVolume = 0
     totalGasVolume = 0
     totalWaterVolume = 0
@@ -914,6 +917,17 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
     adamsRanchGasVolume = 0
     adamsRanchOilVolume = 0
     adamsRanchOilSalesVolume = 0
+
+    wellIdsThatNeedAvg = [10208]
+    avgOilList = []
+    avgGasList = []
+    numberOfWellsThatNeedAvg = len(wellIdsThatNeedAvg)
+    rollingDayOilData = np.zeros([numberOfWellsThatNeedAvg, 7], dtype=float)
+    rollingDayGasData = np.zeros([numberOfWellsThatNeedAvg, 7], dtype=float)
+    batteryIdCounterRolling = np.zeros(numberOfWellsThatNeedAvg, dtype=int)
+    gotDayData = np.full(numberOfWellsThatNeedAvg, False)
+    averageIsGood = np.full(numberOfWellsThatNeedAvg, False)
+    rollingAvgInterval = 7
 
     # Convert all dates to str for comparison rollup
     todayYear = int(dateToday.strftime("%Y"))
@@ -963,6 +977,8 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
     lastDate = ""
     wellsWithoutForecastCounter = 0
     wellsWithoutForecast = []
+
+    priorDay = -999
 
     # MASTER loop that goes through each of the items in the response
     for currentRow in range(numEntries - 1, 0, -1):
@@ -1100,6 +1116,55 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
 
         currentState = ""
 
+        if priorDay == day or priorDay == -999:
+            newDay = False
+        else:
+            newDay = True
+
+        # CORE LOGIC BEGINS FOR MASTER LOOP
+
+        # checks to see if last day had an entry for every well - if not fixes it to include
+        if newDay == True:
+            if batteryId in wellIdsThatNeedAvg:  # sees if the battery id is in the list of wells that need avg
+                for counter in range(0, len(wellIdList)):
+                    if gotDayData[counter] != True:
+                        rollingDayOilData[counter][batteryIdCounterRolling[counter]] = 0
+                        rollingDayGasData[counter][batteryIdCounterRolling[counter]] = 0
+                        if batteryIdCounterRolling[counter] < (rollingAvgInterval - 1):
+                            batteryIdCounterRolling[counter] = batteryIdCounterRolling[counter] + 1
+                        else:
+                            batteryIdCounterRolling[counter] = 0
+
+        # resets gotDayData to False as we loop the current day
+        if newDay == True:
+            gotDayData = np.full(numberOfWellsThatNeedAvg, False)
+            newDay = False
+
+        # Checks to see if we need to replace the volume with the rolling average
+        if batteryId in wellIdsThatNeedAvg:
+            if batteryId in wellIdList:  # builds a list of all battery ID's with data
+                index = wellIdList.index(batteryId)
+                if newDay == False:
+                    gotDayData[index] = True
+
+                # rolling day running average code
+                rollingDayOilData[index][batteryIdCounterRolling[index]
+                                         ] = oilVolumeClean
+                rollingDayGasData[index][batteryIdCounterRolling[index]
+                                         ] = gasVolumeClean
+                if batteryIdCounterRolling[index] < (rollingAvgInterval - 1):
+                    batteryIdCounterRolling[index] = batteryIdCounterRolling[index] + 1
+                else:
+                    batteryIdCounterRolling[index] = 0
+                    averageIsGood[index] = True
+
+            else:  # if batteryId is not in list, then add to list and roll up
+                wellIdList.append(batteryId)
+                index = wellIdList.index(batteryId)
+                wellNameList.insert(index, batteryName)
+                if newDay == False or currentRow == (numEntries - 1):
+                    gotDayData[index] = True
+
         apiNumber = apiList[batteryIndexId[0]]
         indexList = [index for index, value in enumerate(
             forecastedAllocatedProduction["API 14"].to_list()) if value == apiNumber]
@@ -1122,6 +1187,15 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
             if batteryId != 23012:
                 newRow = [dateString, clientName, str(subAccountId), str(wellAccountingName), str(oilVolumeClean), str(
                     gasVolumeClean), str(waterVolumeClean), str(oilSalesDataClean), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast)]
+
+                # This handles the execption for the Wells That We Need Average For
+                # This will NOT WORK IF THERE IS MORE THAN ONE BATTERY ID PER WELL
+                if batteryId in wellIdsThatNeedAvg:
+                    index = wellIdList.index(batteryId)
+                    if averageIsGood[index] == True:
+                        oilVolumeClean = sum(
+                            rollingDayOilData[index]) / (rollingAvgInterval)
+
                 newRowComboCurve = [dateString, clientName, str(apiList[batteryIndexId[0]]), str(wellAccountingName), str(oilVolumeClean), str(gasVolumeClean), str(
                     waterVolumeClean), str(oilSalesDataClean), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast), "di", str(stateList[batteryIndexId[0]])]
 
@@ -1143,7 +1217,6 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
                 if batteryId != 25381 and batteryId != 25382:  # COLORADO
                     newRow = [dateString, clientName, str(apiList[batteryIndexId[j]]), str(wellAccountingName[j]), str(wellOilVolume), str(
                         wellGasVolume), str(wellWaterVolume), str(wellOilSalesVolume), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast), "di", str(stateList[batteryIndexId[0]])]
-                    junk = 0
                 else:
                     newRow = [dateString, clientName, "0" + str(apiList[batteryIndexId[j]]), str(wellAccountingName[j]), str(wellOilVolume), str(
                         wellGasVolume), str(wellWaterVolume), str(wellOilSalesVolume), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast), "di", str(stateList[batteryIndexId[0]])]
@@ -1176,6 +1249,7 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
                 welopCounter = 0
 
         lastDate = dateString  # updates the date for the next iteration
+        priorDay = day  # updates the day for the next iteration
 
     # Output final dataframes to csv and json
     totalAccountingAllocatedProduction.to_csv(fileNameAccounting, index=False)

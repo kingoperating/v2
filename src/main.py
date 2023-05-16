@@ -45,7 +45,6 @@ millerranchb501mh = "millerranchb501mh"
 millerrancha501mh = "millerrancha501mh"
 nameOfWell = "millerranchb501mh"
 
-
 '''
 WORKING ZONE
 
@@ -97,11 +96,15 @@ allocatedProductionData.to_json(
     workingDirectoryData + r"\comboCurveAllocatedProduction.json", orient="records")
 allocatedProductionData.to_csv(
     workingDirectoryData + r"\comboCurveAllocatedProduction.csv", index=False)
+allocatedProductionData.to_json(
+    kocDatawarehouse + r"\comboCurveAllocatedProduction.json", orient="records")
+allocatedProductionData.to_csv(
+    kocDatawarehouse + r"\comboCurveAllocatedProduction.csv", index=False)
 allocatedProductionData.to_csv(
     r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\comboCurveAllocatedProduction.csv", index=False)
 
 combocurve.putWellProductionData(
-    workingDataDirectory=workingDirectoryData,
+    workingDataDirectory=kocDatawarehouse,
     pullFromAllocation=False,
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey,
