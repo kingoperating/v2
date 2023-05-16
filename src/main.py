@@ -4,7 +4,7 @@ Main Script for KOC v2 Python Packages
 Developed by: Michael Tanner
 
 """
-# KOC v2.0.6 Python Packages
+# KOC v2.0.7 Python Packages
 from kingscripts.operations import greasebook, combocurve
 from kingscripts.analytics import enverus
 from kingscripts.afe import afe
@@ -89,7 +89,8 @@ allocatedProductionData = greasebook.allocateWells(
     days=30,
     workingDataDirectory=kocDatawarehouse,
     greasebookApi=greasebookApi,
-    pullProd=False
+    pullProd=False,
+    edgeCaseRollingAverage=7
 )
 
 allocatedProductionData.to_json(

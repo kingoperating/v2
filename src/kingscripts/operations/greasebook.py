@@ -778,7 +778,7 @@ def getComments(workingDataDirectory, greasebookApi):
 
 
 # This function will allocated production by both SubAccount ID (accounting purposes) and API14 (engineering purposes)
-def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
+def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseRollingAverage):
 
     print("Begin Allocation of Production")
 
@@ -901,47 +901,30 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
     # a bunch of variables the below loop needs
     wellIdList = []
     wellNameList = []
-    wellIdOilSoldList = []
-    wellVolumeOilSoldList = []
-
-    totalOilVolume = 0
-    totalGasVolume = 0
-    totalWaterVolume = 0
     welopOilVolume = 0
     welopGasVolume = 0
     welopWaterVolume = 0
     welopOilSalesVolume = 0
     welopCounter = 0
-    adamsRanchCounter = 0
-    adamsRanchOilVolume = 0
-    adamsRanchGasVolume = 0
-    adamsRanchOilVolume = 0
-    adamsRanchOilSalesVolume = 0
-
     wellIdsThatNeedAvg = [10208]
-    avgOilList = []
-    avgGasList = []
     numberOfWellsThatNeedAvg = len(wellIdsThatNeedAvg)
     rollingDayOilData = np.zeros([numberOfWellsThatNeedAvg, 7], dtype=float)
     rollingDayGasData = np.zeros([numberOfWellsThatNeedAvg, 7], dtype=float)
     batteryIdCounterRolling = np.zeros(numberOfWellsThatNeedAvg, dtype=int)
     gotDayData = np.full(numberOfWellsThatNeedAvg, False)
     averageIsGood = np.full(numberOfWellsThatNeedAvg, False)
-    rollingAvgInterval = 7
+    rollingAvgInterval = edgeCaseRollingAverage
 
     # Convert all dates to str for comparison rollup
     todayYear = int(dateToday.strftime("%Y"))
     todayMonth = int(dateToday.strftime("%m"))
     todayDay = int(dateToday.strftime("%d"))
 
-    # if not pulling all of production - then just get the list of dates to parse
+    # LOGIC FOR PULLING ALL DATA vs ONLY THE LAST X DAYS
     if fullProductionPull == False:
         # gets list of dates
         listOfDates = totalComboCurveAllocatedProduction["Date"].to_list()
-        # finds out what date is last
         lastRow = results[0]
-        # lastRow = totalComboCurveAllocatedProduction.iloc[len(
-        #    totalComboCurveAllocatedProduction) - 1]
         dateOfLastRow = lastRow["date"]
         splitDate = re.split("T", str(dateOfLastRow))  # splits date correct
         splitDate2 = re.split("-", str(splitDate[0]))  # splits date correct
@@ -957,7 +940,7 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
     else:
         startingIndex = 0
 
-    # Gets list of Battery id's that are clean for printing
+    # Gets list needed for the master allocation loop - comes from masterAllocationFile
     listOfBatteryIds = masterAllocationList["Id in Greasebooks"].tolist()
     wellNameAccountingList = masterAllocationList["Name in Accounting"].tolist(
     )
@@ -970,15 +953,9 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
     kComboCurve = 0  # variable for loop
     kAccounting = 0  # variable for loop
 
-    # gets length of totalAllocatedProduction
-    initalSizeOfTotalAllocatedProduction = len(
-        totalAccountingAllocatedProduction)
+    lastDate = ""  # presets last date to blank
 
-    lastDate = ""
-    wellsWithoutForecastCounter = 0
-    wellsWithoutForecast = []
-
-    priorDay = -999
+    priorDay = -999  # set to -999 - used in rolling average logic
 
     # MASTER loop that goes through each of the items in the response
     for currentRow in range(numEntries - 1, 0, -1):
@@ -1029,7 +1006,7 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
                     waterVolumeClean = 0
                 else:
                     waterVolumeClean = waterVolumeRaw
-            elif key[0] == "oilSales":
+            elif key[0] == "oilSales":  # same as oil
                 oilSalesDataExist = True
                 oilSalesDataRaw = row["oilSales"]
                 if oilSalesDataRaw == "":
@@ -1043,8 +1020,6 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
         year = int(splitDate2[0])
         month = int(splitDate2[1])
         day = int(splitDate2[2])
-
-        # CORE LOGIC BEGINS FOR MASTER LOOP
 
         # Colorado set MCF to zero
         if batteryId == 25381 or batteryId == 25382:
@@ -1086,7 +1061,7 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
             welopOilVolume = 0
             welopWaterVolume = 0
             welopOilSalesVolume = 0
-        # adamsRanchCounter = 0
+            # adamsRanchCounter = 0
             adamsRanchGasVolume = 0
             adamsRanchOilSalesVolume = 0
             adamsRanchOilVolume = 0
@@ -1116,12 +1091,13 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
 
         currentState = ""
 
+        # T/F trigger based on the priorDay - set to -999 earlier in codebase
         if priorDay == day or priorDay == -999:
             newDay = False
         else:
             newDay = True
 
-        # CORE LOGIC BEGINS FOR MASTER LOOP
+        # CORE LOGIC FOR ROLLING AVG - Needed in order to replace certian wells with the rolling average to account for gauging issues
 
         # checks to see if last day had an entry for every well - if not fixes it to include
         if newDay == True:
@@ -1165,6 +1141,7 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
                 if newDay == False or currentRow == (numEntries - 1):
                     gotDayData[index] = True
 
+        # Section for getting the forecasted production
         apiNumber = apiList[batteryIndexId[0]]
         indexList = [index for index, value in enumerate(
             forecastedAllocatedProduction["API 14"].to_list()) if value == apiNumber]
@@ -1182,7 +1159,8 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi):
             gasVolumeForecast = 0
             waterVolumeForecast = 0
 
-        # CORE LOGIC FOR WELOP
+        # CORE LOGIC BEGIN
+        # Handles the case where the batteryId only appears once aka 1-1 relationship
         if len(batteryIndexId) == 1:
             if batteryId != 23012:
                 newRow = [dateString, clientName, str(subAccountId), str(wellAccountingName), str(oilVolumeClean), str(
