@@ -62,6 +62,7 @@ Two (2) packages `greasebook` and `combocurve` and four (4) functions
      - `days`: Number of days to pull - if `pullProd=True` set to 0 `int`
      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
      - `greasebookApi`: Greasebook API key `str`
+     - `edgeCaseRollingAverage`: for all edge case wells, set to `int` value to replace oil volume with rolling average
 
 4. `greasebook.sendPumperEmail` - sends email to specific users for pumpers who have missed there data
 
