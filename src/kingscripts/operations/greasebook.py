@@ -19,6 +19,8 @@ from email import encoders
 import os.path
 from datetime import datetime
 
+# Gets Battery Level Production Data From Greasebook and returns two objects, pumperNotReportedList and totalAssetProduction
+
 
 def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi):
 
@@ -26,7 +28,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
 
     fullProductionPull = pullProd
     numberOfDaysToPull = days
-
+    # sets working directory
     workingDir = workingDataDirectory
     fileNameAssetProduction = workingDir + \
         r"\totalAssetProduction.csv"
@@ -139,7 +141,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
         ]
         totalAssetProduction = pd.DataFrame(
             0, index=np.arange(numEntries - 1), columns=headerList
-        )
+        )  # creates empty dataframe
 
     # a bunch of variables the below loop needs
     wellIdList = []
@@ -228,10 +230,11 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     goodBatteryNames = masterBatteryList["Pretty Battery Name"].tolist()
     pumperNames = masterBatteryList["Pumper"].tolist()
 
-    j = 0
+    dataCounter = 0  # sets data counter to 0 - used later on to UPSERT data
 
-    priorDay = -999
+    priorDay = -999  # sets to -999 to start
 
+    # gets initial size of total asset production
     initalSizeOfTotalAssetProduction = len(totalAssetProduction)
 
     # MASTER loop that goes through each of the items in the response
@@ -294,16 +297,18 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
         month = int(splitDate2[1])
         day = int(splitDate2[2])
 
+        # Checks to see if the date the same as yesterday and trigger True to move through the core logic
         if priorDay == day or priorDay == -999:
             newDay = False
         else:
             newDay = True
 
-        # CORE LOGIC BEGINS FOR MASTER LOOP
+        ##### CORE LOGIC BEGINS FOR MASTER LOOP ###
 
         # checks to see if last day had an entry for every well - if not fixes it to include
         if newDay == True:
             for counter in range(0, len(wellIdList)):
+                ###### 14 DAY LOGIC ######
                 if gotDayData[counter] != True:
                     fourteenDayOilData[counter][batteryIdCounterFourteen[counter]] = 0
                     fourteenDayGasData[counter][batteryIdCounterFourteen[counter]] = 0
@@ -495,12 +500,12 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
                 str(lastFourteenDayTotalGas),
             ]
             # STARTING HERE WITH IF STATEMENT
-            if (startingIndex + j) > (initalSizeOfTotalAssetProduction - 1):
-                totalAssetProduction.loc[startingIndex + j] = newRow
+            if (startingIndex + dataCounter) > (initalSizeOfTotalAssetProduction - 1):
+                totalAssetProduction.loc[startingIndex + dataCounter] = newRow
             else:
-                totalAssetProduction.iloc[startingIndex + j] = newRow
+                totalAssetProduction.iloc[startingIndex + dataCounter] = newRow
 
-            j = j + 1
+            dataCounter = dataCounter + 1
 
         priorDay = day
 
@@ -906,7 +911,13 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
     welopWaterVolume = 0
     welopOilSalesVolume = 0
     welopCounter = 0
-    wellIdsThatNeedAvg = [10208]
+    wellIdsThatNeedAvg = [28062, 10208]  # Anything can go here
+    # You can only choose the from items in the wellIdsThatNeedAvg list
+    wellIdsThatNeedAvgGas = [28062]
+    # You can only choose the from items in the wellIdsThatNeedAvg list
+    wellIdsThatNeedAvgOil = [10208]
+    wellDataReplacementList = [28062]
+    gotDataForBatteryId = np.full(len(wellDataReplacementList), False)
     numberOfWellsThatNeedAvg = len(wellIdsThatNeedAvg)
     rollingDayOilData = np.zeros([numberOfWellsThatNeedAvg, 7], dtype=float)
     rollingDayGasData = np.zeros([numberOfWellsThatNeedAvg, 7], dtype=float)
@@ -1097,6 +1108,10 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
         else:
             newDay = True
 
+        if batteryId in wellDataReplacementList:
+            index = wellDataReplacementList.index(batteryId)
+            gotDataForBatteryId[index] = True
+
         # CORE LOGIC FOR ROLLING AVG - Needed in order to replace certian wells with the rolling average to account for gauging issues
 
         # checks to see if last day had an entry for every well - if not fixes it to include
@@ -1110,6 +1125,9 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
                             batteryIdCounterRolling[counter] = batteryIdCounterRolling[counter] + 1
                         else:
                             batteryIdCounterRolling[counter] = 0
+
+        if month == 5 and day == 12:
+            junk = 1
 
         # resets gotDayData to False as we loop the current day
         if newDay == True:
@@ -1171,9 +1189,14 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
                 if batteryId in wellIdsThatNeedAvg:
                     index = wellIdList.index(batteryId)
                     if averageIsGood[index] == True:
-                        oilVolumeClean = sum(
-                            rollingDayOilData[index]) / (rollingAvgInterval)
+                        if batteryId in wellIdsThatNeedAvgOil:
+                            oilVolumeClean = sum(
+                                rollingDayOilData[index]) / (rollingAvgInterval)
+                        if batteryId in wellIdsThatNeedAvgGas:
+                            gasVolumeClean = sum(
+                                rollingDayGasData[index]) / (rollingAvgInterval)
 
+                # sets new row
                 newRowComboCurve = [dateString, clientName, str(apiList[batteryIndexId[0]]), str(wellAccountingName), str(oilVolumeClean), str(gasVolumeClean), str(
                     waterVolumeClean), str(oilSalesDataClean), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast), "di", str(stateList[batteryIndexId[0]])]
 
@@ -1183,34 +1206,37 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
                                                        kComboCurve] = newRowComboCurve  # sets new row to combo curve
                 kComboCurve = kComboCurve + 1  # counter for combo curve
                 kAccounting = kAccounting + 1  # counter for accounting
-
+        # Handles the case where the batteryId appears more than once aka 1-many relationship
         elif len(batteryIndexId) > 1:
             for j in range(len(batteryIndexId)):
+                # Gets the allocation ratios for each API14 and cleans
                 wellOilVolume = oilVolumeClean * allocationRatioOil[j]/100
                 wellGasVolume = gasVolumeClean * allocationRatioGas[j]/100
                 wellWaterVolume = waterVolumeClean * allocationRatioOil[j]/100
                 wellOilSalesVolume = oilSalesDataClean * \
                     allocationRatioOil[j]/100
 
-                if batteryId != 25381 and batteryId != 25382:  # COLORADO
+                if batteryId != 25381 and batteryId != 25382:  # COLORADO EXCEPTION
                     newRow = [dateString, clientName, str(apiList[batteryIndexId[j]]), str(wellAccountingName[j]), str(wellOilVolume), str(
                         wellGasVolume), str(wellWaterVolume), str(wellOilSalesVolume), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast), "di", str(stateList[batteryIndexId[0]])]
-                else:
+                else:  # COLORADO EXCEPTION - Note the 0 converts to 14 digits for oil specific reporting needs
                     newRow = [dateString, clientName, "0" + str(apiList[batteryIndexId[j]]), str(wellAccountingName[j]), str(wellOilVolume), str(
                         wellGasVolume), str(wellWaterVolume), str(wellOilSalesVolume), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast), "di", str(stateList[batteryIndexId[0]])]
 
                 totalComboCurveAllocatedProduction.loc[startingIndex +
                                                        kComboCurve] = newRow
-                kComboCurve = kComboCurve + 1
+                kComboCurve = kComboCurve + 1  # iterates combocurve counter
 
+                # Handles all other batteries beside Adams Ranch and WELOP
                 if batteryId != 25381 and batteryId != 25382 and batteryId != 23012 and batteryId != 23011:
                     newRow = [dateString, clientName, str(subAccountId[j]), str(wellAccountingName[j]), str(wellOilVolume), str(
                         wellGasVolume), str(wellWaterVolume), str(wellOilSalesVolume), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast)]
+
                     totalAccountingAllocatedProduction.loc[startingIndex +
                                                            kAccounting] = newRow
-                    kAccounting = kAccounting + 1
+                    kAccounting = kAccounting + 1  # iterates combocurve counter
 
-            # OUTSIDE OF LOOP
+            # Colorado Accounting handles the unitization aka two batteries to one subaccountId OUTSIDE OF LOOP ##
             if batteryId == 25381 or batteryId == 25382:
                 welopOilVolume = welopOilVolume + oilVolumeClean
                 welopGasVolume = welopGasVolume + gasVolumeClean
@@ -1227,7 +1253,25 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
                 welopCounter = 0
 
         lastDate = dateString  # updates the date for the next iteration
-        priorDay = day  # updates the day for the next iteration
+
+        # if priorDay != day:
+        #     for k in range(len(gotDataForBatteryId)):
+        #         if gotDataForBatteryId[k] == False:
+        #             batteryId = wellIdsThatNeedAvg[k]
+        #             batteryIdIdx = wellIdList.index(batteryId)
+        #             wellAccountingName = wellNameAccountingList[batteryIdIdx]
+        #             gasVolumeClean = sum(
+        #                 rollingDayGasData[index]) / (rollingAvgInterval)
+        #             newRowComboCurve = [dateString, clientName, str(apiList[batteryIdIdx]), str(wellAccountingName), str(oilVolumeClean), str(gasVolumeClean), str(
+        #                 waterVolumeClean), str(oilSalesDataClean), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast), "di", str(stateList[batteryIdIdx])]
+        #             # sets new row to combo curve
+        #             totalComboCurveAllocatedProduction.loc[startingIndex +
+        #                                                    kComboCurve] = newRowComboCurve
+        #             kComboCurve = kComboCurve + 1  # increases the counter for combo curve by 1
+
+        #         gotDataForBatteryId[k] = False
+
+        priorDay = day  # updates the day for the next iteration # very important
 
     # Output final dataframes to csv and json
     totalAccountingAllocatedProduction.to_csv(fileNameAccounting, index=False)

@@ -20,11 +20,10 @@ load_dotenv()
 '''
 FIRST - MAKE SURE ALL THE ENVIRONMENT VARIABLES ARE SET IN THE .ENV FILE 
 
-SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER. 
+SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER. CURRENT THIS SCRIPT REFERENCES THE KOC DATAWAREHOUSE V1.0.0
 
 '''
-
-# Working Directory
+# Working Directories
 workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
 kocDatawarehouse = os.getenv("KOC_DATAWAREHOUSE")
 
@@ -42,24 +41,35 @@ basin = "MIDLAND"
 comboCurveProjectId = "612fc3d36880c20013a885df"
 comboCurveScenarioId = "632e70eefcea66001337cd43"
 millerranchb501mh = "millerranchb501mh"
+millerrancha502v = "millerrancha502v"
 millerrancha501mh = "millerrancha501mh"
-nameOfWell = "millerranchb501mh"
+thurman23v = "thurman23v"
+chunn923v = "chunn923v"
+ayres79v = "ayres79v"
+porter33v = "porter33v"
+wu108 = "wu108"
+wu105 = "wu105"
+wu99 = "wu99"
+kinga199cv1h = "kinga199cv1h"
+kinga199cv2h = "kinga199cv2h"
+nameOfWell = "thurman23v"
 
 '''
 WORKING ZONE
 
 '''
 
+# Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
     wellApi14=browning5181H
 )
 
+# prints results for number of records in the dataframe
 print("Number of Records in Fluvanna 518H: " +
       str(len(browing518HProductionMonthtlyData)))
 browing518HProductionMonthtlyData.to_excel(
     workingDirectoryData + r"\browningWell.xlsx", index=False)
-
 browing518HProductionMonthtlyData.to_excel(
     kocDatawarehouse + r"\browningWell.xlsx", index=False)
 
