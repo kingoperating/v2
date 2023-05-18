@@ -58,6 +58,13 @@ nameOfWell = "thurman23v"
 WORKING ZONE
 
 '''
+
+pumperNotReportedList = greasebook.getBatteryProductionData(
+    workingDataDirectory=kocDatawarehouse,
+    pullProd=False,
+    days=30,
+    greasebookApi=greasebookApi
+)
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,

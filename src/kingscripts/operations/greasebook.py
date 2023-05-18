@@ -1278,9 +1278,6 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
 
         priorDay = day  # updates the day for the next iteration # very important
 
-    # Output final dataframes to csv and json
-    totalAccountingAllocatedProduction.to_csv(fileNameAccounting, index=False)
-
     print("Completed Allocation Process")
 
     return totalComboCurveAllocatedProduction
