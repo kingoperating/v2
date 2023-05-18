@@ -13,6 +13,8 @@ from kingscripts.afe import afe
 from dotenv import load_dotenv
 from combocurve_api_v1 import ServiceAccount
 import os
+import datetime as dt
+from datetime import timedelta
 
 # load .env file
 load_dotenv()
@@ -33,6 +35,18 @@ greasebookApi = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(
     os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
+
+# Getting Date Variables
+dateToday = dt.datetime.today()
+dateYesterday = dateToday - timedelta(days=1)
+todayYear = dateToday.strftime("%Y")
+todayMonth = dateToday.strftime("%m")
+todayDay = dateToday.strftime("%d")
+
+yesYear = int(dateYesterday.strftime("%Y"))
+yesMonth = int(dateYesterday.strftime("%m"))
+yesDay = int(dateYesterday.strftime("%d"))
+yesDateString = dateYesterday.strftime("%Y-%m-%d")
 
 # Important Variables for scripts
 browning5181H = "42033325890000"
@@ -59,12 +73,6 @@ WORKING ZONE
 
 '''
 
-pumperNotReportedList = greasebook.getBatteryProductionData(
-    workingDataDirectory=kocDatawarehouse,
-    pullProd=False,
-    days=30,
-    greasebookApi=greasebookApi
-)
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
@@ -109,16 +117,19 @@ allocatedProductionData = greasebook.allocateWells(
     edgeCaseRollingAverage=7
 )
 
+# Backup
 allocatedProductionData.to_json(
     workingDirectoryData + r"\comboCurveAllocatedProduction.json", orient="records")
 allocatedProductionData.to_csv(
     workingDirectoryData + r"\comboCurveAllocatedProduction.csv", index=False)
+
+# KOC Datawarehouse LIVE DUMP
+allocatedProductionData.to_csv(
+    kocDatawarehouse + r"\production\comboCurveAllocatedProduction.csv", index=False)
 allocatedProductionData.to_json(
-    kocDatawarehouse + r"\comboCurveAllocatedProduction.json", orient="records")
+    kocDatawarehouse + r"\production\comboCurveAllocatedProduction.json", orient="records")
 allocatedProductionData.to_csv(
-    kocDatawarehouse + r"\comboCurveAllocatedProduction.csv", index=False)
-allocatedProductionData.to_csv(
-    r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\comboCurveAllocatedProduction.csv", index=False)
+    kocDatawarehouse + r"\production\allocationVersionControl\comboCurveAllocatedProduction_" + yesDateString + ".csv", index=False)
 
 combocurve.putWellProductionData(
     workingDataDirectory=kocDatawarehouse,

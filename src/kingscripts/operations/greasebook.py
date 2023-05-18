@@ -793,9 +793,9 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
     numberOfDaysToPull = days
 
     fileNameAccounting = (workingDataDirectory +
-                          r"\accountingAllocatedProduction.csv")
+                          r"\production\accountingAllocatedProduction.csv")
     fileNameComboCurve = (workingDataDirectory +
-                          r"\comboCurveAllocatedProduction.csv")
+                          r"\production\comboCurveAllocatedProduction.csv")
     fileNameForecast = (workingDataDirectory + r"\forecastWells.csv")
     fileNameMasterAllocationList = (
         workingDataDirectory + r"\master\masterWellAllocation.xlsx")
@@ -1279,6 +1279,9 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
         priorDay = day  # updates the day for the next iteration # very important
 
     print("Completed Allocation Process")
+
+    totalAccountingAllocatedProduction.to_csv(
+        r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\accountingAllocatedProduction.csv", index=False)
 
     return totalComboCurveAllocatedProduction
 
