@@ -341,6 +341,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
         if batteryId == 25381 or batteryId == 25382:
             gasVolumeClean = 0
 
+        # Gets Oil Sales Volume and keeps track of the last 30 days of sales volumes
         if oilSalesDataClean != 0:
             thrityDayOilSalesVolume = thrityDayOilSalesVolume + oilSalesDataClean
 

@@ -8,11 +8,16 @@ import pandas as pd
 import numpy as np
 from combocurve_api_v1 import ComboCurveAuth
 
+# Script to put Greasebook Well Production into ComboCurve - does allocation process
+
 
 def putWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccount, comboCurveApi, greasebookApi, daysToPull):
     load_dotenv()  # load enviroment variables
 
     pullFromAllocation = pullFromAllocation
+
+    print("Start upsert of daily well production data for the last " +
+          str(daysToPull) + " days")
 
     # connect to service account
     service_account = serviceAccount
@@ -37,8 +42,8 @@ def putWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccou
     todayDay = dateToday.strftime("%d")
     dateYes = dateToday - timedelta(days=1)
 
+    # set the interval for the API call - if True then pull EVERYTHING and will be around an hour runtime
     if pullFromAllocation == False:
-
         # set the interval for the API call
         numberOfDaysToPull = daysToPull
         dateThirtyDays = dateToday - timedelta(days=numberOfDaysToPull)
@@ -136,7 +141,7 @@ def putWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccou
 
         lastDate = ""
 
-        # MASTER loop that goes through each of the items in the response
+        # MASTER loop that goes through each of the items in the response to build a dataframe
         for currentRow in range(numEntries - 1, 0, -1):
             row = results[currentRow]  # get row i in results
             keys = list(row.items())  # pull out the headers
@@ -229,7 +234,7 @@ def putWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccou
                         allocationGasList[batteryIndexId[t]])
                     wellAccountingName.append(
                         wellNameAccountingList[batteryIndexId[t]])
-
+            # setting the proper date format
             dateString = str(month) + "/" + str(day) + "/" + str(year)
             dateStringComboCurve = datetime.strptime(dateString, "%m/%d/%Y")
 
