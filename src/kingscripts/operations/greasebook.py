@@ -1164,9 +1164,11 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
         indexList = [index for index, value in enumerate(
             forecastedAllocatedProduction["API 14"].to_list()) if value == apiNumber]
 
+        # Gets the forecasted prodcution for the current date
         forecastedDateList = [forecastedAllocatedProduction["Date"][index]
                               for index in indexList]
 
+        # finds the index of the current date in the forecasted data and sets to the current forecasted volume
         if dateString in forecastedDateList:
             forecastedIndex = forecastedDateList.index(dateString)
             oilVolumeForecast = forecastedAllocatedProduction["Oil"][indexList[forecastedIndex]]
@@ -1254,22 +1256,24 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
 
         lastDate = dateString  # updates the date for the next iteration
 
-        # if priorDay != day:
-        #     for k in range(len(gotDataForBatteryId)):
-        #         if gotDataForBatteryId[k] == False:
-        #             batteryId = wellIdsThatNeedAvg[k]
-        #             batteryIdIdx = wellIdList.index(batteryId)
-        #             wellAccountingName = wellNameAccountingList[batteryIdIdx]
-        #             gasVolumeClean = sum(
-        #                 rollingDayGasData[index]) / (rollingAvgInterval)
-        #             newRowComboCurve = [dateString, clientName, str(apiList[batteryIdIdx]), str(wellAccountingName), str(oilVolumeClean), str(gasVolumeClean), str(
-        #                 waterVolumeClean), str(oilSalesDataClean), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast), "di", str(stateList[batteryIdIdx])]
-        #             # sets new row to combo curve
-        #             totalComboCurveAllocatedProduction.loc[startingIndex +
-        #                                                    kComboCurve] = newRowComboCurve
-        #             kComboCurve = kComboCurve + 1  # increases the counter for combo curve by 1
+        # Working on Henrgy Foster #1 edge case
 
-        #         gotDataForBatteryId[k] = False
+        """ if priorDay != day:
+            for k in range(len(gotDataForBatteryId)):
+                if gotDataForBatteryId[k] == False:
+                    batteryId = wellIdsThatNeedAvg[k]
+                    batteryIdIdx = wellIdList.index(batteryId)
+                    wellAccountingName = wellNameAccountingList[batteryIdIdx]
+                    gasVolumeClean = sum(
+                        rollingDayGasData[index]) / (rollingAvgInterval)
+                    newRowComboCurve = [dateString, clientName, str(apiList[batteryIdIdx]), str(wellAccountingName), str(oilVolumeClean), str(gasVolumeClean), str(
+                        waterVolumeClean), str(oilSalesDataClean), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast), "di", str(stateList[batteryIdIdx])]
+                    # sets new row to combo curve
+                    totalComboCurveAllocatedProduction.loc[startingIndex +
+                                                           kComboCurve] = newRowComboCurve
+                    kComboCurve = kComboCurve + 1  # increases the counter for combo curve by 1
+
+                gotDataForBatteryId[k] = False """
 
         priorDay = day  # updates the day for the next iteration # very important
 
