@@ -58,16 +58,6 @@ nameOfWell = "thurman23v"
 WORKING ZONE
 
 '''
-
-combocurve.putWellProductionData(
-    workingDataDirectory=kocDatawarehouse,
-    pullFromAllocation=False,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey,
-    greasebookApi=greasebookApi,
-    daysToPull=25
-)
-
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
