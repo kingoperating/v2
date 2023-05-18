@@ -59,6 +59,13 @@ WORKING ZONE
 
 '''
 
+pumperNotReportedList = greasebook.getBatteryProductionData(
+    workingDataDirectory=kocDatawarehouse,
+    pullProd=False,
+    days=30,
+    greasebookApi=greasebookApi
+)
+
 combocurve.putWellProductionData(
     workingDataDirectory=kocDatawarehouse,
     pullFromAllocation=False,
