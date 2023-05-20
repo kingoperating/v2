@@ -786,6 +786,30 @@ def getComments(workingDataDirectory, greasebookApi):
 # This function will allocated production by both SubAccount ID (accounting purposes) and API14 (engineering purposes)
 def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseRollingAverage):
 
+    # Getting Client Name from Battery Name
+    def getClientName(batteryNameGb):
+        # Splits battery name up
+        splitString = re.split("-|–", batteryNameGb)
+        # sets client name to client name from ETX/STX and GCT
+        clientName = splitString[0]
+        # if field name exisits - add the batteryName
+        if clientName == "CWS ":
+            clientName = "KOSOU"
+        elif clientName == "Peak ":
+            clientName = "KOEAS"
+        elif clientName == "Otex ":
+            clientName = "KOGCT"
+        elif clientName == "Midcon ":
+            clientName = "KOAND"
+        elif clientName == "Wellman ":
+            clientName = "KOPRM"
+        elif clientName == "Wellington ":
+            clientName = "WELOP"
+        elif clientName == "Scurry ":
+            clientName = "KOPRM"
+        elif clientName == "Wyoming":
+            clientName = "KOWYM"
+
     print("Begin Allocation of Production")
 
     # 30 Day Or Full? If False - only looking at last 30 days and appending.
@@ -912,13 +936,15 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
     welopWaterVolume = 0
     welopOilSalesVolume = 0
     welopCounter = 0
-    wellIdsThatNeedAvg = [28062, 10208]  # Anything can go here
+    wellIdsThatNeedAvg = [28062, 10208, 23706]  # Anything can go here
     # You can only choose the from items in the wellIdsThatNeedAvg list
     wellIdsThatNeedAvgGas = [28062]
     # You can only choose the from items in the wellIdsThatNeedAvg list
     wellIdsThatNeedAvgOil = [10208]
-    wellDataReplacementList = [28062]
-    gotDataForBatteryId = np.full(len(wellDataReplacementList), False)
+    wellDataReplacementIdList = [28062, 23706]
+    wellDataReplacmentNameList = [
+        "Midcon - Stout #1", "Midcon – Kansas – SchmidtConnors #129"]
+    gotDataForBatteryId = np.full(len(wellDataReplacementIdList), False)
     numberOfWellsThatNeedAvg = len(wellIdsThatNeedAvg)
     rollingDayOilData = np.zeros([numberOfWellsThatNeedAvg, 7], dtype=float)
     rollingDayGasData = np.zeros([numberOfWellsThatNeedAvg, 7], dtype=float)
@@ -1079,27 +1105,8 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
             adamsRanchOilVolume = 0
             adamsRanchWaterVolume = 0
 
-        # Splits battery name up
-        splitString = re.split("-|–", batteryName)
-        # sets client name to client name from ETX/STX and GCT
-        clientName = splitString[0]
-        # if field name exisits - add the batteryName
-        if clientName == "CWS ":
-            clientName = "KOSOU"
-        elif clientName == "Peak ":
-            clientName = "KOEAS"
-        elif clientName == "Otex ":
-            clientName = "KOGCT"
-        elif clientName == "Midcon ":
-            clientName = "KOAND"
-        elif clientName == "Wellman ":
-            clientName = "KOPRM"
-        elif clientName == "Wellington ":
-            clientName = "WELOP"
-        elif clientName == "Scurry ":
-            clientName = "KOPRM"
-        elif clientName == "Wyoming":
-            clientName = "KOWYM"
+        # invokes function to get the client name
+        clientName = getClientName(batteryName)
 
         currentState = ""
 
@@ -1109,8 +1116,8 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
         else:
             newDay = True
 
-        if batteryId in wellDataReplacementList:
-            index = wellDataReplacementList.index(batteryId)
+        if batteryId in wellDataReplacementIdList:
+            index = wellDataReplacementIdList.index(batteryId)
             gotDataForBatteryId[index] = True
 
         # CORE LOGIC FOR ROLLING AVG - Needed in order to replace certian wells with the rolling average to account for gauging issues
@@ -1259,15 +1266,45 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
 
         # Working on Henrgy Foster #1 edge case
 
-        """ if priorDay != day:
+        """ if priorDay != day and priorDay != -999:
+            priorDateString = str(month) + "/" + \
+                str(priorDay) + "/" + str(year)
+            if priorDateString == "5/17/2023":
+                print("here")
             for k in range(len(gotDataForBatteryId)):
                 if gotDataForBatteryId[k] == False:
-                    batteryId = wellIdsThatNeedAvg[k]
-                    batteryIdIdx = wellIdList.index(batteryId)
+                    batteryId = wellDataReplacementIdList[k]
+                    batteryIdIdx = listOfBatteryIds.index(batteryId)
+                    index = wellIdList.index(batteryId)
                     wellAccountingName = wellNameAccountingList[batteryIdIdx]
                     gasVolumeClean = sum(
                         rollingDayGasData[index]) / (rollingAvgInterval)
-                    newRowComboCurve = [dateString, clientName, str(apiList[batteryIdIdx]), str(wellAccountingName), str(oilVolumeClean), str(gasVolumeClean), str(
+                    oilVolumeClean = sum(
+                        rollingDayOilData[index]) / (rollingAvgInterval)
+                    waterVolumeClean = 0
+                    oilSalesDataClean = 0
+
+                    # Section for getting the forecasted production
+                    apiNumber = apiList[batteryIdIdx]
+                    indexList = [index for index, value in enumerate(
+                        forecastedAllocatedProduction["API 14"].to_list()) if value == apiNumber]
+
+                    if priorDateString in forecastedDateList:
+                        forecastedIndex = forecastedDateList.index(
+                            priorDateString)
+                        oilVolumeForecast = forecastedAllocatedProduction[
+                            "Oil"][indexList[forecastedIndex]]
+                        gasVolumeForecast = forecastedAllocatedProduction[
+                            "Gas"][indexList[forecastedIndex]]
+                        waterVolumeForecast = forecastedAllocatedProduction[
+                            "Water"][indexList[forecastedIndex]]
+                    else:
+                        oilVolumeForecast = 0
+                        gasVolumeForecast = 0
+                        waterVolumeForecast = 0
+                    # invokes function to get the client name
+                    clientName = getClientName(wellDataReplacmentNameList[k])
+                    newRowComboCurve = [priorDateString, clientName, str(apiList[batteryIdIdx]), str(wellAccountingName), str(oilVolumeClean), str(gasVolumeClean), str(
                         waterVolumeClean), str(oilSalesDataClean), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast), "di", str(stateList[batteryIdIdx])]
                     # sets new row to combo curve
                     totalComboCurveAllocatedProduction.loc[startingIndex +
