@@ -72,22 +72,6 @@ nameOfWell = "thurman23v"
 WORKING ZONE
 
 '''
-
-allocatedProductionData = greasebook.allocateWells(
-    days=30,
-    workingDataDirectory=kocDatawarehouse,
-    greasebookApi=greasebookApi,
-    pullProd=False,
-    edgeCaseRollingAverage=7
-)
-
-# Backup
-allocatedProductionData.to_json(
-    workingDirectoryData + r"\comboCurveAllocatedProduction.json", orient="records")
-allocatedProductionData.to_csv(
-    workingDirectoryData + r"\comboCurveAllocatedProduction.csv", index=False)
-
-
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
