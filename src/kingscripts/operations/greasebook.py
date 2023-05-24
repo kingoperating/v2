@@ -791,24 +791,26 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
         # Splits battery name up
         splitString = re.split("-|–", batteryNameGb)
         # sets client name to client name from ETX/STX and GCT
-        clientName = splitString[0]
+        clientNameAlgo = splitString[0]
         # if field name exisits - add the batteryName
-        if clientName == "CWS ":
-            clientName = "KOSOU"
-        elif clientName == "Peak ":
-            clientName = "KOEAS"
-        elif clientName == "Otex ":
-            clientName = "KOGCT"
-        elif clientName == "Midcon ":
-            clientName = "KOAND"
-        elif clientName == "Wellman ":
-            clientName = "KOPRM"
-        elif clientName == "Wellington ":
-            clientName = "WELOP"
-        elif clientName == "Scurry ":
-            clientName = "KOPRM"
-        elif clientName == "Wyoming":
-            clientName = "KOWYM"
+        if clientNameAlgo == "CWS ":
+            clientNameAlgo = "KOSOU"
+        elif clientNameAlgo == "Peak ":
+            clientNameAlgo = "KOEAS"
+        elif clientNameAlgo == "Otex ":
+            clientNameAlgo = "KOGCT"
+        elif clientNameAlgo == "Midcon ":
+            clientNameAlgo = "KOAND"
+        elif clientNameAlgo == "Wellman ":
+            clientNameAlgo = "KOPRM"
+        elif clientNameAlgo == "Wellington ":
+            clientNameAlgo = "WELOP"
+        elif clientNameAlgo == "Scurry ":
+            clientNameAlgo = "KOPRM"
+        elif clientNameAlgo == "Wyoming ":
+            clientNameAlgo = "KOWYM"
+
+        return clientNameAlgo
 
     print("Begin Allocation of Production")
 
@@ -820,7 +822,8 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
                           r"\production\accountingAllocatedProduction.csv")
     fileNameComboCurve = (workingDataDirectory +
                           r"\production\comboCurveAllocatedProduction.csv")
-    fileNameForecast = (workingDataDirectory + r"\forecastWells.csv")
+    fileNameForecast = (workingDataDirectory +
+                        r"\production\forecastWellsFinal.csv")
     fileNameMasterAllocationList = (
         workingDataDirectory + r"\master\masterWellAllocation.xlsx")
     load_dotenv()  # load ENV

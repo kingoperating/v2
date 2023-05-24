@@ -67,11 +67,14 @@ wu99 = "wu99"
 kinga199cv1h = "kinga199cv1h"
 kinga199cv2h = "kinga199cv2h"
 nameOfWell = "thurman23v"
+irvinsisters53m1h = "irvinsisters53m1h"
+pshigoda752h = "pshigoda752h"
 
 '''
 WORKING ZONE
 
 '''
+
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
@@ -109,7 +112,7 @@ totalAssetProduction.to_csv(
     r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\totalAssetProduction.csv", index=False)
 
 allocatedProductionData = greasebook.allocateWells(
-    days=30,
+    days=35,
     workingDataDirectory=kocDatawarehouse,
     greasebookApi=greasebookApi,
     pullProd=False,
