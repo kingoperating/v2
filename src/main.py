@@ -1,7 +1,7 @@
 """
 Main Script for KOC v2 Python Packages
 
-Developed by: Michael Tanner
+Developed by: Michael Tanner - hi heheh
 
 """
 # KOC v2.0.7 Python Packages
