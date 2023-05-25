@@ -74,7 +74,6 @@ pshigoda752h = "pshigoda752h"
 WORKING ZONE
 
 '''
-
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
