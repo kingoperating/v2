@@ -598,13 +598,6 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     # Oil and gas daily change numbers
     oilChangeDaily = round((twoDayOilVolume - threeDayOilVolume), 2)
     gasChangeDaily = round((twoDayGasVolume - threeDayGasVolume), 2)
-    oilrollingDayPercent = round(
-        (twoDayOilVolume - lastWeekTotalOilVolume) / lastWeekTotalOilVolume, 1
-    )
-    gasrollingDayPercent = round(
-        (twoDayGasVolume - lastWeekTotalGasVolume) / lastWeekTotalGasVolume, 1
-    )
-
     if oilChangeDaily > 0:
         increaseDecreaseOil = "Increase"
     else:
@@ -635,9 +628,9 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
         + ","
         + str(gasChangeDaily)
         + ","
-        + str(oilrollingDayPercent)
+        + "0"
         + ","
-        + str(gasrollingDayPercent)
+        + "0"
         + ","
         + str(twoDayOilVolume)
         + ","
