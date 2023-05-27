@@ -384,7 +384,7 @@ Get the latest scenerio from a given ComboCurve project and return a pandas data
 """
 
 
-def getLatestScenario(workingDataDirectory, projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
+def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
 
     load_dotenv()
 
@@ -404,7 +404,7 @@ def getLatestScenario(workingDataDirectory, projectIdKey, scenarioIdKey, service
     projectId = projectIdKey
     scenarioId = scenarioIdKey
 
-    # This code chunk gets the Monthly Cash Flow for given Scenerio
+    # This code chunk gets the  for given Scenerio
     # Call Stack - Get Econ Id
 
     authComboCurveHeaders = combocurve_auth.get_auth_headers()
@@ -532,6 +532,8 @@ def getLatestScenario(workingDataDirectory, projectIdKey, scenarioIdKey, service
 
     return eurData
 
+# This code puts the well comments into ComboCurve from Greasebook
+
 
 def putWellComments(cleanJson, serviceAccount, comboCurveApi):
     # connect to service account
@@ -562,3 +564,11 @@ def putWellComments(cleanJson, serviceAccount, comboCurveApi):
         print(responseText[indexOfSuccessFail:])
 
     print("PUT COMPLETE")
+
+# This function gest the daily forecast volumes from a given ComboCurve project and forecast id
+
+
+def getDailyForecastVolume():
+    print("Starting Getting Daily Forecast Volumes")
+
+    print("Done Getting Daily Forecast Volumes")

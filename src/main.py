@@ -213,7 +213,7 @@ combocurve.putWellProductionData(
     daysToPull=60
 )
 
-pdpModel = combocurve.getLatestScenario(
+pdpModel = combocurve.getLatestScenarioOneLiner(
     workingDataDirectory=workingDirectoryData,
     projectIdKey=comboCurveProjectId,
     scenarioIdKey=comboCurveScenarioId,
