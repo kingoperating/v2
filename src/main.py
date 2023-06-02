@@ -161,6 +161,16 @@ afe.variance(
     name=millerrancha501mh
 )
 
+# AFE Stack Miller Ranch A502V
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerrancha502v
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerrancha502v
+)
+
 
 '''
 MAIN SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mainAFE.py for more details
