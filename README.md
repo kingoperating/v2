@@ -1,6 +1,6 @@
 # kingscripts Python Package
 
-This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 2.0.7
+This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 2.0.8
 
 Developed and Maintained by Michael Tanner. Please email mtanner@kingoperating.com with any questions.
 
@@ -8,16 +8,17 @@ Visit [KOC Development Site](https://mtanner161.github.io/kingdashboard/#/kingda
 
 ## Documentation
 
-Use `git clone` download and access packages. There are 3 different modules withing `kingscripts` - `afe`, `operations` and `analytics`. Each of these packages connect with different data products within the King ecosystem.
+Use `git clone` download and access packages. There are four different modules withing `kingscripts` - `afe`, `finance` `operations` and `analytics`. Each of these packages connect with different data products within the King ecosystem.
 
 To import these modules, first create a working directory and `git clone https://github.com/kingoperating/v2.git` into that working directory. Create a `kingoperating\data` sub folder to house all data, with subfolders of `afe` and `loe`
 
 Then, import the packages below:
 
 ```python
-from kingscripts.operations import greasebook, combocurve
+from kingscripts.operations import greasebook, combocurve, joyn
 from kingscripts.analytics import enverus
 from kingscripts.afe import afe
+from kingscripts.finance import tech, wenergy
 ```
 
 ## afe Module
@@ -38,9 +39,9 @@ One (1) package `afe.py` and two (2) functions
         - `workingDataDirectory`: Data directory where all exports and imports come from `str`
         - `name`: Name of the well, see masterWellList for details
 
-## production Module
+## operations Module
 
-Two (2) packages `greasebook` and `combocurve` and four (4) functions
+Three (2) packages `greasebook`, `joyn` and `combocurve`
 
 1. `greasebook.getProductionData` - pulls production data from Greasebook, formats and exports CSV into working data folder
 
@@ -80,6 +81,7 @@ Two (2) packages `greasebook` and `combocurve` and four (4) functions
      - `daysToPull`: Number of days to pull, if `pullFromAllocation=True` set to 0 `int`
 
 6. `combocurve.getLatestScenario` - returns pandas dataframe of the latest scenerio given a projectId and scenerioId
+
    - Arguments
      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
      - `projectIdKey`: ComboCurve specific project id - get through front-end UI `str`
@@ -87,9 +89,11 @@ Two (2) packages `greasebook` and `combocurve` and four (4) functions
      - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
 
+7. `joyn.getWells` - returns pandas dataframe of latest production data from JOYN during given data length - COMING SOONB
+
 ## analytics Module
 
-One package `enverus` and two (2) functions
+One package `enverus`
 
 1.  `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
 
@@ -102,3 +106,14 @@ One package `enverus` and two (2) functions
       - `apiKey`: Enverus API authentication `object`
       - `operatorName`: Name of operator of interest `str`
       - `basin`: Name of basin of interest `str
+
+## finance Module
+
+Two packages `tech` and `wenergy`
+
+1. `tech.getItSpend` - returns a dataframe all of all coded invoices by M. Tanner
+
+- Arguments:
+  - None
+
+`wenergy` - COMING SOON
