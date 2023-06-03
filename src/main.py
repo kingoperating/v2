@@ -4,10 +4,11 @@ Main Script for KOC v2 Python Packages
 Developed by: Michael Tanner - hi heheh
 
 """
-# KOC v2.0.7 Python Packages
-from kingscripts.operations import greasebook, combocurve
+# KOC v2.0.8 Python Packages
+from kingscripts.operations import greasebook, combocurve, joyn
 from kingscripts.analytics import enverus
 from kingscripts.afe import afe
+from kingscripts.finance import tech, wenergy
 
 # Python Packages
 from dotenv import load_dotenv
@@ -35,6 +36,8 @@ greasebookApi = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(
     os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
+kingServer = str(os.getenv('SQL_SERVER'))
+itDatabase = str(os.getenv('SQL_KING_DATABASE'))
 
 # Getting Date Variables
 dateToday = dt.datetime.today()
@@ -74,6 +77,12 @@ pshigoda752h = "pshigoda752h"
 WORKING ZONE
 
 '''
+
+itSpend = tech.getItSpend(
+    serverName=kingServer,
+    databaseName=itDatabase
+)
+
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
