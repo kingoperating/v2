@@ -72,6 +72,7 @@ kinga199cv2h = "kinga199cv2h"
 nameOfWell = "thurman23v"
 irvinsisters53m1h = "irvinsisters53m1h"
 pshigoda752h = "pshigoda752h"
+itSqlTable = "itSpend"
 
 '''
 WORKING ZONE
@@ -81,7 +82,7 @@ WORKING ZONE
 itSpend = tech.getItSpend(
     serverName=kingServer,
     databaseName=kingDatabase,
-    tableName="itSpend"
+    tableName=itSqlTable
 )
 
 # Gets Browning 518H Production Data
