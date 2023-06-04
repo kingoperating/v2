@@ -8,7 +8,7 @@ load_dotenv()
 # Returns all the IT Spend Coded by Michael Tanner in using coding tool - returns a dataframe
 
 
-def getItSpend(serverName, databaseName):
+def getItSpend(serverName, databaseName, tableName):
     # Set up the connection parameters
     server = str(os.getenv('SQL_SERVER'))
     database = str(os.getenv('SQL_KING_DATABASE'))
@@ -18,7 +18,7 @@ def getItSpend(serverName, databaseName):
     # Create a cursor object to interact with the database
     cursor = connection.cursor()
     # Execute a SQL query to fetch data from the "itSpend" table
-    query = 'SELECT * FROM itSpend'
+    query = 'SELECT * FROM ' + tableName
     cursor.execute(query)
     # Fetch all the rows from the query result
     rows = cursor.fetchall()

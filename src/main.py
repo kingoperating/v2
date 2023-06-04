@@ -37,7 +37,7 @@ serviceAccount = ServiceAccount.from_file(
     os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
 kingServer = str(os.getenv('SQL_SERVER'))
-itDatabase = str(os.getenv('SQL_KING_DATABASE'))
+kingDatabase = str(os.getenv('SQL_KING_DATABASE'))
 
 # Getting Date Variables
 dateToday = dt.datetime.today()
@@ -80,7 +80,8 @@ WORKING ZONE
 
 itSpend = tech.getItSpend(
     serverName=kingServer,
-    databaseName=itDatabase
+    databaseName=kingDatabase,
+    tableName="itSpend"
 )
 
 # Gets Browning 518H Production Data
