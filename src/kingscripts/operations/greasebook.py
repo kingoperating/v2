@@ -802,6 +802,8 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
             clientNameAlgo = "KOPRM"
         elif clientNameAlgo == "Wyoming ":
             clientNameAlgo = "KOWYM"
+        elif clientNameAlgo == "Wyoming":
+            clientNameAlgo == "KOWYM"
 
         return clientNameAlgo
 
