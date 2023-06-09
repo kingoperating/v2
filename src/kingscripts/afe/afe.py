@@ -13,13 +13,15 @@ def dailyCost(workingDataDirectory, name):
     plannedCostDepth = pd.read_excel(plannedCostFile)
     budgetRawString = pathOfAfe + "\\" + nameOfWell + "AfeOg.xlsx"
     actualSpendString = pathOfAfe + "\\" + nameOfWell + "ActualSpend.xlsx"
-    masterMatchFile = pd.read_excel(
-        r".\kingoperating\data\afe\welldriveWolfepakMatch.xlsx")
+    masterMatchFileString = pathOfWorkingDir + \
+        r"\master\welldriveWolfepakMatch.xlsx"
+    masterMatchFile = pd.read_excel(masterMatchFileString)
     pathOfMasterFile = pathOfAfe + "\\" + "fullreport.xlsx"
     masterAfe = pd.read_excel(pathOfMasterFile)
     actualWellCostWolfepak = pd.read_excel(actualSpendString)
     budgetRawFile = pd.read_excel(budgetRawString)
-    drillingDayDescriptionPath = workingDataDirectory + r"\daysdepthdescription.xlsx"
+    drillingDayDescriptionPath = workingDataDirectory + \
+        r"\master\daysdepthdescription.xlsx"
     descriptionFile = pd.read_excel(
         drillingDayDescriptionPath, sheet_name=nameOfWell)
 
@@ -241,8 +243,9 @@ def variance(workingDataDirectory, name):
     pathOfAfe = pathOfWorkingDir + r"\afe" + "\\" + nameOfWell
     budgetRawString = pathOfAfe + "\\" + nameOfWell + "AfeOg.xlsx"
     actualSpendString = pathOfAfe + "\\" + nameOfWell + "ActualSpend.xlsx"
-    masterMatchFile = pd.read_excel(
-        pathOfWorkingDir + r"\afe\welldriveWolfepakMatch.xlsx")
+    masterMatchFileString = pathOfWorkingDir + \
+        r"\master\welldriveWolfepakMatch.xlsx"
+    masterMatchFile = pd.read_excel(masterMatchFileString)
     pathOfMasterFile = pathOfAfe + "\\" + "fullreport.xlsx"
     masterAfe = pd.read_excel(pathOfMasterFile)
     actualWellCostWolfepak = pd.read_excel(actualSpendString)

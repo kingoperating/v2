@@ -78,7 +78,6 @@ itSqlTable = "itSpend"
 WORKING ZONE
 
 '''
-
 itSpend = tech.getItSpend(
     serverName=kingServer,
     databaseName=kingDatabase,
