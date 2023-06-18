@@ -60,6 +60,7 @@ comboCurveScenarioId = "632e70eefcea66001337cd43"
 millerranchb501mh = "millerranchb501mh"
 millerrancha502v = "millerrancha502v"
 millerrancha501mh = "millerrancha501mh"
+millerranchc301 = "millerranchc301"
 thurman23v = "thurman23v"
 chunn923v = "chunn923v"
 ayres79v = "ayres79v"
@@ -78,6 +79,7 @@ itSqlTable = "itSpend"
 WORKING ZONE
 
 '''
+
 itSpend = tech.getItSpend(
     serverName=kingServer,
     databaseName=kingDatabase,
@@ -149,6 +151,16 @@ combocurve.putWellProductionData(
     comboCurveApi=comboCurveApiKey,
     greasebookApi=greasebookApi,
     daysToPull=25
+)
+
+# AFE Stack Miller Ranch C301
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerranchc301
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerranchc301
 )
 
 # AFE Stack Miller Ranch B501MH
