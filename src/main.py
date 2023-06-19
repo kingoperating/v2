@@ -1,7 +1,7 @@
 """
 Main Script for KOC v2 Python Packages
 
-Developed by: Michael Tanner - hi heheh - This is Gabe
+Developed by: Michael Tanner - hi heheh - removing gabes comment
 
 """
 # KOC v2.0.8 Python Packages
@@ -29,8 +29,6 @@ SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER. CURREN
 # Working Directories
 workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
 kocDatawarehouse = os.getenv("KOC_DATAWAREHOUSE")
-
-x = 2
 
 # getting API keys
 enverusApiKey = os.getenv('ENVERUS_API')
