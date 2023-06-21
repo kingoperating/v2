@@ -649,6 +649,7 @@ def getComments(workingDataDirectory, greasebookApi):
         print(str(len(results)) + " entries read")
     else:
         print("The Status Code: " + str(response.status_code))
+        return
 
     # gets all API's from the master allocation list
     apiList = masterAllocationList["API"].tolist()
@@ -704,9 +705,10 @@ def getComments(workingDataDirectory, greasebookApi):
 
     totalCommentComboCurveJson = totalCommentComboCurve.to_json(
         orient="records")
+
     cleanTotalCommentComboCurveJson = json.loads(totalCommentComboCurveJson)
 
-    return cleanTotalCommentComboCurveJson
+    return cleanTotalCommentComboCurveJson, totalCommentComboCurve
 
 
 # This function will allocated production by both SubAccount ID (accounting purposes) and API14 (engineering purposes)
@@ -766,10 +768,6 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
     todayYear = dateToday.strftime("%Y")
     todayMonth = dateToday.strftime("%m")
     todayDay = dateToday.strftime("%d")
-
-    yesYear = int(dateYesterday.strftime("%Y"))
-    yesMonth = int(dateYesterday.strftime("%m"))
-    yesDay = int(dateYesterday.strftime("%d"))
 
     # Set production interval based on boolen
     if fullProductionPull == True:
@@ -873,8 +871,6 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
     # You can only choose the from items in the wellIdsThatNeedAvg list
     wellIdsThatNeedAvgOil = [10208]
     wellDataReplacementIdList = [28062, 23706]
-    wellDataReplacmentNameList = [
-        "Midcon - Stout #1", "Midcon – Kansas – SchmidtConnors #129"]
     gotDataForBatteryId = np.full(len(wellDataReplacementIdList), False)
     numberOfWellsThatNeedAvg = len(wellIdsThatNeedAvg)
     rollingDayOilData = np.zeros([numberOfWellsThatNeedAvg, 7], dtype=float)

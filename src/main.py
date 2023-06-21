@@ -112,14 +112,14 @@ pumperNotReportedList = greasebook.getBatteryProductionData(
     greasebookApi=greasebookApi
 )
 
-greasebook.sendPumperEmail(
-    pumperNotReportedList=pumperNotReportedList[0],
-    workingDataDirectory=kocDatawarehouse
-)
+# greasebook.sendPumperEmail(
+#     pumperNotReportedList=pumperNotReportedList[0],
+#     workingDataDirectory=kocDatawarehouse
+# )
 
 totalAssetProduction = pumperNotReportedList[1]
 totalAssetProduction.to_csv(
-    r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\totalAssetProduction.csv", index=False)
+    kocDatawarehouse + r"\totalAssetProduction.csv", index=False)
 
 allocatedProductionData = greasebook.allocateWells(
     days=35,
