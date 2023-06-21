@@ -613,39 +613,6 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
         index=False,
     )
 
-    # Opens Oil Change File for daily specific percent change calculations
-    oilGasCustomNumbersFp = open(
-        r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\oilgascustomnumbers.csv",
-        "w",
-    )
-
-    headerString = "Daily Oil Change,Daily Gas Change, 7-day Oil Percent Change, 7-day Gas Percent Change, Two Day Ago Oil Volume, Two Day Ago Gas Volume, Increase/Decrease Oil, Increase/Decrease Gas, Percent Not Reported\n"
-
-    oilGasCustomNumbersFp.write(headerString)
-
-    outputString = (
-        str(oilChangeDaily)
-        + ","
-        + str(gasChangeDaily)
-        + ","
-        + "0"
-        + ","
-        + "0"
-        + ","
-        + str(twoDayOilVolume)
-        + ","
-        + str(twoDayGasVolume)
-        + ","
-        + increaseDecreaseOil
-        + ","
-        + increaseDecreaseGas
-        + ","
-        + str(percentNotReported)
-    )
-
-    oilGasCustomNumbersFp.write(outputString)
-    oilGasCustomNumbersFp.close()
-
     # Rounds the volumne oil sold list to two decimal places
     wellVolumeOilSoldListRound = [round(num, 2)
                                   for num in wellVolumeOilSoldList]
