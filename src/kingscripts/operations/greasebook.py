@@ -45,7 +45,6 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     todayYear = dateToday.strftime("%Y")
     todayMonth = dateToday.strftime("%m")
     todayDay = dateToday.strftime("%d")
-    dateYes = dateToday - timedelta(days=1)
 
     # Set production interval based on boolen
     if fullProductionPull == True:
@@ -92,17 +91,6 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
         + "&end="
     )
 
-    urlAccounting = (
-        "https://integration.greasebook.com/api/v1/batteries/daily-production?apiKey="
-        + greasebookApi
-        + productionInterval
-        + todayYear
-        + "-"
-        + todayMonth
-        + "-"
-        + todayDay
-    )
-
     # make the API call
     response = requests.request(
         "GET",
@@ -121,6 +109,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
         print(str(numEntries) + " total number of rows")
     else:
         print("The Status Code: " + str(response.status_code))
+        return
 
     # checks if we need to pull all the data or just last specificed
     if fullProductionPull == False:
@@ -522,6 +511,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
         avgOilList.insert(i, runningTotalOil[i] / numberOfDaysBattery[i])
         avgGasList.insert(i, runningTotalGas[i] / numberOfDaysBattery[i])
 
+    # Prints out the total asset production
     yesWellReportFileName = workingDataDirectory + r"\yesterdayWellReport.csv"
     fpReported = open(yesWellReportFileName, "w")
     headerString = "Battery ID,Battery Name,Oil Production,14-day Oil Average,Gas Production,14-day Gas Average, Pumper Name\n"
@@ -574,6 +564,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     pumperNotReportedList = []
     numberOfNotReported = 0
 
+    # Naughty list - determines whether or not a pumper has reported there data and adds it to a list
     for i in range(0, len(wellIdList)):
         if wellOilVolumeOneDayAgo[i] == "No Data Reported" and rollingFourteenDayPerWellOil[i] > 0:
             index = listOfBatteryIds.index(wellIdList[i])
@@ -581,7 +572,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
             notReportedListOil.append(goodBatteryNameWrite)
             pumperName = pumperNames[index]
             numberOfNotReported = numberOfNotReported + 1
-            if pumperName not in pumperNotReportedList:
+            if pumperName not in pumperNotReportedList:  # adds name to pumper list
                 pumperNotReportedList.append(pumperName)
         if wellGasVolumeOneDayAgo[i] == "No Data Reported" and rollingFourteenDayPerWellGas[i] > 0:
             index = listOfBatteryIds.index(wellIdList[i])
@@ -591,32 +582,6 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
             if pumperName not in pumperNotReportedList:
                 pumperNotReportedList.append(pumperName)
 
-    numberOfBatteries = len(wellIdList)
-    percentNotReported = (len(notReportedListOil) +
-                          len(notReportedListGas)) / numberOfBatteries
-
-    # Oil and gas daily change numbers
-    oilChangeDaily = round((twoDayOilVolume - threeDayOilVolume), 2)
-    gasChangeDaily = round((twoDayGasVolume - threeDayGasVolume), 2)
-    if oilChangeDaily > 0:
-        increaseDecreaseOil = "Increase"
-    else:
-        increaseDecreaseOil = "Decline"
-
-    if gasChangeDaily > 0:
-        increaseDecreaseGas = "Increase"
-    else:
-        increaseDecreaseGas = "Decline"
-
-    totalAssetProduction.to_csv(
-        fileNameAssetProduction,
-        index=False,
-    )
-
-    # Rounds the volumne oil sold list to two decimal places
-    wellVolumeOilSoldListRound = [round(num, 2)
-                                  for num in wellVolumeOilSoldList]
-
     # print out the volumes for data check while model is running
     print("Yesterday Oil Volume: " + str(yesTotalOilVolume))
     print("Yesterday Gas Volume: " + str(yesTotalGasVolume))
@@ -625,6 +590,7 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
 
     print("Finish Rolling Up Production - Bad Pumper List Ready to Send")
 
+    # returns the list of wells that are not reported and the total asset production
     return pumperNotReportedList, totalAssetProduction
 
 
