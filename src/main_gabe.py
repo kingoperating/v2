@@ -1,4 +1,8 @@
 
+## Author: Gabe Tatman
+## Date: 06/22/23
+## 
+
 from kingscripts.operations import greasebook 
 from kingscripts.analytics import enverus
 
