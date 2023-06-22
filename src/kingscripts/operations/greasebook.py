@@ -601,7 +601,7 @@ GET COMMENTS FROM GREASEBOOK and returns a clean JSON file ready to loading into
 '''
 
 
-def getComments(workingDataDirectory, greasebookApi):
+def getComments(workingDataDirectory, greasebookApi, prodStartDate, prodEndDate):
 
     workingDir = workingDataDirectory
     fileNameMasterAllocationList = workingDir + \
@@ -619,17 +619,17 @@ def getComments(workingDataDirectory, greasebookApi):
     )
 
     productionInterval = "&start=2023-01-01&end="
+    productionIntervalStart = prodStartDate
+    productionIntervalEnd = prodEndDate
 
     # Master API call to Greasebooks
     url = (
         "https://integration.greasebook.com/api/v1/comments/read?apiKey="
         + greasebookApi
-        + productionInterval
-        + todayYear
-        + "-"
-        + todayMonth
-        + "-"
-        + todayDay
+        + "&start="
+        + prodStartDate
+        + "&end="
+        + prodEndDate
         + "&pageSize=250"
     )
 
