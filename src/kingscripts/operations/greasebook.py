@@ -585,7 +585,8 @@ def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi
     # print out the volumes for data check while model is running
     print("Yesterday Oil Volume: " + str(yesTotalOilVolume))
     print("Yesterday Gas Volume: " + str(yesTotalGasVolume))
-    print("Oil Sales Volume Last 30 days: " + str(thrityDayOilSalesVolume))
+    print("Oil Sales Volume Last " + str(days) +
+          " days: " + str(thrityDayOilSalesVolume))
     print("Oil Sales Volume This Month: " + str(monthlyOilSales))
 
     print("Finish Rolling Up Production - Bad Pumper List Ready to Send")

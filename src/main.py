@@ -74,6 +74,7 @@ nameOfWell = "thurman23v"
 irvinsisters53m1h = "irvinsisters53m1h"
 pshigoda752h = "pshigoda752h"
 itSqlTable = "itSpend"
+daysToPull = 35
 
 '''
 WORKING ZONE
@@ -108,21 +109,21 @@ newBrowningFluvannaActivity = enverus.checkWellStatus(
 pumperNotReportedList = greasebook.getBatteryProductionData(
     workingDataDirectory=kocDatawarehouse,
     pullProd=False,
-    days=30,
+    days=daysToPull,
     greasebookApi=greasebookApi
 )
 
-# greasebook.sendPumperEmail(
-#     pumperNotReportedList=pumperNotReportedList[0],
-#     workingDataDirectory=kocDatawarehouse
-# )
+greasebook.sendPumperEmail(
+    pumperNotReportedList=pumperNotReportedList[0],
+    workingDataDirectory=kocDatawarehouse
+)
 
 totalAssetProduction = pumperNotReportedList[1]
 totalAssetProduction.to_csv(
     kocDatawarehouse + r"\totalAssetProduction.csv", index=False)
 
 allocatedProductionData = greasebook.allocateWells(
-    days=35,
+    days=daysToPull,
     workingDataDirectory=kocDatawarehouse,
     greasebookApi=greasebookApi,
     pullProd=False,
@@ -149,7 +150,7 @@ combocurve.putWellProductionData(
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey,
     greasebookApi=greasebookApi,
-    daysToPull=25
+    daysToPull=daysToPull
 )
 
 # AFE Stack Miller Ranch C301
