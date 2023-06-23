@@ -79,9 +79,32 @@ totalAssetProduction = NaughtyList[1]
 totalAssetProduction.to_csv(
     r"C:\Users\gtatman\OneDrive - King Operating\KOC Datawarehouse\totalAssetProduction.csv", index=False)
 
-greasebookComments = greasebook.getComments(
+# greasebookComments = greasebook.getComments(
+#     workingDataDirectory=kocDatawarehouse,
+#     greasebookApi=greasebookApi
+# )
+
+allocatedProductionData = greasebook.allocateWells(
+    days=30,
     workingDataDirectory=kocDatawarehouse,
-    greasebookApi=greasebookApi
+    greasebookApi=greasebookApi,
+    pullProd=False,
+    edgeCaseRollingAverage=7
 )
+
+# # Backup
+# allocatedProductionData.to_json(
+#     workingDirectoryData + r"\comboCurveAllocatedProduction.json", orient="records")
+# allocatedProductionData.to_csv(
+#     workingDirectoryData + r"\comboCurveAllocatedProduction.csv", index=False)
+
+# KOC Datawarehouse LIVE DUMP
+allocatedProductionData.to_csv(
+    kocDatawarehouse + r"\production\comboCurveAllocatedProduction.csv", index=False)
+allocatedProductionData.to_json(
+    kocDatawarehouse + r"\production\comboCurveAllocatedProduction.json", orient="records")
+allocatedProductionData.to_csv(
+    kocDatawarehouse + r"\production\allocationVersionControl\comboCurveAllocatedProduction_" + yesDateString + ".csv", index=False)
+
 
 x=5
