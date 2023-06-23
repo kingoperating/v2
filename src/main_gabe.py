@@ -79,5 +79,9 @@ totalAssetProduction = NaughtyList[1]
 totalAssetProduction.to_csv(
     r"C:\Users\gtatman\OneDrive - King Operating\KOC Datawarehouse\totalAssetProduction.csv", index=False)
 
+greasebookComments = greasebook.getComments(
+    workingDataDirectory=kocDatawarehouse,
+    greasebookApi=greasebookApi
+)
 
 x=5
