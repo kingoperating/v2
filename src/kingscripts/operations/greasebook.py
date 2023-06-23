@@ -1192,55 +1192,6 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
 
         lastDate = dateString  # updates the date for the next iteration
 
-        # Working on Henrgy Foster #1 edge case
-
-        """ if priorDay != day and priorDay != -999:
-            priorDateString = str(month) + "/" + \
-                str(priorDay) + "/" + str(year)
-            if priorDateString == "5/17/2023":
-                print("here")
-            for k in range(len(gotDataForBatteryId)):
-                if gotDataForBatteryId[k] == False:
-                    batteryId = wellDataReplacementIdList[k]
-                    batteryIdIdx = listOfBatteryIds.index(batteryId)
-                    index = wellIdList.index(batteryId)
-                    wellAccountingName = wellNameAccountingList[batteryIdIdx]
-                    gasVolumeClean = sum(
-                        rollingDayGasData[index]) / (rollingAvgInterval)
-                    oilVolumeClean = sum(
-                        rollingDayOilData[index]) / (rollingAvgInterval)
-                    waterVolumeClean = 0
-                    oilSalesDataClean = 0
-
-                    # Section for getting the forecasted production
-                    apiNumber = apiList[batteryIdIdx]
-                    indexList = [index for index, value in enumerate(
-                        forecastedAllocatedProduction["API 14"].to_list()) if value == apiNumber]
-
-                    if priorDateString in forecastedDateList:
-                        forecastedIndex = forecastedDateList.index(
-                            priorDateString)
-                        oilVolumeForecast = forecastedAllocatedProduction[
-                            "Oil"][indexList[forecastedIndex]]
-                        gasVolumeForecast = forecastedAllocatedProduction[
-                            "Gas"][indexList[forecastedIndex]]
-                        waterVolumeForecast = forecastedAllocatedProduction[
-                            "Water"][indexList[forecastedIndex]]
-                    else:
-                        oilVolumeForecast = 0
-                        gasVolumeForecast = 0
-                        waterVolumeForecast = 0
-                    # invokes function to get the client name
-                    clientName = getClientName(wellDataReplacmentNameList[k])
-                    newRowComboCurve = [priorDateString, clientName, str(apiList[batteryIdIdx]), str(wellAccountingName), str(oilVolumeClean), str(gasVolumeClean), str(
-                        waterVolumeClean), str(oilSalesDataClean), str(oilVolumeForecast), str(gasVolumeForecast), str(waterVolumeForecast), "di", str(stateList[batteryIdIdx])]
-                    # sets new row to combo curve
-                    totalComboCurveAllocatedProduction.loc[startingIndex +
-                                                           kComboCurve] = newRowComboCurve
-                    kComboCurve = kComboCurve + 1  # increases the counter for combo curve by 1
-
-                gotDataForBatteryId[k] = False """
-
         priorDay = day  # updates the day for the next iteration # very important
 
     print("Completed Allocation Process")
