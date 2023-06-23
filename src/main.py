@@ -57,6 +57,7 @@ browningOperatorName = "BROWNING OIL"
 basin = "MIDLAND"
 comboCurveProjectId = "612fc3d36880c20013a885df"
 comboCurveScenarioId = "632e70eefcea66001337cd43"
+comboCurveForecastIdPdp = "6130df3741999a0013f9751d"
 millerranchb501mh = "millerranchb501mh"
 millerrancha502v = "millerrancha502v"
 millerrancha501mh = "millerrancha501mh"
@@ -80,6 +81,16 @@ daysToPull = 35
 WORKING ZONE
 
 '''
+
+combocurve.getDailyForecastVolume(
+    workingDataDirectory=kocDatawarehouse,
+    projectIdKey=comboCurveProjectId,
+    forecastIdKey=comboCurveForecastIdPdp,
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
+
+
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,

@@ -385,7 +385,35 @@ Get the latest scenerio from a given ComboCurve project and return a pandas data
 
 
 def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
+    # FUNCTIONS
+    # GET request to get Well ID to API14
+    def getWellApi(wellIdComboCurve):
+        authComboCurveHeaders = combocurve_auth.get_auth_headers()
+        url = "https://api.combocurve.com/v1/wells/" + wellIdComboCurve
+        responseApi = requests.request(
+            "GET", url, headers=authComboCurveHeaders)
+        jsonStr = responseApi.text
+        dataObjBetter = json.loads(jsonStr)
+        return dataObjBetter["chosenID"]
 
+      # Get the next page URL from the response headers for pagination
+    def getNextPageUrlComboCurve(response_headers: dict) -> str:
+        urlHeader = response_headers.get('Link', "")
+        matchComboCurve = re.findall("<([^<>]+)>;rel=\"([^\"]+)\"", urlHeader)
+        for linkComboCurve, rel in matchComboCurve:
+            if rel == 'next':
+                return linkComboCurve
+        return None
+
+    def processNextPageUrlComboCurve(response_json):
+        for i in range(0, len(response_json)):
+            results = response_json[i]
+            wellId = results["well"]
+            output = results["output"]
+            wellIdList.append(wellId)
+            resultsList.append(output)
+
+    # load enviroment variables
     load_dotenv()
 
     workingDir = workingDataDirectory
@@ -444,23 +472,6 @@ def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey,
     resultsList = []
     wellIdList = []
 
-    # Get the next page URL from the response headers for pagination
-    def getNextPageUrlComboCurve(response_headers: dict) -> str:
-        urlHeader = response_headers.get('Link', "")
-        matchComboCurve = re.findall("<([^<>]+)>;rel=\"([^\"]+)\"", urlHeader)
-        for linkComboCurve, rel in matchComboCurve:
-            if rel == 'next':
-                return linkComboCurve
-        return None
-
-    def processNextPageUrlComboCurve(response_json):
-        for i in range(0, len(response_json)):
-            results = response_json[i]
-            wellId = results["well"]
-            output = results["output"]
-            wellIdList.append(wellId)
-            resultsList.append(output)
-
     # boolean to check if there is a next page for pagination
     hasNextLink = True
 
@@ -472,16 +483,6 @@ def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey,
         hasNextLink = urltwo is not None
 
     numEntries = len(resultsList)
-
-    # GET request to get Well ID to API14
-    def getWellApi(wellIdComboCurve):
-        authComboCurveHeaders = combocurve_auth.get_auth_headers()
-        url = "https://api.combocurve.com/v1/wells/" + wellIdComboCurve
-        responseApi = requests.request(
-            "GET", url, headers=authComboCurveHeaders)
-        jsonStr = responseApi.text
-        dataObjBetter = json.loads(jsonStr)
-        return dataObjBetter["chosenID"]
 
     apiListBest = []
 
@@ -532,9 +533,8 @@ def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey,
 
     return eurData
 
+
 # This code puts the well comments into ComboCurve from Greasebook
-
-
 def putWellComments(cleanJson, serviceAccount, comboCurveApi):
     # connect to service account
     service_account = serviceAccount
@@ -565,10 +565,92 @@ def putWellComments(cleanJson, serviceAccount, comboCurveApi):
 
     print("PUT COMPLETE")
 
+
 # This function gest the daily forecast volumes from a given ComboCurve project and forecast id
+def getDailyForecastVolume(workingDataDirectory, projectIdKey, forecastIdKey, serviceAccount, comboCurveApi):
+    # FUNCTIONS
 
+    # Get the next page URL from the response headers for pagination
+    def getNextPageUrlComboCurve(response_headers: dict) -> str:
+        urlHeader = response_headers.get('Link', "")
+        matchComboCurve = re.findall("<([^<>]+)>;rel=\"([^\"]+)\"", urlHeader)
+        for linkComboCurve, rel in matchComboCurve:
+            if rel == 'next':
+                return linkComboCurve
+        return None
 
-def getDailyForecastVolume():
+    def processNextPageUrlComboCurve(response_json):
+        for i in range(0, len(response_json)):
+            results = response_json[i]
+            wellId = results["well"]
+            output = results["phases"]
+            wellIdList.append(wellId)
+            resultsList.append(output)
+
+    # GET request to get Well ID to API14
+    def getWellApi(wellIdComboCurve):
+        authComboCurveHeaders = combocurve_auth.get_auth_headers()
+        url = "https://api.combocurve.com/v1/wells/" + wellIdComboCurve
+        responseApi = requests.request(
+            "GET", url, headers=authComboCurveHeaders)
+        jsonStr = responseApi.text
+        dataObjBetter = json.loads(jsonStr)
+        return dataObjBetter["chosenID"]
+
     print("Starting Getting Daily Forecast Volumes")
 
+    load_dotenv()
+
+    workingDir = workingDataDirectory
+    masterAllocationListFileName = workingDir + \
+        r"\master\masterWellAllocation.xlsx"
+
+    masterAllocationList = pd.read_excel(masterAllocationListFileName)
+
+    # connect to service account
+    service_account = serviceAccount
+    # set API Key from enviroment variable
+    api_key = comboCurveApi
+    # specific Python ComboCurve authentication
+    combocurve_auth = ComboCurveAuth(service_account, api_key)
+
+    projectId = projectIdKey
+    forecastId = forecastIdKey
+
+    # This code chunk gets the  for given Scenerio
+    # Call Stack - Get Econ Id
+
+    authComboCurveHeaders = combocurve_auth.get_auth_headers()
+    # URl econid
+    url = (
+        "https://api.combocurve.com/v1/projects/"
+        + projectId
+        + "/forecasts/"
+        + forecastId
+        + "/daily-volumes?skip=0&take=25"
+    )
+
+    resultsList = []
+    wellIdList = []
+
+    # boolean to check if there is a next page for pagination
+    hasNextLink = True
+
+    while hasNextLink:
+        response = requests.request(
+            "GET", url, headers=authComboCurveHeaders)
+        url = getNextPageUrlComboCurve(response.headers)
+        processNextPageUrlComboCurve(response.json())
+        hasNextLink = url is not None
+
+    numEntries = len(resultsList)
+
+    apiListBest = []
+
+    for i in range(0, len(wellIdList)):
+        apiNumber = getWellApi(wellIdList[i])
+        apiListBest.append(apiNumber)
+
+    for i in range(0, len(resultsList)):
+        x = 5
     print("Done Getting Daily Forecast Volumes")
