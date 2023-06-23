@@ -570,6 +570,25 @@ def putWellComments(cleanJson, serviceAccount, comboCurveApi):
 def getDailyForecastVolume(workingDataDirectory, projectIdKey, forecastIdKey, serviceAccount, comboCurveApi):
     # FUNCTIONS
 
+    def getDailyDateList(startDate, finishDate):
+        date_format = "%Y-%m-%d"  # Adjust the date format as per your input
+        startDate = datetime.strptime(startDate, date_format)
+        finishDate = datetime.strptime(finishDate, date_format)
+
+        delta = finishDate - startDate
+        daily_dates = []
+
+        for i in range(delta.days + 1):
+            day = startDate + timedelta(days=i)
+            daily_dates.append(day.strftime(date_format))
+
+        return daily_dates
+
+    def splitDateFunction(badDate):
+        splitDate = re.split("T", badDate)
+
+        return splitDate[0]
+
     # Get the next page URL from the response headers for pagination
     def getNextPageUrlComboCurve(response_headers: dict) -> str:
         urlHeader = response_headers.get('Link', "")
@@ -616,6 +635,8 @@ def getDailyForecastVolume(workingDataDirectory, projectIdKey, forecastIdKey, se
 
     projectId = projectIdKey
     forecastId = forecastIdKey
+    # master API list
+    apiListBest = []
 
     # This code chunk gets the  for given Scenerio
     # Call Stack - Get Econ Id
@@ -636,6 +657,7 @@ def getDailyForecastVolume(workingDataDirectory, projectIdKey, forecastIdKey, se
     # boolean to check if there is a next page for pagination
     hasNextLink = True
 
+    # loops through all the pages of the API call
     while hasNextLink:
         response = requests.request(
             "GET", url, headers=authComboCurveHeaders)
@@ -643,14 +665,30 @@ def getDailyForecastVolume(workingDataDirectory, projectIdKey, forecastIdKey, se
         processNextPageUrlComboCurve(response.json())
         hasNextLink = url is not None
 
-    numEntries = len(resultsList)
-
-    apiListBest = []
-
+    # gets the API number for each well and place in apiListBest
     for i in range(0, len(wellIdList)):
         apiNumber = getWellApi(wellIdList[i])
         apiListBest.append(apiNumber)
 
+    # Upacking resultsList - all well in forecast
     for i in range(0, len(resultsList)):
-        x = 5
+        row = resultsList[i]
+        # Upacking row - all phases in well - 3
+        for j in range(0, len(row)):
+            phaseName = row[j]["phase"]
+            rowTwo = row[j]
+            seriesData = rowTwo["series"]  # getting series data
+            for k in range(0, len(seriesData)):
+                eur = seriesData[i]["eur"]  # getting eur
+                seriesVolumes = seriesData[i]["volumes"]  # getting volumes
+                # getting start date
+                seriesStartDate = seriesData[i]["startDate"]
+                seriesEndDate = seriesData[i]["endDate"]  # getting end date
+                seriesStartDateClean = splitDateFunction(seriesStartDate)
+                seriesEndDateClean = splitDateFunction(seriesEndDate)
+                dailyDateList = getDailyDateList(
+                    seriesStartDateClean, seriesEndDateClean)
+
+                x = 5
+
     print("Done Getting Daily Forecast Volumes")
