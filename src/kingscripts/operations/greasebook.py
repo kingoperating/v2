@@ -1197,7 +1197,7 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
     print("Completed Allocation Process")
 
     totalAccountingAllocatedProduction.to_csv(
-        r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\accountingAllocatedProduction.csv", index=False)
+        workingDataDirectory+r"\production\accountingAllocatedProduction.csv", index=False)
 
     return totalComboCurveAllocatedProduction
 
