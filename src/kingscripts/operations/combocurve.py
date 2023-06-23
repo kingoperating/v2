@@ -567,7 +567,7 @@ def putWellComments(cleanJson, serviceAccount, comboCurveApi):
 
 
 # This function gest the daily forecast volumes from a given ComboCurve project and forecast id
-def getDailyForecastVolume(workingDataDirectory, projectIdKey, forecastIdKey, serviceAccount, comboCurveApi):
+def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCurveApi):
     # FUNCTIONS
 
     def getDailyDateList(startDate, finishDate):
@@ -618,13 +618,7 @@ def getDailyForecastVolume(workingDataDirectory, projectIdKey, forecastIdKey, se
 
     print("Starting Getting Daily Forecast Volumes")
 
-    load_dotenv()
-
-    workingDir = workingDataDirectory
-    masterAllocationListFileName = workingDir + \
-        r"\master\masterWellAllocation.xlsx"
-
-    masterAllocationList = pd.read_excel(masterAllocationListFileName)
+    load_dotenv()  # load enviroment variables
 
     # connect to service account
     service_account = serviceAccount

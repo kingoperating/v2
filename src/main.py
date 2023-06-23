@@ -81,18 +81,16 @@ daysToPull = 35
 WORKING ZONE
 
 '''
-dateframe = joyn.getDailyAllocatedProduction()
-dateframe.to_csv(workingDirectoryData +
-                 r"\joynAllocatedProductionGoodTest.csv", index=False)
-
 combocurve.getDailyForecastVolume(
-    workingDataDirectory=kocDatawarehouse,
     projectIdKey=comboCurveProjectId,
     forecastIdKey=comboCurveForecastId,
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
 
+dateframe = joyn.getDailyAllocatedProduction()
+dateframe.to_csv(workingDirectoryData +
+                 r"\joynAllocatedProductionGoodTest.csv", index=False)
 
 # IT SPEND
 itSpend = tech.getItSpend(
@@ -293,6 +291,14 @@ greasebookComments = greasebook.getComments(
 
 combocurve.putWellComments(
     cleanJson=greasebookComments,
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
+
+combocurve.getDailyForecastVolume(
+    workingDataDirectory=kocDatawarehouse,
+    projectIdKey=comboCurveProjectId,
+    forecastIdKey=comboCurveForecastId,
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
