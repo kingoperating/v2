@@ -80,16 +80,7 @@ daysToPull = 35
 WORKING ZONE
 
 '''
-# WELL COMMENTS
-
-greasebookComments = greasebook.getComments(
-    workingDataDirectory=kocDatawarehouse,
-    greasebookApi=greasebookApi,
-    prodStartDate="2022-01-01",
-    prodEndDate="2022-03-31"
-)
-
-
+# IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
     databaseName=kingDatabase,
@@ -279,9 +270,12 @@ afe.variance(
 # WELL COMMENTS
 
 greasebookComments = greasebook.getComments(
-    workingDataDirectory=workingDirectoryData,
-    greasebookApi=greasebookApi
+    workingDataDirectory=kocDatawarehouse,
+    greasebookApi=greasebookApi,
+    prodStartDate="2022-01-01",
+    prodEndDate="2022-03-31"
 )
+
 
 combocurve.putWellComments(
     cleanJson=greasebookComments,
