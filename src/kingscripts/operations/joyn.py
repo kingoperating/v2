@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 import numpy as np
 from kingscripts.operations import combocurve
+from combocurve_api_v1 import ServiceAccount
 
 
 def getDailyAllocatedProduction():
@@ -22,9 +23,6 @@ def getDailyAllocatedProduction():
     apiNumberList = masterAllocationData["API"].tolist()
     wellAccountingNameList = masterAllocationData["Name in Accounting"].tolist(
     )
-
-    login = os.getenv('JOYN_USERNAME')
-    password = os.getenv('JOYN_PASSWORD')
 
     # Function to split date from JOYN API into correct format - returns date in format of 5/17/2023 from format of 2023-05-17T00:00:00
 

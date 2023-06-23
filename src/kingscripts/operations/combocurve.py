@@ -567,7 +567,7 @@ def putWellComments(cleanJson, serviceAccount, comboCurveApi):
 
 
 # This function gest the daily forecast volumes from a given ComboCurve project and forecast id
-def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCurveApi):
+def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCurveApi, dateOfInterest):
     # FUNCTIONS
 
     def getDailyDateList(startDate, finishDate):
