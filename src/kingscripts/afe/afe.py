@@ -166,6 +166,7 @@ def dailyCost(workingDataDirectory, name):
     if lastDate in descriptionDateList:
         index = descriptionDateList.index(lastDate)
         description = descriptionFile["Description"].iloc[index]
+        description = description.replace(",", " ")
     else:
         description = ""
 
@@ -389,3 +390,114 @@ def variance(workingDataDirectory, name):
     fp.close()
 
     print("Done with AFE Varience")
+
+    """
+    Combine AFE reporting files: AfeActualVariance, dailyItemCost, Paid and Actual
+    """
+
+
+def combineAfeFiles(listOfWells, workingDataDirectory):
+    # set working data directory
+    pathOfWorkingDir = workingDataDirectory + r"\afe"
+    pathofExport = pathOfWorkingDir + r"\mergedFiles"
+
+    # combinedDataFrame files
+    afeVarianceCombineData = pd.DataFrame()
+    dailyItemCostCombineData = pd.DataFrame()
+    paidCombineData = pd.DataFrame()
+    spendCombineData = pd.DataFrame()
+    daysVsDepthCombineData = pd.DataFrame()
+    afeOgCombineData = pd.DataFrame()
+    plannedCostCombineData = pd.DataFrame()
+    dataFrameStoreAfeVariance = []
+    dataFrameStoreDailyItemCost = []
+    dataFrameStorePaid = []
+    dataFrameStoreSpend = []
+    dataFrameStoreDaysVsDepth = []
+    dataFrameStoreAfeOg = []
+    dataFrameStorePlanned = []
+
+    # combine all AFE Variance Files
+    for i in range(0, len(listOfWells)):
+        nameOfWell = listOfWells[i]
+        df = pd.read_csv(pathOfWorkingDir + "\\" +
+                         nameOfWell + "\\" + nameOfWell + "AfeActualVarience.csv")
+        df["Well Name"] = nameOfWell
+        dataFrameStoreAfeVariance.append(df)
+
+    # combine all Daily Item Cost Files
+    for i in range(0, len(listOfWells)):
+        nameOfWell = listOfWells[i]
+        df = pd.read_csv(pathOfWorkingDir + "\\" +
+                         nameOfWell + "\\" + nameOfWell + "dailyItemCost.csv")
+        df["Well Name"] = nameOfWell
+        dataFrameStoreDailyItemCost.append(df)
+
+    # combine all Paid Files
+    for i in range(0, len(listOfWells)):
+        nameOfWell = listOfWells[i]
+        df = pd.read_excel(pathOfWorkingDir + "\\" +
+                           nameOfWell + "\\" + nameOfWell + "Paid.xlsx")
+        df["Well Name"] = nameOfWell
+        dataFrameStorePaid.append(df)
+
+    # combine all Spend Files
+    for i in range(0, len(listOfWells)):
+        nameOfWell = listOfWells[i]
+        df = pd.read_excel(pathOfWorkingDir + "\\" +
+                           nameOfWell + "\\" + nameOfWell + "ActualSpend.xlsx")
+        df["Well Name"] = nameOfWell
+        dataFrameStoreSpend.append(df)
+
+    # combine all Days vs Depth Files
+    for i in range(0, len(listOfWells)):
+        nameOfWell = listOfWells[i]
+        path = pathOfWorkingDir + "\\" + nameOfWell + \
+            "\\" + nameOfWell + "daysvsdepth.csv"
+        df = pd.read_csv(path)
+        df["Well Name"] = nameOfWell
+        dataFrameStoreDaysVsDepth.append(df)
+
+    # combine all AFE Og Files
+    for i in range(0, len(listOfWells)):
+        nameOfWell = listOfWells[i]
+        df = pd.read_excel(pathOfWorkingDir + "\\" +
+                           nameOfWell + "\\" + nameOfWell + "AfeOg.xlsx")
+        df["Well Name"] = nameOfWell
+        dataFrameStoreAfeOg.append(df)
+
+    # combine all Planned Cost Files
+    for i in range(0, len(listOfWells)):
+        nameOfWell = listOfWells[i]
+        df = pd.read_excel(pathOfWorkingDir + "\\" +
+                           nameOfWell + "\\" + nameOfWell + "planned.xlsx")
+        df["Well Name"] = nameOfWell
+        dataFrameStorePlanned.append(df)
+
+    # combine all dataframes
+    afeVarianceCombineData = pd.concat(dataFrameStoreAfeVariance)
+    dailyItemCostCombineData = pd.concat(dataFrameStoreDailyItemCost)
+    spendCombineData = pd.concat(dataFrameStoreSpend)
+    paidCombineData = pd.concat(dataFrameStorePaid)
+    daysVsDepthCombineData = pd.concat(dataFrameStoreDaysVsDepth)
+    #daysVsDepthCombineData = daysVsDepthCombineData.fillna(0)
+    afeOgCombineData = pd.concat(dataFrameStoreAfeOg)
+    plannedCostCombineData = pd.concat(dataFrameStorePlanned)
+
+    afeVarianceCombineData.to_excel(
+        pathofExport + r"\afeVarianceCombineData.xlsx", index=False)
+    dailyItemCostCombineData.to_excel(
+        pathofExport + r"\dailyItemCostCombineData.xlsx", index=False)
+    spendCombineData.to_excel(
+        pathofExport + r"\spendCombineData.xlsx", index=False)
+    paidCombineData.to_excel(
+        pathofExport + r"\paidCombineData.xlsx", index=False)
+    daysVsDepthCombineData.to_excel(
+        pathofExport + r"\daysVsDepthCombineData.xlsx", index=False)
+    afeOgCombineData.to_excel(
+        pathofExport + r"\afeOgCombineData.xlsx", index=False)
+    plannedCostCombineData.to_excel(
+        pathofExport + r"\plannedCostCombineData.xlsx", index=False)
+
+
+x = 5
