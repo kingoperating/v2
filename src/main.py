@@ -96,23 +96,6 @@ listOfWells = [
 WORKING ZONE
 
 '''
-
-afe.combineAfeFiles(
-    workingDataDirectory=kocDatawarehouse,
-    listOfWells=listOfWells
-)
-
-combocurve.getDailyForecastVolume(
-    projectIdKey=comboCurveProjectId,
-    forecastIdKey=comboCurveForecastId,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey
-)
-
-dateframe = joyn.getDailyAllocatedProduction()
-dateframe.to_csv(workingDirectoryData +
-                 r"\joynAllocatedProductionGoodTest.csv", index=False)
-
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
@@ -227,9 +210,15 @@ afe.variance(
     name=millerrancha502v
 )
 
+# Combine AFE files and place in data warehouse
+afe.combineAfeFiles(
+    workingDataDirectory=kocDatawarehouse,
+    listOfWells=listOfWells
+)
+
 
 '''
-MAIN SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mainAFE.py for more details
+ALL SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mainAFE.py for more details
 
 '''
 
@@ -269,6 +258,15 @@ greasebook.allocateWells(
     pullProd=False
 )
 
+# WELL COMMENTS
+
+greasebookComments = greasebook.getComments(
+    workingDataDirectory=kocDatawarehouse,
+    greasebookApi=greasebookApi,
+    prodStartDate="2022-01-01",
+    prodEndDate="2022-03-31"
+)
+
 # ComboCurve Stack
 combocurve.putWellProductionData(
     workingDataDirectory=workingDirectoryData,
@@ -290,25 +288,16 @@ pdpModel = combocurve.getLatestScenarioOneLiner(
 pdpModel.to_excel(workingDirectoryData +
                   r"\eurData.xlsx", index=False)
 
-# AFE Stack
-afe.dailyCost(
-    workingDataDirectory=workingDirectoryData,
-    name=millerranchb501mh
-)
-afe.variance(
-    workingDataDirectory=workingDirectoryData,
-    name=millerranchb501mh
+
+latestPdpDailyForecast = combocurve.getDailyForecastVolume(
+    projectIdKey=comboCurveProjectId,
+    forecastIdKey=comboCurveForecastId,
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
 )
 
-# WELL COMMENTS
-
-greasebookComments = greasebook.getComments(
-    workingDataDirectory=kocDatawarehouse,
-    greasebookApi=greasebookApi,
-    prodStartDate="2022-01-01",
-    prodEndDate="2022-03-31"
-)
-
+latestPdpDailyForecast.to_excel(
+    kocDatawarehouse + r"\production\latestDailyForecast.xlsx", index=False)
 
 combocurve.putWellComments(
     cleanJson=greasebookComments,
@@ -323,3 +312,23 @@ combocurve.getDailyForecastVolume(
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
+
+# AFE Stack
+afe.dailyCost(
+    workingDataDirectory=workingDirectoryData,
+    name=millerranchb501mh
+)
+afe.variance(
+    workingDataDirectory=workingDirectoryData,
+    name=millerranchb501mh
+)
+# combine AFE files
+afe.combineAfeFiles(
+    workingDataDirectory=kocDatawarehouse,
+    listOfWells=listOfWells
+)
+
+# JOYN STACK
+dateframe = joyn.getDailyAllocatedProduction()
+dateframe.to_csv(workingDirectoryData +
+                 r"\joynAllocatedProductionGoodTest.csv", index=False)
