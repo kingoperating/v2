@@ -76,11 +76,32 @@ irvinsisters53m1h = "irvinsisters53m1h"
 pshigoda752h = "pshigoda752h"
 itSqlTable = "itSpend"
 daysToPull = 35
+listOfWells = [
+    thurman23v,
+    chunn923v,
+    ayres79v,
+    porter33v,
+    kinga199cv1h,
+    kinga199cv2h,
+    wu108,
+    wu105,
+    wu99,
+    millerrancha501mh,
+    millerrancha502v,
+    millerranchb501mh,
+    millerranchc301,
+]
 
 '''
 WORKING ZONE
 
 '''
+
+afe.combineAfeFiles(
+    workingDataDirectory=kocDatawarehouse,
+    listOfWells=listOfWells
+)
+
 combocurve.getDailyForecastVolume(
     projectIdKey=comboCurveProjectId,
     forecastIdKey=comboCurveForecastId,
