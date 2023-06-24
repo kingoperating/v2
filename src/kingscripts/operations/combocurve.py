@@ -567,9 +567,12 @@ def putWellComments(cleanJson, serviceAccount, comboCurveApi):
 
 
 # This function gest the daily forecast volumes from a given ComboCurve project and forecast id
-def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCurveApi, dateOfInterest):
+
+def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCurveApi):
+
     # FUNCTIONS
 
+    # get daily date list
     def getDailyDateList(startDate, finishDate):
         date_format = "%Y-%m-%d"  # Adjust the date format as per your input
         startDate = datetime.strptime(startDate, date_format)
@@ -584,6 +587,7 @@ def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCur
 
         return daily_dates
 
+    # split date function - takes unformatted date and returns formatted date
     def splitDateFunction(badDate):
         splitDate = re.split("T", badDate)
 
@@ -598,6 +602,7 @@ def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCur
                 return linkComboCurve
         return None
 
+    # process the next page URL for pagination
     def processNextPageUrlComboCurve(response_json):
         for i in range(0, len(response_json)):
             results = response_json[i]
@@ -645,6 +650,7 @@ def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCur
         + "/daily-volumes?skip=0&take=25"
     )
 
+    # create empty lists to be used in pagination
     resultsList = []
     wellIdList = []
 
@@ -664,6 +670,9 @@ def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCur
         apiNumber = getWellApi(wellIdList[i])
         apiListBest.append(apiNumber)
 
+    # master dataframe to be used later to hold all data
+    masterForecastData = pd.DataFrame()
+
     # Upacking resultsList - all well in forecast
     for i in range(0, len(resultsList)):
         row = resultsList[i]
@@ -672,17 +681,23 @@ def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCur
             phaseName = row[j]["phase"]
             rowTwo = row[j]
             seriesData = rowTwo["series"]  # getting series data
+            # Upacking seriesData - all volumes in
             for k in range(0, len(seriesData)):
-                eur = seriesData[i]["eur"]  # getting eur
-                seriesVolumes = seriesData[i]["volumes"]  # getting volumes
+                seriesVolumes = seriesData[k]["volumes"]  # getting volumes
                 # getting start date
-                seriesStartDate = seriesData[i]["startDate"]
-                seriesEndDate = seriesData[i]["endDate"]  # getting end date
+                seriesStartDate = seriesData[k]["startDate"]
+                seriesEndDate = seriesData[k]["endDate"]  # getting end date
                 seriesStartDateClean = splitDateFunction(seriesStartDate)
                 seriesEndDateClean = splitDateFunction(seriesEndDate)
                 dailyDateList = getDailyDateList(
                     seriesStartDateClean, seriesEndDateClean)
+                # creating dataframe to temp hold phase data
+                df = pd.DataFrame(
+                    {"Date": dailyDateList, "API": apiListBest[i], "Volume": seriesVolumes, "Phase": phaseName})
 
-                x = 5
+                # add to master dataframe
+                masterForecastData = pd.concat([masterForecastData, df])
 
     print("Done Getting Daily Forecast Volumes")
+
+    return masterForecastData
