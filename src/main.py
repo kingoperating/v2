@@ -96,9 +96,9 @@ listOfWells = [
 WORKING ZONE
 
 '''
-dateframe = joyn.getDailyAllocatedProduction()
-dateframe.to_csv(workingDirectoryData +
-                 r"\joynAllocatedProductionGoodTestMergred.csv", index=False)
+joynData = joyn.getDailyAllocatedProduction()
+joynData.to_csv(workingDirectoryData +
+                r"\joynAllocatedProductionGoodTestMergred.csv", index=False)
 
 # IT SPEND
 itSpend = tech.getItSpend(
@@ -333,6 +333,6 @@ afe.combineAfeFiles(
 )
 
 # JOYN STACK
-dateframe = joyn.getDailyAllocatedProduction()
-dateframe.to_csv(workingDirectoryData +
-                 r"\joynAllocatedProductionGoodTest.csv", index=False)
+joynData = joyn.getDailyAllocatedProduction()
+joynData.to_csv(workingDirectoryData +
+                r"\joynAllocatedProductionGoodTest.csv", index=False)
