@@ -11,6 +11,7 @@ from combocurve_api_v1 import ServiceAccount
 
 
 def getDailyAllocatedProduction():
+
     load_dotenv()
 
     masterAllocationData = pd.read_excel(
@@ -19,15 +20,40 @@ def getDailyAllocatedProduction():
     forecastedProductionData = pd.read_csv(
         r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\forecastWellsFinal.csv")
 
+    joynMasterFile = pd.read_csv(
+        r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\totalAssetProductionJoynGOODBESTTEST_62223UpdateForecast.csv")
+
     joynIdList = masterAllocationData["JOYN Id"].tolist()
     apiNumberList = masterAllocationData["API"].tolist()
     wellAccountingNameList = masterAllocationData["Name in Accounting"].tolist(
     )
 
+    def getForecast(apiNumber, date):
+
+        indexList = [index for index, value in enumerate(
+            forecastedProductionData["API 14"].to_list()) if value == apiNumber]
+
+        # Gets the forecasted prodcution for the current date
+        forecastedDateList = [forecastedProductionData["Date"][index]
+                              for index in indexList]
+
+        # finds the index of the current date in the forecasted data and sets to the current forecasted volume
+        if date in forecastedDateList:
+            forecastedIndex = forecastedDateList.index(date)
+            oilVolumeForecast = forecastedProductionData["Oil"][indexList[forecastedIndex]]
+            gasVolumeForecast = forecastedProductionData["Gas"][indexList[forecastedIndex]]
+            waterVolumeForecast = forecastedProductionData["Water"][indexList[forecastedIndex]]
+        else:
+            oilVolumeForecast = 0
+            gasVolumeForecast = 0
+            waterVolumeForecast = 0
+
+        return oilVolumeForecast, gasVolumeForecast, waterVolumeForecast
+
     # Function to split date from JOYN API into correct format - returns date in format of 5/17/2023 from format of 2023-05-17T00:00:00
 
     def splitDateFunction(badDate):
-        splitDate = re.split("T", date)
+        splitDate = re.split("T", badDate)
         splitDate2 = re.split("-", splitDate[0])
         year = int(splitDate2[0])
         month = int(splitDate2[1])
@@ -105,28 +131,6 @@ def getDailyAllocatedProduction():
 
         return name
 
-    def getForecast(apiNumber, date):
-
-        indexList = [index for index, value in enumerate(
-            forecastedProductionData["API 14"].to_list()) if value == apiNumber]
-
-        # Gets the forecasted prodcution for the current date
-        forecastedDateList = [forecastedProductionData["Date"][index]
-                              for index in indexList]
-
-        # finds the index of the current date in the forecasted data and sets to the current forecasted volume
-        if date in forecastedDateList:
-            forecastedIndex = forecastedDateList.index(date)
-            oilVolumeForecast = forecastedProductionData["Oil"][indexList[forecastedIndex]]
-            gasVolumeForecast = forecastedProductionData["Gas"][indexList[forecastedIndex]]
-            waterVolumeForecast = forecastedProductionData["Water"][indexList[forecastedIndex]]
-        else:
-            oilVolumeForecast = 0
-            gasVolumeForecast = 0
-            waterVolumeForecast = 0
-
-        return oilVolumeForecast, gasVolumeForecast, waterVolumeForecast
-
     def getState(apiNumber):
         if apiNumber in apiNumberList:
             index = apiNumberList.index(apiNumber)
@@ -199,7 +203,8 @@ def getDailyAllocatedProduction():
         "Data Source",
         "State"
     ]
-    finalTotalAssetProduction = pd.DataFrame(columns=headersMerge)
+
+    currentRunTotalAssetProductionJoyn = pd.DataFrame(columns=headersMerge)
 
     dataSource = "di"
 
@@ -240,6 +245,8 @@ def getDailyAllocatedProduction():
     # convert date column to datetime format for sorting purposes
     rawTotalAssetProduction["Date"] = pd.to_datetime(
         rawTotalAssetProduction["Date"])
+    forecastedProductionData["Date"] = pd.to_datetime(
+        forecastedProductionData["Date"])
     # sort dataframe by date for loop to get daily production
     rawTotalAssetProductionSorted = rawTotalAssetProduction.sort_values(by=[
         "Date"])
@@ -249,6 +256,8 @@ def getDailyAllocatedProduction():
     dailyRawAssetId = []
     dailyRawWellName = []
     dailyRawDate = []
+    dailyClientName = []
+    dailyForecastedProduction = np.zeros([200, 3])
     priorDate = -999
     counter = 0
     lastIndex = 0
@@ -261,26 +270,28 @@ def getDailyAllocatedProduction():
         readingVolumePivot = row["ReadingVolume"]
         productTypePivot = row["Product"]
         datePivot = row["Date"]
-        dateBetterPivot = splitDateFunction(datePivot)
         wellNamePivot = getName(apiNumberPivot)
         stateName = getState(apiNumberPivot)
         clientName = getClient(apiNumberPivot)
-        forecastVolumes = getForecast(apiNumberPivot, dateBetterPivot)
-        if forecastVolumes[0] != 0:
-            x = 5
+        forecastVolumes = getForecast(
+            apiNumberPivot, datePivot)
 
         if datePivot != priorDate and priorDate != -999:
+
             for j in range(0, counter):
-                row = [dailyRawDate[j], clientName, dailyRawAssetId[j], dailyRawWellName[j], dailyRawProduction[j][0], dailyRawProduction[j]
-                       [1], dailyRawProduction[j][2], 0, forecastVolumes[0], forecastVolumes[1], forecastVolumes[2], dataSource, stateName]
+                row = [dailyRawDate[j], dailyClientName[j], dailyRawAssetId[j], dailyRawWellName[j], dailyRawProduction[j][0], dailyRawProduction[j]
+                       [1], dailyRawProduction[j][2], 0, dailyForecastedProduction[j][0], dailyForecastedProduction[j][1], dailyForecastedProduction[j][2], dataSource, stateName]
                 # row = [dailyRawAssetId[j], dailyRawWellName[j], dailyRawDate[j],
                 #        dailyRawProduction[j][0], dailyRawProduction[j][1], dailyRawProduction[j][2]]
-                finalTotalAssetProduction.loc[lastIndex + j] = row
+
+                currentRunTotalAssetProductionJoyn.loc[lastIndex + j] = row
 
             dailyRawProduction = np.zeros([200, 3])
+            dailyForecastedProduction = np.zeros([200, 3])
             dailyRawAssetId = []
             dailyRawWellName = []
             dailyRawDate = []
+            dailyClientName = []
             counter = 0
             lastIndex = lastIndex + j + 1
 
@@ -297,6 +308,10 @@ def getDailyAllocatedProduction():
             dailyRawAssetId.append(apiNumberPivot)
             dailyRawWellName.append(wellNamePivot)
             dailyRawDate.append(datePivot)
+            dailyClientName.append(clientName)
+            dailyForecastedProduction[counter][0] = forecastVolumes[0]
+            dailyForecastedProduction[counter][1] = forecastVolumes[1]
+            dailyForecastedProduction[counter][2] = forecastVolumes[2]
             if productTypePivot == "Oil":
                 dailyRawProduction[counter][0] = readingVolumePivot
             elif productTypePivot == "Gas":
@@ -307,10 +322,18 @@ def getDailyAllocatedProduction():
 
         priorDate = datePivot
 
-    # get forecasted volume for current allocation row
+    currentRunTotalAssetProductionJoyn.to_excel(
+        r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\currentRunTotalAssetProductionJoyn.xlsx", index=False)
 
-        # Get State name
+    joynMasterFile["Date"] = pd.to_datetime(joynMasterFile["Date"])
+    currentRunTotalAssetProductionJoyn["Date"] = pd.to_datetime(
+        currentRunTotalAssetProductionJoyn["Date"])
 
-        # create row to append to dataframe
+    joynMasterFile["Date"] = joynMasterFile["Date"].dt.strftime("%m/%d/%Y")
+    currentRunTotalAssetProductionJoyn["Date"] = currentRunTotalAssetProductionJoyn["Date"].dt.strftime(
+        "%m/%d/%Y")
 
-    return finalTotalAssetProduction
+    finalMergedProduction = pd.merge(joynMasterFile, currentRunTotalAssetProductionJoyn, how="outer", on=[
+                                     "API", "Well Accounting Name", "Date"])
+
+    return finalMergedProduction

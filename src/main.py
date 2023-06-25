@@ -96,6 +96,10 @@ listOfWells = [
 WORKING ZONE
 
 '''
+dateframe = joyn.getDailyAllocatedProduction()
+dateframe.to_csv(workingDirectoryData +
+                 r"\joynAllocatedProductionGoodTestMergred.csv", index=False)
+
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
