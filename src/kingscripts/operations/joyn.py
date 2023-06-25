@@ -322,6 +322,7 @@ def getDailyAllocatedProduction():
 
         priorDate = datePivot
 
+    # clean JOYN only copy - for testing purposes - will delete in production
     currentRunTotalAssetProductionJoyn.to_excel(
         r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\currentRunTotalAssetProductionJoyn.xlsx", index=False)
 
@@ -336,4 +337,6 @@ def getDailyAllocatedProduction():
     finalMergedProduction = pd.merge(joynMasterFile, currentRunTotalAssetProductionJoyn, how="outer", on=[
                                      "API", "Well Accounting Name", "Date"])
 
-    return finalMergedProduction
+    currentRunTotalAssetProductionJoyn.update(finalMergedProduction)
+
+    return currentRunTotalAssetProductionJoyn
