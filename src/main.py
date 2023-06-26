@@ -96,10 +96,10 @@ listOfWells = [
 WORKING ZONE
 
 '''
-# JOYN STACK
-joynData = joyn.getDailyAllocatedProduction()
-joynData.to_csv(workingDirectoryData +
-                r"\joynAllocatedProductionGoodTestMergred6252023.csv", index=False)
+# # JOYN STACK
+# joynData = joyn.getDailyAllocatedProduction()
+# joynData.to_csv(workingDirectoryData +
+#                 r"\joynAllocatedProductionGoodTestMergred6252023.csv", index=False)
 
 # IT SPEND
 itSpend = tech.getItSpend(
