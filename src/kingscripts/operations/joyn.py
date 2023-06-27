@@ -345,7 +345,7 @@ def getDailyAllocatedProduction(workingDataDirectory):
     # merge master JOYN data with current run JOYN data to ensure clean JOYN list
     masterJoynData.update(currentRunTotalAssetProductionJoyn)
 
-    return masterJoynData
+    return masterJoynData, currentRunTotalAssetProductionJoyn
 
 
 def mergeProduction(masterJoynData, masterGreasebookData):

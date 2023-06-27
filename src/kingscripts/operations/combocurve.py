@@ -8,10 +8,81 @@ import pandas as pd
 import numpy as np
 from combocurve_api_v1 import ComboCurveAuth
 
+
+def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
+    load_dotenv()  # load enviroment variables
+
+    masterJoynData = currentJoynData
+
+    print("Start upsert of daily well production data for update records from JOYN")
+
+    # connect to service account
+    service_account = serviceAccount
+    # set API Key from enviroment variable
+    api_key = comboCurveApi
+    # specific Python ComboCurve authentication
+    combocurve_auth = ComboCurveAuth(service_account, api_key)
+
+    # converts API to int (removing decimals) and then back to string for JSON
+    masterJoynData = masterJoynData.astype({
+        "Date": "string", "API": "string"})
+
+    # helps when uploading to ComboCurve to check for length of data (can only send 20,000 data points at a time)
+    print("Length of Total Asset Production: " +
+          str(len(masterJoynData)))
+
+    # drops columns that are not needed
+    masterJoynData = masterJoynData.drop(
+        ["Well Accounting Name", "Client", "Oil Forecast", "Gas Forecast", "Water Forecast", "State"], axis=1)
+
+    # remove duplicate rows
+    masterJoynData = masterJoynData.drop_duplicates()
+
+    masterJoynData = masterJoynData.iloc[0:19999]
+
+    # renames columns to match ComboCurve
+    masterJoynData.rename(
+        columns={"Oil Volume": "oil", "Date": "date", "Gas Volume": "gas", "Water Volume": "water", "API": "chosenID", "Data Source": "dataSource", "Oil Sold Volume": "customNumber0"}, inplace=True)
+
+    # exports to json for storage
+    masterJoynData.to_json(
+        r".\kingoperating\data\totalAssetsProduction.json", orient="records")
+
+    totalAssetProductionJson = masterJoynData.to_json(
+        orient="records")  # converts to internal json format
+    # loads json into format that can be sent to ComboCurve
+    cleanTotalAssetProduction = json.loads(totalAssetProductionJson)
+
+    # prints length as final check (should be less than 20,000)
+    print("Length of Sliced Data: " + str(len(cleanTotalAssetProduction)))
+
+    # sets url to daily production for combo curve for daily production
+    url = "https://api.combocurve.com/v1/daily-productions"
+    auth_headers = combocurve_auth.get_auth_headers()  # authenticates ComboCurve
+
+    # put request to ComboCurve
+    response = requests.put(url, headers=auth_headers,
+                            json=cleanTotalAssetProduction)
+
+    responseCode = response.status_code  # sets response code to the current state
+    responseText = response.text  # sets response text to the current state
+
+    print("Response Code: " + str(responseCode))  # prints response code
+
+    if "successCount" in responseText:  # checks if the response text contains successCount
+        # finds the index of successCount
+        # prints the successCount and the number of data points sent
+        indexOfSuccessFail = responseText.index("successCount")
+        print(responseText[indexOfSuccessFail:])
+
+    print("Finished Put Production Data to ComboCurve")
+
+    x = 5
+
 # Script to put Greasebook Well Production into ComboCurve - does allocation process
 
 
-def putWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccount, comboCurveApi, greasebookApi, daysToPull):
+def putGreasebookWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccount, comboCurveApi, greasebookApi, daysToPull):
     load_dotenv()  # load enviroment variables
 
     pullFromAllocation = pullFromAllocation
