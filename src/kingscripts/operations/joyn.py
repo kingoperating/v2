@@ -10,18 +10,16 @@ from kingscripts.operations import combocurve
 from combocurve_api_v1 import ServiceAccount
 
 
-def getDailyAllocatedProduction():
+def getDailyAllocatedProduction(workingDataDirectory):
 
     load_dotenv()
 
     masterAllocationData = pd.read_excel(
-        r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\master\masterWellAllocation.xlsx")
-
+        workingDataDirectory + r"\master\masterWellAllocation.xlsx")
     masterJoynData = pd.read_excel(
-        r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterJoynData.xlsx")
-
+        workingDataDirectory + r"\production\masterJoynData.xlsx")
     forecastedProductionData = pd.read_csv(
-        r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\forecastWellsFinal.csv")
+        workingDataDirectory + r"\production\forecastWellsFinal.csv")
 
     joynIdList = masterAllocationData["JOYN Id"].tolist()
     apiNumberList = masterAllocationData["API"].tolist()

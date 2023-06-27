@@ -31,6 +31,9 @@ SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER. CURREN
 workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
 kocDatawarehouse = os.getenv("KOC_DATAWAREHOUSE")
 
+# Master Greasebook Data
+masterGreasebookData = pd.read_csv(os.getenv("MASTER_GREASEBOOK_DATA"))
+
 # getting API keys
 enverusApiKey = os.getenv('ENVERUS_API')
 greasebookApi = os.getenv('GREASEBOOK_API_KEY')
@@ -90,7 +93,7 @@ listOfWells = [
     millerrancha501mh,
     millerrancha502v,
     millerranchb501mh,
-    millerranchc301,
+    millerranchc301
 ]
 
 
@@ -98,18 +101,25 @@ listOfWells = [
 WORKING ZONE
 
 '''
-# # JOYN STACK
-# joynData = joyn.getDailyAllocatedProduction()
-# joynData.to_excel(kocDatawarehouse +
-#                   r"\production\masterJoynData.xlsx", index=False)
+# JOYN STACK
+# DAILY ALLOCATED PRODUCTION
+joynData = joyn.getDailyAllocatedProduction(
+    workingDataDirectory=kocDatawarehouse
+)
+joynData.to_excel(kocDatawarehouse +
+                  r"\production\masterJoynData.xlsx", index=False)
 
-# masterGreasebookData = pd.read_csv(
-#     r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveAllocatedProduction.csv")
+# MERGE JOYN DATA WITH MASTER GREASEBOOK DATA
+masterData = joyn.mergeProduction(
+    masterJoynData=joynData,
+    masterGreasebookData=masterGreasebookData
+)
 
-# masterData = joyn.mergeProduction(joynData, masterGreasebookData)
-
-# masterData.to_excel(kocDatawarehouse +
-#                     r"\production\masterAllocatedProductionData.xlsx", index=False)
+# EXPORT MASTER DATA TO KOC DATAWAREHOUSE
+masterData.to_excel(
+    kocDatawarehouse + r"\production\masterAllocatedProductionData.xlsx", index=False)
+masterData.to_json(kocDatawarehouse +
+                   r"\production\masterAllocatedProductionData.json", index=False)
 
 # IT SPEND
 itSpend = tech.getItSpend(
