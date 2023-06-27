@@ -225,7 +225,7 @@ def dailyCost(workingDataDirectory, name):
     dailyItemCostFp.close()
     daysVsDepthFp.close()
 
-    print("Days vs Depth vs Cost and Daily Item Cost Updated")
+    print("Days vs Depth vs Cost and Daily Item Cost Updated for " + nameOfWell)
 
 
 """
@@ -389,7 +389,7 @@ def variance(workingDataDirectory, name):
 
     fp.close()
 
-    print("Done with AFE Varience")
+    print("Done with AFE Varience for" + nameOfWell)
 
     """
     Combine AFE reporting files: AfeActualVariance, dailyItemCost, Paid and Actual

@@ -98,18 +98,18 @@ listOfWells = [
 WORKING ZONE
 
 '''
-# JOYN STACK
-joynData = joyn.getDailyAllocatedProduction()
-joynData.to_excel(kocDatawarehouse +
-                  r"\production\masterJoynData.xlsx", index=False)
+# # JOYN STACK
+# joynData = joyn.getDailyAllocatedProduction()
+# joynData.to_excel(kocDatawarehouse +
+#                   r"\production\masterJoynData.xlsx", index=False)
 
-masterGreasebookData = pd.read_csv(
-    r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveAllocatedProduction.csv")
+# masterGreasebookData = pd.read_csv(
+#     r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveAllocatedProduction.csv")
 
-masterData = joyn.mergeProduction(joynData, masterGreasebookData)
+# masterData = joyn.mergeProduction(joynData, masterGreasebookData)
 
-masterData.to_excel(kocDatawarehouse +
-                    r"\production\masterAllocatedProductionData.xlsx", index=False)
+# masterData.to_excel(kocDatawarehouse +
+#                     r"\production\masterAllocatedProductionData.xlsx", index=False)
 
 # IT SPEND
 itSpend = tech.getItSpend(
