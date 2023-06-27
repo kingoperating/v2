@@ -96,6 +96,9 @@ listOfWells = [
     millerranchc301
 ]
 
+# masterAllocatedData = pd.read_excel(
+#     r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
+
 
 '''
 WORKING ZONE
@@ -109,28 +112,27 @@ joynData = joyn.getDailyAllocatedProduction(
     workingDataDirectory=kocDatawarehouse
 )
 
-# currentJoynData = joynData[1]
-masterJoyn = joynData[0]
-# masterJoyn.to_excel(kocDatawarehouse +
-#                     r"\production\currentmasterJoynDataTest.xlsx", index=False)
+joynData.to_excel(kocDatawarehouse +
+                  r"\production\testmasterJoynData.xlsx", index=False)
+
+# # MERGE JOYN DATA WITH MASTER GREASEBOOK DATA
+# masterData = joyn.mergeProduction(
+#     masterJoynData=joynData,
+#     masterGreasebookData=masterGreasebookData
+# )
+
+# # EXPORT MASTER DATA TO KOC DATAWAREHOUSE
+# masterData.to_excel(
+#     kocDatawarehouse + r"\production\masterAllocatedProductionData.xlsx", index=False)
+# masterData.to_json(kocDatawarehouse +
+#                    r"\production\masterAllocatedProductionData.json", index=False)
 
 combocurve.putJoynWellProductionData(
-    currentJoynData=masterJoyn,
+    currentJoynData=joynData,
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey,
 )
 
-# MERGE JOYN DATA WITH MASTER GREASEBOOK DATA
-masterData = joyn.mergeProduction(
-    masterJoynData=joynData,
-    masterGreasebookData=masterGreasebookData
-)
-
-# EXPORT MASTER DATA TO KOC DATAWAREHOUSE
-masterData.to_excel(
-    kocDatawarehouse + r"\production\masterAllocatedProductionData.xlsx", index=False)
-masterData.to_json(kocDatawarehouse +
-                   r"\production\masterAllocatedProductionData.json", index=False)
 
 # IT SPEND
 itSpend = tech.getItSpend(
