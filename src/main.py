@@ -16,6 +16,7 @@ from combocurve_api_v1 import ServiceAccount
 import os
 import datetime as dt
 from datetime import timedelta
+import pandas as pd
 
 # load .env file
 load_dotenv()
@@ -92,14 +93,23 @@ listOfWells = [
     millerranchc301,
 ]
 
+
 '''
 WORKING ZONE
 
 '''
-# # JOYN STACK
-# joynData = joyn.getDailyAllocatedProduction()
-# joynData.to_csv(workingDirectoryData +
-#                 r"\joynAllocatedProductionGoodTestMergred6252023.csv", index=False)
+# JOYN STACK
+joynData = joyn.getDailyAllocatedProduction()
+joynData.to_excel(kocDatawarehouse +
+                  r"\production\masterJoynData.xlsx", index=False)
+
+masterGreasebookData = pd.read_csv(
+    r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveAllocatedProduction.csv")
+
+masterData = joyn.mergeProduction(joynData, masterGreasebookData)
+
+masterData.to_excel(kocDatawarehouse +
+                    r"\production\masterAllocatedProductionData.xlsx", index=False)
 
 # IT SPEND
 itSpend = tech.getItSpend(

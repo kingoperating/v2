@@ -17,11 +17,11 @@ def getDailyAllocatedProduction():
     masterAllocationData = pd.read_excel(
         r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\master\masterWellAllocation.xlsx")
 
+    masterJoynData = pd.read_excel(
+        r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterJoynData.xlsx")
+
     forecastedProductionData = pd.read_csv(
         r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\forecastWellsFinal.csv")
-
-    joynMasterFile = pd.read_csv(
-        r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\totalAssetProductionJoynGOODBESTTEST_62223UpdateForecast.csv")
 
     joynIdList = masterAllocationData["JOYN Id"].tolist()
     apiNumberList = masterAllocationData["API"].tolist()
@@ -153,7 +153,7 @@ def getDailyAllocatedProduction():
     idToken = getIdToken()  # get idToken from authJoyn function
 
     # set correct URL for Reading Data API JOYN - use idToken as header for authorization
-    urlBase = "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate=2023-06-22&todate=2023-06-23&pagesize=1000&pagenumber="
+    urlBase = "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate=2023-06-24&todate=2023-06-28&pagesize=1000&pagenumber="
 
     pageNumber = 1  # set page number to 1
     nextPage = True
@@ -230,10 +230,18 @@ def getDailyAllocatedProduction():
             # disposition for current allocation row
             disposition = totalResults[i][j]["Disposition"]
 
-            if disposition == 760098 or disposition == 760101:
-                oilSalesVolume = readingVolume
+            # checking to confirm that the record is not deleted
+            if isDeleted == True:
+                continue
 
-            if disposition == 760096 or disposition == 760101 or disposition == 760098:
+            if disposition == 760098 or disposition == 760101 or disposition == 760094 or disposition == 760095 or disposition == 760097:
+                # oilSalesVolume = readingVolume
+                # readingVolume = 0  # set reading volume to 0 if sold
+                newProduct = "Oil Sales Volume"
+            # else:
+            #     oilSalesVolume = 0
+
+            if disposition == 760096 or newProduct == "Oil Sales Volume":
                 row = [apiNumber, wellName, readingVolume, networkName,
                        dateBetter, newProduct, disposition]
             else:
@@ -252,14 +260,15 @@ def getDailyAllocatedProduction():
         "Date"])
 
     # Setting some initial variables for loop
-    dailyRawProduction = np.zeros([200, 3])
+    dailyRawProduction = np.zeros([200, 4])
     dailyRawAssetId = []
     dailyRawWellName = []
     dailyRawDate = []
     dailyClientName = []
+    dailyOilSalesVolume = []
     dailyForecastedProduction = np.zeros([200, 3])
     priorDate = -999
-    counter = 0
+    wellCounter = 0
     lastIndex = 0
 
     # Master Loop Through the raw production data to pivot from 3 records per well per date to one record per well per date with 3 columns: Oil, Gas, Water
@@ -270,6 +279,7 @@ def getDailyAllocatedProduction():
         readingVolumePivot = row["ReadingVolume"]
         productTypePivot = row["Product"]
         datePivot = row["Date"]
+        # oilSalesPivot = row["Oil Sales Volume"]
         wellNamePivot = getName(apiNumberPivot)
         stateName = getState(apiNumberPivot)
         clientName = getClient(apiNumberPivot)
@@ -278,65 +288,78 @@ def getDailyAllocatedProduction():
 
         if datePivot != priorDate and priorDate != -999:
 
-            for j in range(0, counter):
-                row = [dailyRawDate[j], dailyClientName[j], dailyRawAssetId[j], dailyRawWellName[j], dailyRawProduction[j][0], dailyRawProduction[j]
-                       [1], dailyRawProduction[j][2], 0, dailyForecastedProduction[j][0], dailyForecastedProduction[j][1], dailyForecastedProduction[j][2], dataSource, stateName]
-                # row = [dailyRawAssetId[j], dailyRawWellName[j], dailyRawDate[j],
-                #        dailyRawProduction[j][0], dailyRawProduction[j][1], dailyRawProduction[j][2]]
+            for j in range(0, wellCounter):
+                rowCounter = [dailyRawDate[j], dailyClientName[j], dailyRawAssetId[j], dailyRawWellName[j], dailyRawProduction[j][0], dailyRawProduction[j]
+                              [1], dailyRawProduction[j][2], dailyRawProduction[j][3], dailyForecastedProduction[j][0], dailyForecastedProduction[j][1], dailyForecastedProduction[j][2], dataSource, stateName]
 
-                currentRunTotalAssetProductionJoyn.loc[lastIndex + j] = row
+                currentRunTotalAssetProductionJoyn.loc[lastIndex +
+                                                       j] = rowCounter
 
-            dailyRawProduction = np.zeros([200, 3])
+            dailyRawProduction = np.zeros([200, 4])
             dailyForecastedProduction = np.zeros([200, 3])
             dailyRawAssetId = []
             dailyRawWellName = []
             dailyRawDate = []
             dailyClientName = []
-            counter = 0
+            wellCounter = 0  # keeping track of how many results we have on the same day
             lastIndex = lastIndex + j + 1
 
         if apiNumberPivot in dailyRawAssetId:
             index = dailyRawAssetId.index(apiNumberPivot)
+
             if productTypePivot == "Oil":
                 dailyRawProduction[index][0] = readingVolumePivot
             elif productTypePivot == "Gas":
                 dailyRawProduction[index][1] = readingVolumePivot
             elif productTypePivot == "Water":
                 dailyRawProduction[index][2] = readingVolumePivot
+            elif productTypePivot == "Oil Sales Volume":
+                dailyRawProduction[index][3] = readingVolumePivot
 
         else:
             dailyRawAssetId.append(apiNumberPivot)
             dailyRawWellName.append(wellNamePivot)
             dailyRawDate.append(datePivot)
             dailyClientName.append(clientName)
-            dailyForecastedProduction[counter][0] = forecastVolumes[0]
-            dailyForecastedProduction[counter][1] = forecastVolumes[1]
-            dailyForecastedProduction[counter][2] = forecastVolumes[2]
+            dailyForecastedProduction[wellCounter][0] = forecastVolumes[0]
+            dailyForecastedProduction[wellCounter][1] = forecastVolumes[1]
+            dailyForecastedProduction[wellCounter][2] = forecastVolumes[2]
             if productTypePivot == "Oil":
-                dailyRawProduction[counter][0] = readingVolumePivot
+                dailyRawProduction[wellCounter][0] = readingVolumePivot
             elif productTypePivot == "Gas":
-                dailyRawProduction[counter][1] = readingVolumePivot
+                dailyRawProduction[wellCounter][1] = readingVolumePivot
             elif productTypePivot == "Water":
-                dailyRawProduction[counter][2] = readingVolumePivot
-            counter = counter + 1
+                dailyRawProduction[wellCounter][2] = readingVolumePivot
+            elif productTypePivot == "Oil Sales Volume":
+                dailyRawProduction[wellCounter][3] = readingVolumePivot
+            wellCounter = wellCounter + 1
 
         priorDate = datePivot
 
-    # clean JOYN only copy - for testing purposes - will delete in production
-    currentRunTotalAssetProductionJoyn.to_excel(
-        r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\currentRunTotalAssetProductionJoyn.xlsx", index=False)
+        # write the last day out after we have processed the last row of the last data
 
-    joynMasterFile["Date"] = pd.to_datetime(joynMasterFile["Date"])
-    currentRunTotalAssetProductionJoyn["Date"] = pd.to_datetime(
-        currentRunTotalAssetProductionJoyn["Date"])
+    for j in range(0, wellCounter):
+        rowCounter = [dailyRawDate[j], dailyClientName[j], dailyRawAssetId[j], dailyRawWellName[j], dailyRawProduction[j][0], dailyRawProduction[j]
+                      [1], dailyRawProduction[j][2], dailyRawProduction[j][3], dailyForecastedProduction[j][0], dailyForecastedProduction[j][1], dailyForecastedProduction[j][2], dataSource, stateName]
 
-    joynMasterFile["Date"] = joynMasterFile["Date"].dt.strftime("%m/%d/%Y")
-    currentRunTotalAssetProductionJoyn["Date"] = currentRunTotalAssetProductionJoyn["Date"].dt.strftime(
-        "%m/%d/%Y")
+        currentRunTotalAssetProductionJoyn.loc[lastIndex + j] = rowCounter
 
-    finalMergedProduction = pd.merge(joynMasterFile, currentRunTotalAssetProductionJoyn, how="outer", on=[
-                                     "API", "Well Accounting Name", "Date"])
+    # merge master JOYN data with current run JOYN data to ensure clean JOYN list
+    masterJoynData.update(currentRunTotalAssetProductionJoyn)
 
-    currentRunTotalAssetProductionJoyn.update(finalMergedProduction)
+    return masterJoynData
 
-    return currentRunTotalAssetProductionJoyn
+
+def mergeProduction(masterJoynData, masterGreasebookData):
+
+    masterJoynDataframe = masterJoynData
+    masterGreasebookDataframe = masterGreasebookData
+
+    masterGreasebookDataframe.update(masterJoynDataframe)
+
+    masterGreasebookDataframe["Date"] = pd.to_datetime(
+        masterGreasebookDataframe["Date"])
+    masterGreasebookDataframe.sort_values(
+        by=["Date"], inplace=True, ascending=True)
+
+    return masterGreasebookDataframe
