@@ -8,6 +8,12 @@ import pandas as pd
 import numpy as np
 from combocurve_api_v1 import ComboCurveAuth
 
+"""
+
+    Script to put Joyn data into ComboCurve - production-ready
+
+"""
+
 
 def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
     load_dotenv()  # load enviroment variables
@@ -24,6 +30,7 @@ def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
     combocurve_auth = ComboCurveAuth(service_account, api_key)
 
     # converts API to int (removing decimals) and then back to string for JSON
+
     masterJoynData = masterJoynData.astype({
         "Date": "string", "API": "string"})
 
@@ -35,20 +42,17 @@ def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
     masterJoynData = masterJoynData.drop(
         ["Well Accounting Name", "Client", "Oil Forecast", "Gas Forecast", "Water Forecast", "State"], axis=1)
 
-    # remove duplicate rows
-    masterJoynData = masterJoynData.drop_duplicates()
-
-    masterJoynData = masterJoynData.iloc[0:19999]
+    masterJoynDataLastRows = masterJoynData.tail(5000)
 
     # renames columns to match ComboCurve
-    masterJoynData.rename(
+    masterJoynDataLastRows.rename(
         columns={"Oil Volume": "oil", "Date": "date", "Gas Volume": "gas", "Water Volume": "water", "API": "chosenID", "Data Source": "dataSource", "Oil Sold Volume": "customNumber0"}, inplace=True)
 
     # exports to json for storage
-    masterJoynData.to_json(
-        r".\kingoperating\data\totalAssetsProduction.json", orient="records")
+    masterJoynDataLastRows.to_json(
+        r".\kingoperating\data\totalAssetsProductionJoyn.json", orient="records")
 
-    totalAssetProductionJson = masterJoynData.to_json(
+    totalAssetProductionJson = masterJoynDataLastRows.to_json(
         orient="records")  # converts to internal json format
     # loads json into format that can be sent to ComboCurve
     cleanTotalAssetProduction = json.loads(totalAssetProductionJson)
@@ -75,11 +79,15 @@ def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
         indexOfSuccessFail = responseText.index("successCount")
         print(responseText[indexOfSuccessFail:])
 
-    print("Finished Put Production Data to ComboCurve")
+    print("Finished PUT " + str(len(cleanTotalAssetProduction)) +
+          " Rows of New Production Data to ComboCurve")
 
-    x = 5
 
-# Script to put Greasebook Well Production into ComboCurve - does allocation process
+"""
+ 
+ Script to put Greasebook Well Production into ComboCurve - does allocation process
+
+"""
 
 
 def putGreasebookWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccount, comboCurveApi, greasebookApi, daysToPull):
