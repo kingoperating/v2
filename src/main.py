@@ -22,7 +22,7 @@ import pandas as pd
 load_dotenv()
 
 '''
-FIRST - MAKE SURE ALL THE ENVIRONMENT VARIABLES ARE SET IN THE .ENV FILE 
+FIRST - MAKE SURE ALL THE ENVIRONMENT VARIABLES ARE SET IN THE .ENV FILE
 
 SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER. CURRENT THIS SCRIPT REFERENCES THE KOC DATAWAREHOUSE V1.0.0
 
@@ -101,13 +101,24 @@ listOfWells = [
 WORKING ZONE
 
 '''
+
+
 # JOYN STACK
 # DAILY ALLOCATED PRODUCTION
 joynData = joyn.getDailyAllocatedProduction(
     workingDataDirectory=kocDatawarehouse
 )
-joynData.to_excel(kocDatawarehouse +
-                  r"\production\masterJoynData.xlsx", index=False)
+
+# currentJoynData = joynData[1]
+masterJoyn = joynData[0]
+# masterJoyn.to_excel(kocDatawarehouse +
+#                     r"\production\currentmasterJoynDataTest.xlsx", index=False)
+
+combocurve.putJoynWellProductionData(
+    currentJoynData=masterJoyn,
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey,
+)
 
 # MERGE JOYN DATA WITH MASTER GREASEBOOK DATA
 masterData = joyn.mergeProduction(
@@ -186,7 +197,7 @@ allocatedProductionData.to_json(
 allocatedProductionData.to_csv(
     kocDatawarehouse + r"\production\allocationVersionControl\comboCurveAllocatedProduction_" + yesDateString + ".csv", index=False)
 
-combocurve.putWellProductionData(
+combocurve.putGreasebookWellProductionData(
     workingDataDirectory=kocDatawarehouse,
     pullFromAllocation=False,
     serviceAccount=serviceAccount,
@@ -293,7 +304,7 @@ greasebookComments = greasebook.getComments(
 )
 
 # ComboCurve Stack
-combocurve.putWellProductionData(
+combocurve.putGreasebookWellProductionData(
     workingDataDirectory=workingDirectoryData,
     pullFromAllocation=False,
     serviceAccount=serviceAccount,
