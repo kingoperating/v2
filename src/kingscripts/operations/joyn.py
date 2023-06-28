@@ -6,7 +6,7 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 import numpy as np
-from kingscripts.operations import combocurve
+from kingscripts.operations.combocurve import *
 from combocurve_api_v1 import ServiceAccount
 
 
@@ -151,7 +151,7 @@ def getDailyAllocatedProduction(workingDataDirectory):
     idToken = getIdToken()  # get idToken from authJoyn function
 
     # set correct URL for Reading Data API JOYN - use idToken as header for authorization
-    urlBase = "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate=2023-06-24&todate=2023-06-29&pagesize=1000&pagenumber="
+    urlBase = "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate=2023-06-24&todate=2023-06-30&pagesize=1000&pagenumber="
 
     pageNumber = 1  # set page number to 1
     nextPage = True
@@ -317,7 +317,8 @@ def getDailyAllocatedProduction(workingDataDirectory):
         else:
             dailyRawAssetId.append(apiNumberPivot)
             dailyRawWellName.append(wellNamePivot)
-            dailyRawDate.append(datePivot)
+            cleanDatePivot = datePivot.strftime("%m/%d/%Y")
+            dailyRawDate.append(cleanDatePivot)
             dailyClientName.append(clientName)
             dailyForecastedProduction[wellCounter][0] = forecastVolumes[0]
             dailyForecastedProduction[wellCounter][1] = forecastVolumes[1]
@@ -342,43 +343,44 @@ def getDailyAllocatedProduction(workingDataDirectory):
 
         currentRunTotalAssetProductionJoyn.loc[lastIndex + j] = rowCounter
 
-    mergedJoynData = pd.merge(masterJoynData, currentRunTotalAssetProductionJoyn, on=[
-                              "Date", "API"], how="outer")
+    masterJoynData = mergeBIntoA(
+        masterJoynData, currentRunTotalAssetProductionJoyn)
 
-    # merge master JOYN data with current run JOYN data to ensure clean JOYN list
-    masterJoynData.update(mergedJoynData)
-    masterJoynData = pd.concat(
-        [masterJoynData, currentRunTotalAssetProductionJoyn], axis=0)
-
-    masterJoynData.drop_duplicates(subset=[
-        "Date",
-        "Client",
-        "API",
-        "Well Accounting Name",
-        "Oil Volume",
-        "Gas Volume",
-        "Water Volume",
-        "Oil Sold Volume",
-        "Oil Forecast",
-        "Gas Forecast",
-        "Water Forecast",
-        "Data Source",
-        "State"
-    ])
-
-    return currentRunTotalAssetProductionJoyn
+    return masterJoynData
 
 
-def mergeProduction(masterJoynData, masterGreasebookData):
+"""
+        
+For this script to work, A and B MUST have the same columns and column names.
+Two of those columns must be "Date" and "API". The function will merge B into A
+      
+"""
 
-    masterJoynDataframe = masterJoynData
-    masterGreasebookDataframe = masterGreasebookData
 
-    masterGreasebookDataframe.update(masterJoynDataframe)
+def mergeBIntoA(A, B):
 
-    masterGreasebookDataframe["Date"] = pd.to_datetime(
-        masterGreasebookDataframe["Date"])
-    masterGreasebookDataframe.sort_values(
-        by=["Date"], inplace=True, ascending=True)
+    A["Date"] = pd.to_datetime(A["Date"])
+    A["Date"] = A["Date"].dt.strftime("%m/%d/%Y")
 
-    return masterGreasebookDataframe
+    B["Date"] = pd.to_datetime(B["Date"])
+    B["Date"] = B["Date"].dt.strftime("%m/%d/%Y")
+
+    for i in range(0, len(B)):
+        row = B.iloc[i]
+        index = A.index[(A["Date"] == row["Date"]) &
+                        (A["API"] == row["API"])].tolist()
+
+        if len(index) > 1:
+            print("Error: More than one row found")
+
+        if len(index) == 0:
+            A.loc[len(A)] = row
+        else:
+            A.iloc[index] = row
+
+    A["Date"] = pd.to_datetime(A["Date"])
+    A.sort_values(by=["Date"], inplace=True, ascending=True)
+
+    A["Date"] = A["Date"].dt.strftime("%m/%d/%Y")
+
+    return A
