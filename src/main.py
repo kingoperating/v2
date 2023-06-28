@@ -96,60 +96,10 @@ listOfWells = [
     millerranchc301
 ]
 
-# masterAllocatedData = pd.read_excel(
-#     r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
-
-
 '''
 WORKING ZONE
 
 '''
-
-# allocatedProductionData = greasebook.allocateWells(
-#     days=daysToPull,
-#     workingDataDirectory=kocDatawarehouse,
-#     greasebookApi=greasebookApi,
-#     pullProd=True,
-#     edgeCaseRollingAverage=7
-# )
-
-# # KOC Datawarehouse LIVE DUMP
-# allocatedProductionData.to_csv(
-#     kocDatawarehouse + r"\production\comboCurveAllocatedProduction.csv", index=False)
-# allocatedProductionData.to_json(
-#     kocDatawarehouse + r"\production\comboCurveAllocatedProduction.json", orient="records")
-# allocatedProductionData.to_csv(
-#     kocDatawarehouse + r"\production\allocationVersionControl\comboCurveAllocatedProduction_" + yesDateString + ".csv", index=False)
-
-
-# # JOYN STACK
-# # DAILY ALLOCATED PRODUCTION
-# joynData = joyn.getDailyAllocatedProduction(
-#     workingDataDirectory=kocDatawarehouse
-# )
-
-# joynData.to_excel(kocDatawarehouse +
-#                   r"\production\testmasterJoynData.xlsx", index=False)
-
-# # MERGE JOYN DATA WITH MASTER GREASEBOOK DATA
-# masterData = joyn.mergeProduction(
-#     masterJoynData=joynData,
-#     masterGreasebookData=masterGreasebookData
-# )
-
-# # EXPORT MASTER DATA TO KOC DATAWAREHOUSE
-# masterData.to_excel(
-#     kocDatawarehouse + r"\production\masterAllocatedProductionData.xlsx", index=False)
-# masterData.to_json(kocDatawarehouse +
-#                    r"\production\masterAllocatedProductionData.json", index=False)
-
-# combocurve.putJoynWellProductionData(
-#     currentJoynData=joynData,
-#     serviceAccount=serviceAccount,
-#     comboCurveApi=comboCurveApiKey,
-# )
-
-
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
@@ -179,7 +129,7 @@ newBrowningFluvannaActivity = enverus.checkWellStatus(
 
 pumperNotReportedList = greasebook.getBatteryProductionData(
     workingDataDirectory=kocDatawarehouse,
-    pullProd=False,
+    fullProd=False,
     days=daysToPull,
     greasebookApi=greasebookApi
 )
@@ -214,6 +164,28 @@ allocatedProductionData.to_json(
     kocDatawarehouse + r"\production\comboCurveAllocatedProduction.json", orient="records")
 allocatedProductionData.to_csv(
     kocDatawarehouse + r"\production\allocationVersionControl\comboCurveAllocatedProduction_" + yesDateString + ".csv", index=False)
+
+# JOYN STACK
+# DAILY ALLOCATED PRODUCTION
+joynData = joyn.getDailyAllocatedProduction(
+    workingDataDirectory=kocDatawarehouse
+)
+
+joynData.to_excel(kocDatawarehouse +
+                  r"\production\masterJoynData.xlsx", index=False)
+
+# MERGE JOYN DATA WITH MASTER GREASEBOOK DATA
+masterData = joyn.mergeBIntoA(
+    A=masterGreasebookData,
+    B=joynData
+)
+
+# EXPORT MASTER DATA TO KOC DATAWAREHOUSE
+masterData.to_excel(
+    kocDatawarehouse + r"\production\masterAllocatedProductionData.xlsx", index=False)
+
+masterData.to_json(kocDatawarehouse +
+                   r"\production\masterAllocatedProductionData.json", orient="records")
 
 combocurve.putGreasebookWellProductionData(
     workingDataDirectory=kocDatawarehouse,
@@ -296,7 +268,7 @@ enverus.checkWellStatus(
 # Greasebook Stack
 greasebook.getBatteryProductionData(
     workingDataDirectory=workingDirectoryData,
-    pullProd=False,
+    fullProd=False,
     days=30,
     greasebookApi=greasebookApi
 )

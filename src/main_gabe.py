@@ -1,9 +1,9 @@
 
-## Author: Gabe Tatman
-## Date: 06/22/23
-## 
+# Author: Gabe Tatman
+# Date: 06/22/23
+##
 
-from kingscripts.operations import greasebook 
+from kingscripts.operations import greasebook
 from kingscripts.analytics import enverus
 
 # Python Packages
@@ -16,12 +16,12 @@ from datetime import timedelta
 # load .env file
 load_dotenv()
 
-#getting API Key
+# getting API Key
 enverusApiKey = os.getenv('ENVERUS_API')
 greasebookApi = os.getenv('GREASEBOOK_API_KEY')
 
 # Working Directories
-##workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA") ## Backup file
+# workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA") ## Backup file
 kocDatawarehouse = os.getenv("KOC_DATAWAREHOUSE")
 
 
@@ -70,7 +70,7 @@ browing518HProductionMonthtlyData = enverus.getWellProductionData(
 # Greasebook Stack
 NaughtyList = greasebook.getBatteryProductionData(
     workingDataDirectory=kocDatawarehouse,
-    pullProd=False,
+    fullProd=False,
     days=30,
     greasebookApi=greasebookApi
 )
@@ -107,4 +107,4 @@ allocatedProductionData.to_csv(
     kocDatawarehouse + r"\production\allocationVersionControl\comboCurveAllocatedProduction_" + yesDateString + ".csv", index=False)
 
 
-x=5
+x = 5

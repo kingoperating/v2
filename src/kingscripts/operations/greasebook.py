@@ -22,11 +22,11 @@ from datetime import datetime
 # Gets Battery Level Production Data From Greasebook and returns two objects, pumperNotReportedList and totalAssetProduction
 
 
-def getBatteryProductionData(workingDataDirectory, pullProd, days, greasebookApi):
+def getBatteryProductionData(workingDataDirectory, fullProd, days, greasebookApi):
 
     print("Begin Pulling Battery Production Data From Greasebook")
 
-    fullProductionPull = pullProd
+    fullProductionPull = fullProd
     numberOfDaysToPull = days
     # sets working directory
     workingDir = workingDataDirectory
