@@ -105,15 +105,31 @@ WORKING ZONE
 
 '''
 
+# allocatedProductionData = greasebook.allocateWells(
+#     days=daysToPull,
+#     workingDataDirectory=kocDatawarehouse,
+#     greasebookApi=greasebookApi,
+#     pullProd=True,
+#     edgeCaseRollingAverage=7
+# )
 
-# JOYN STACK
-# DAILY ALLOCATED PRODUCTION
-joynData = joyn.getDailyAllocatedProduction(
-    workingDataDirectory=kocDatawarehouse
-)
+# # KOC Datawarehouse LIVE DUMP
+# allocatedProductionData.to_csv(
+#     kocDatawarehouse + r"\production\comboCurveAllocatedProduction.csv", index=False)
+# allocatedProductionData.to_json(
+#     kocDatawarehouse + r"\production\comboCurveAllocatedProduction.json", orient="records")
+# allocatedProductionData.to_csv(
+#     kocDatawarehouse + r"\production\allocationVersionControl\comboCurveAllocatedProduction_" + yesDateString + ".csv", index=False)
 
-joynData.to_excel(kocDatawarehouse +
-                  r"\production\testmasterJoynData.xlsx", index=False)
+
+# # JOYN STACK
+# # DAILY ALLOCATED PRODUCTION
+# joynData = joyn.getDailyAllocatedProduction(
+#     workingDataDirectory=kocDatawarehouse
+# )
+
+# joynData.to_excel(kocDatawarehouse +
+#                   r"\production\testmasterJoynData.xlsx", index=False)
 
 # # MERGE JOYN DATA WITH MASTER GREASEBOOK DATA
 # masterData = joyn.mergeProduction(
@@ -127,11 +143,11 @@ joynData.to_excel(kocDatawarehouse +
 # masterData.to_json(kocDatawarehouse +
 #                    r"\production\masterAllocatedProductionData.json", index=False)
 
-combocurve.putJoynWellProductionData(
-    currentJoynData=joynData,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey,
-)
+# combocurve.putJoynWellProductionData(
+#     currentJoynData=joynData,
+#     serviceAccount=serviceAccount,
+#     comboCurveApi=comboCurveApiKey,
+# )
 
 
 # IT SPEND

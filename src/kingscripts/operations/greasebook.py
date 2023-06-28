@@ -866,7 +866,8 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
     welopWaterVolume = 0
     welopOilSalesVolume = 0
     welopCounter = 0
-    wellIdsThatNeedAvg = [28062, 10208, 23706]  # Anything can go here, these ID's are battery ID's 
+    # Anything can go here, these ID's are battery ID's
+    wellIdsThatNeedAvg = [28062, 10208, 23706]
     # You can only choose the from items in the wellIdsThatNeedAvg list
     wellIdsThatNeedAvgGas = [28062]
     # You can only choose the from items in the wellIdsThatNeedAvg list

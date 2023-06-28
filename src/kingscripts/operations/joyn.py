@@ -151,7 +151,7 @@ def getDailyAllocatedProduction(workingDataDirectory):
     idToken = getIdToken()  # get idToken from authJoyn function
 
     # set correct URL for Reading Data API JOYN - use idToken as header for authorization
-    urlBase = "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate=2023-06-24&todate=2023-06-28&pagesize=1000&pagenumber="
+    urlBase = "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate=2023-06-24&todate=2023-06-29&pagesize=1000&pagenumber="
 
     pageNumber = 1  # set page number to 1
     nextPage = True
@@ -342,8 +342,29 @@ def getDailyAllocatedProduction(workingDataDirectory):
 
         currentRunTotalAssetProductionJoyn.loc[lastIndex + j] = rowCounter
 
+    mergedJoynData = pd.merge(masterJoynData, currentRunTotalAssetProductionJoyn, on=[
+                              "Date", "API"], how="outer")
+
     # merge master JOYN data with current run JOYN data to ensure clean JOYN list
-    masterJoynData.update(currentRunTotalAssetProductionJoyn)
+    masterJoynData.update(mergedJoynData)
+    masterJoynData = pd.concat(
+        [masterJoynData, currentRunTotalAssetProductionJoyn], axis=0)
+
+    masterJoynData.drop_duplicates(subset=[
+        "Date",
+        "Client",
+        "API",
+        "Well Accounting Name",
+        "Oil Volume",
+        "Gas Volume",
+        "Water Volume",
+        "Oil Sold Volume",
+        "Oil Forecast",
+        "Gas Forecast",
+        "Water Forecast",
+        "Data Source",
+        "State"
+    ])
 
     return currentRunTotalAssetProductionJoyn
 

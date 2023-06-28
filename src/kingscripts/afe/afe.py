@@ -389,7 +389,7 @@ def variance(workingDataDirectory, name):
 
     fp.close()
 
-    print("Done with AFE Varience for" + nameOfWell)
+    print("Done with AFE Varience for " + nameOfWell)
 
     """
     Combine AFE reporting files: AfeActualVariance, dailyItemCost, Paid and Actual
