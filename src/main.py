@@ -32,7 +32,7 @@ workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
 kocDatawarehouse = os.getenv("KOC_DATAWAREHOUSE")
 
 # Master Greasebook Data
-masterGreasebookData = pd.read_csv(os.getenv("MASTER_GREASEBOOK_DATA"))
+masterGreasebookData = pd.read_excel(os.getenv("MASTER_GREASEBOOK_DATA"))
 
 # getting API keys
 enverusApiKey = os.getenv('ENVERUS_API')
@@ -154,16 +154,16 @@ allocatedProductionData = greasebook.allocateWells(
 # Backup
 allocatedProductionData.to_json(
     workingDirectoryData + r"\comboCurveAllocatedProduction.json", orient="records")
-allocatedProductionData.to_csv(
-    workingDirectoryData + r"\comboCurveAllocatedProduction.csv", index=False)
+allocatedProductionData.to_excel(
+    workingDirectoryData + r"\comboCurveAllocatedProduction.xlsx", index=False)
 
 # KOC Datawarehouse LIVE DUMP
-allocatedProductionData.to_csv(
-    kocDatawarehouse + r"\production\comboCurveAllocatedProduction.csv", index=False)
+allocatedProductionData.to_excel(
+    kocDatawarehouse + r"\production\comboCurveAllocatedProduction.xlsx", index=False)
 allocatedProductionData.to_json(
     kocDatawarehouse + r"\production\comboCurveAllocatedProduction.json", orient="records")
-allocatedProductionData.to_csv(
-    kocDatawarehouse + r"\production\allocationVersionControl\comboCurveAllocatedProduction_" + yesDateString + ".csv", index=False)
+allocatedProductionData.to_excel(
+    kocDatawarehouse + r"\production\allocationVersionControl\comboCurveAllocatedProduction_" + yesDateString + ".xlsx", index=False)
 
 # JOYN STACK
 # DAILY ALLOCATED PRODUCTION
