@@ -723,23 +723,23 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
         clientNameAlgo = splitString[0]
         # if field name exisits - add the batteryName
         if clientNameAlgo == "CWS ":
-            clientNameAlgo = "KOSOU"
+            clientNameAlgo = "South Texas"
         elif clientNameAlgo == "Peak ":
-            clientNameAlgo = "KOEAS"
+            clientNameAlgo = "East Texas"
         elif clientNameAlgo == "Otex ":
-            clientNameAlgo = "KOGCT"
+            clientNameAlgo = "Gulf Coast"
         elif clientNameAlgo == "Midcon ":
-            clientNameAlgo = "KOAND"
+            clientNameAlgo = "Anadarko"
         elif clientNameAlgo == "Wellman ":
-            clientNameAlgo = "KOPRM"
+            clientNameAlgo = "West Texas"
         elif clientNameAlgo == "Wellington ":
-            clientNameAlgo = "WELOP"
+            clientNameAlgo = "Colorado"
         elif clientNameAlgo == "Scurry ":
-            clientNameAlgo = "KOPRM"
+            clientNameAlgo = "Scurry"
         elif clientNameAlgo == "Wyoming ":
-            clientNameAlgo = "KOWYM"
+            clientNameAlgo = "Wyoming"
         elif clientNameAlgo == "Wyoming":
-            clientNameAlgo == "KOWYM"
+            clientNameAlgo == "Wyoming"
 
         return clientNameAlgo
 
@@ -1196,9 +1196,6 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
         priorDay = day  # updates the day for the next iteration # very important
 
     print("Completed Allocation Process")
-
-    totalAccountingAllocatedProduction.to_csv(
-        workingDataDirectory+r"\production\accountingAllocatedProduction.csv", index=False)
 
     return totalComboCurveAllocatedProduction
 
