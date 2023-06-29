@@ -2,6 +2,12 @@
 from datetime import datetime
 import pandas as pd
 
+"""
+
+Getting AFE Daily Cost Data Formatted Properly
+
+"""
+
 
 def dailyCost(workingDataDirectory, name):
     # Set Well Name To Whatever well is needed:
@@ -396,6 +402,13 @@ def variance(workingDataDirectory, name):
     """
 
 
+"""
+
+Combine all AFE vs Actual Spend Files for reporting purposes
+ 
+"""
+
+
 def combineAfeFiles(listOfWells, workingDataDirectory):
     # set working data directory
     pathOfWorkingDir = workingDataDirectory + r"\afe"
@@ -498,6 +511,3 @@ def combineAfeFiles(listOfWells, workingDataDirectory):
         pathofExport + r"\afeOgCombineData.xlsx", index=False)
     plannedCostCombineData.to_excel(
         pathofExport + r"\plannedCostCombineData.xlsx", index=False)
-
-
-x = 5

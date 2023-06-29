@@ -114,6 +114,7 @@ browing518HProductionMonthtlyData = enverus.getWellProductionData(
 browing518HProductionMonthtlyData.to_excel(
     kocDatawarehouse + r"\browningWell.xlsx", index=False)
 
+# Gresebook Stack
 pumperNotReportedList = greasebook.getBatteryProductionData(
     workingDataDirectory=kocDatawarehouse,
     fullProd=False,
@@ -121,14 +122,10 @@ pumperNotReportedList = greasebook.getBatteryProductionData(
     greasebookApi=greasebookApi
 )
 
-# greasebook.sendPumperEmail(
-#     pumperNotReportedList=pumperNotReportedList[0],
-#     workingDataDirectory=kocDatawarehouse
-# )
-
-totalAssetProduction = pumperNotReportedList[1]
-totalAssetProduction.to_csv(
-    kocDatawarehouse + r"\totalAssetProduction.csv", index=False)
+greasebook.sendPumperEmail(
+    pumperNotReportedList=pumperNotReportedList[0],
+    workingDataDirectory=kocDatawarehouse
+)
 
 allocatedProductionData = greasebook.allocateWells(
     days=daysToPull,
@@ -138,8 +135,8 @@ allocatedProductionData = greasebook.allocateWells(
     edgeCaseRollingAverage=7
 )
 
-print("Begin Exporting Greasebook Allocated Production Data to KOC Datawarehouse...")
 # KOC Datawarehouse LIVE DUMP
+print("Begin Exporting Greasebook Allocated Production Data to KOC Datawarehouse...")
 allocatedProductionData.to_excel(
     kocDatawarehouse + r"\production\comboCurveAllocatedProduction.xlsx", index=False)
 allocatedProductionData.to_json(
@@ -152,6 +149,7 @@ joynData = joyn.getDailyAllocatedProduction(
     workingDataDirectory=kocDatawarehouse
 )
 
+print("Begin Exporting Master Joyn Data to KOC Datawarehouse...")
 joynData.to_excel(kocDatawarehouse +
                   r"\production\masterJoynData.xlsx", index=False)
 print("Finished Exporting Master Joyn Data to KOC Datawarehouse!")
@@ -176,7 +174,7 @@ masterData.to_json(kocDatawarehouse +
                    r"\production\masterAllocatedProductionData.json", orient="records")
 print("Finished Exporting Master Data to KOC Datawarehouse!")
 
-
+# ComboCurve PUT Statements
 combocurve.putGreasebookWellProductionData(
     workingDataDirectory=kocDatawarehouse,
     pullFromAllocation=False,
@@ -321,7 +319,7 @@ latestPdpDailyForecast = combocurve.getDailyForecastVolume(
 latestPdpDailyForecast.to_excel(
     kocDatawarehouse + r"\production\latestDailyForecast.xlsx", index=False)
 
-combocurve.putWellComments(
+combocurve.putGreasebookWellComments(
     cleanJson=greasebookComments,
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
