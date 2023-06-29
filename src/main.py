@@ -32,7 +32,9 @@ workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
 kocDatawarehouse = os.getenv("KOC_DATAWAREHOUSE")
 
 # Master Greasebook Data
+print("Reading Master Greasebook Data...")
 masterGreasebookData = pd.read_excel(os.getenv("MASTER_GREASEBOOK_DATA"))
+print("Finished Reading Master Greasebook Data")
 
 # getting API keys
 enverusApiKey = os.getenv('ENVERUS_API')
@@ -117,15 +119,7 @@ browing518HProductionMonthtlyData = enverus.getWellProductionData(
 print("Number of Records in Fluvanna 518H: " +
       str(len(browing518HProductionMonthtlyData)))
 browing518HProductionMonthtlyData.to_excel(
-    workingDirectoryData + r"\browningWell.xlsx", index=False)
-browing518HProductionMonthtlyData.to_excel(
     kocDatawarehouse + r"\browningWell.xlsx", index=False)
-
-newBrowningFluvannaActivity = enverus.checkWellStatus(
-    apiKey=enverusApiKey,
-    operatorName=browningOperatorName,
-    basin=basin
-)
 
 pumperNotReportedList = greasebook.getBatteryProductionData(
     workingDataDirectory=kocDatawarehouse,
@@ -151,19 +145,11 @@ allocatedProductionData = greasebook.allocateWells(
     edgeCaseRollingAverage=7
 )
 
-# Backup
-allocatedProductionData.to_json(
-    workingDirectoryData + r"\comboCurveAllocatedProduction.json", orient="records")
-allocatedProductionData.to_excel(
-    workingDirectoryData + r"\comboCurveAllocatedProduction.xlsx", index=False)
-
 # KOC Datawarehouse LIVE DUMP
 allocatedProductionData.to_excel(
     kocDatawarehouse + r"\production\comboCurveAllocatedProduction.xlsx", index=False)
 allocatedProductionData.to_json(
     kocDatawarehouse + r"\production\comboCurveAllocatedProduction.json", orient="records")
-allocatedProductionData.to_excel(
-    kocDatawarehouse + r"\production\allocationVersionControl\comboCurveAllocatedProduction_" + yesDateString + ".xlsx", index=False)
 
 # JOYN STACK
 # DAILY ALLOCATED PRODUCTION
@@ -194,6 +180,12 @@ combocurve.putGreasebookWellProductionData(
     comboCurveApi=comboCurveApiKey,
     greasebookApi=greasebookApi,
     daysToPull=daysToPull
+)
+
+combocurve.putJoynWellProductionData(
+    currentJoynData=joynData,
+    comboCurveApi=comboCurveApiKey,
+    serviceAccount=serviceAccount
 )
 
 # AFE Stack Miller Ranch C301
