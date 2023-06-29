@@ -39,6 +39,8 @@ serviceAccount = ServiceAccount.from_file(
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
 kingServer = str(os.getenv('SQL_SERVER'))
 kingDatabase = str(os.getenv('SQL_KING_DATABASE'))
+joynUsername = str(os.getenv('JOYN_USERNAME'))
+joynPassword = str(os.getenv('JOYN_PASSWORD'))
 
 # Getting Date Variables
 dateToday = dt.datetime.today()
@@ -97,6 +99,15 @@ listOfWells = [
 WORKING ZONE
 
 '''
+# JOYN STACK
+# DAILY ALLOCATED PRODUCTION
+joynData = joyn.getDailyAllocatedProduction(
+    workingDataDirectory=kocDatawarehouse,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
