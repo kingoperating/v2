@@ -16,7 +16,7 @@ This script gets all the modifed daily allocated production over to the master J
 """
 
 
-def getDailyAllocatedProduction(workingDataDirectory):
+def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword):
 
     load_dotenv()
 
@@ -75,8 +75,8 @@ def getDailyAllocatedProduction(workingDataDirectory):
 
         load_dotenv()
 
-        login = os.getenv("JOYN_USERNAME")
-        password = os.getenv("JOYN_PASSWORD")
+        login = joynUsername
+        password = joynPassword
 
         # User Token API
         url = "https://api.joyn.ai/common/user/token"
