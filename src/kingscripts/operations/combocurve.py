@@ -619,7 +619,7 @@ This code puts the well comments into ComboCurve from Greasebook
 """
 
 
-def putWellComments(cleanJson, serviceAccount, comboCurveApi):
+def putGreasebookWellComments(cleanJson, serviceAccount, comboCurveApi):
     # connect to service account
     service_account = serviceAccount
     # set API Key from enviroment variable
