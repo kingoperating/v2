@@ -19,7 +19,10 @@ from email import encoders
 import os.path
 from datetime import datetime
 
-# Gets Battery Level Production Data From Greasebook and returns two objects, pumperNotReportedList and totalAssetProduction
+'''
+#Gets Battery Level Production Data From Greasebook and returns two objects, pumperNotReportedList and totalAssetProduction
+
+'''
 
 
 def getBatteryProductionData(workingDataDirectory, fullProd, days, greasebookApi):
@@ -712,7 +715,12 @@ def getComments(workingDataDirectory, greasebookApi, prodStartDate, prodEndDate)
     return cleanTotalCommentComboCurveJson, totalCommentComboCurve
 
 
-# This function will allocated production by both SubAccount ID (accounting purposes) and API14 (engineering purposes)
+'''
+This function will allocated production by both SubAccount ID (accounting purposes) and API14 (engineering purposes)
+
+'''
+
+
 def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseRollingAverage):
 
     # Getting Client Name from Battery Name
@@ -1200,7 +1208,10 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
     return totalComboCurveAllocatedProduction
 
 
-# This function is used to send Operations an email of the pumpers who have not gotten their data in for the day
+'''
+This function is used to send Operations an email of the pumpers who have not gotten their data in for the day
+
+'''
 
 
 def sendPumperEmail(pumperNotReportedList, workingDataDirectory):

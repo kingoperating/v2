@@ -9,11 +9,18 @@ import numpy as np
 from kingscripts.operations.combocurve import *
 from combocurve_api_v1 import ServiceAccount
 
+"""
+    
+This script gets all the modifed daily allocated production over to the master JOYN dataframe in prep to merge    
+
+"""
+
 
 def getDailyAllocatedProduction(workingDataDirectory):
 
     load_dotenv()
 
+    # Read in Master Data
     masterAllocationData = pd.read_excel(
         workingDataDirectory + r"\master\masterWellAllocation.xlsx")
     masterJoynData = pd.read_excel(
@@ -21,11 +28,13 @@ def getDailyAllocatedProduction(workingDataDirectory):
     forecastedProductionData = pd.read_csv(
         workingDataDirectory + r"\production\forecastWellsFinal.csv")
 
+    # Get id, API and Well Accounting Name from masterAllocationData
     joynIdList = masterAllocationData["JOYN Id"].tolist()
     apiNumberList = masterAllocationData["API"].tolist()
     wellAccountingNameList = masterAllocationData["Name in Accounting"].tolist(
     )
 
+    # Functions
     def getForecast(apiNumber, date):
 
         indexList = [index for index, value in enumerate(
@@ -120,6 +129,7 @@ def getDailyAllocatedProduction(workingDataDirectory):
 
         return apiNumberYay
 
+    # Function to get Well Accounting Name from JOYN ID using masterAllocationSheet
     def getName(apiNumber2):
         if apiNumber2 in apiNumberList:
             index = apiNumberList.index(apiNumber2)
@@ -128,6 +138,8 @@ def getDailyAllocatedProduction(workingDataDirectory):
             name = "Unknown"
 
         return name
+
+    # Function to get State from JOYN ID using masterAllocationSheet
 
     def getState(apiNumber):
         if apiNumber in apiNumberList:
@@ -138,6 +150,8 @@ def getDailyAllocatedProduction(workingDataDirectory):
 
         return state
 
+    # Function to get Client from JOYN ID using masterAllocationSheet
+
     def getClient(apiNumber):
         if apiNumber in apiNumberList:
             index = apiNumberList.index(apiNumber)
@@ -147,46 +161,48 @@ def getDailyAllocatedProduction(workingDataDirectory):
 
         return client
 
-    # Begin Script
+    #### BEGIN SCRIPT #####
+
     idToken = getIdToken()  # get idToken from authJoyn function
 
-    # set correct URL for Reading Data API JOYN - use idToken as header for authorization
+    # set correct URL for Reading Data API JOYN - use idToken as header for authorization. Note the isCustom=true is required for custom entities and todate and fromdate are based on modified timestamp
     urlBase = "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate=2023-06-24&todate=2023-06-30&pagesize=1000&pagenumber="
 
     pageNumber = 1  # set page number to 1
-    nextPage = True
+    nextPage = True  # set nextPage to True to start while loop
     totalResults = []  # create empty list to store results
 
     while nextPage == True:  # loop through all pages of data
         url = urlBase + str(pageNumber)
         # makes the request to the API
-
         response = requests.request(
             "GET", url, headers={"Authorization": idToken})
+        # Dislay status code of response - 200 = GOOD
         if response.status_code != 200:
             print(response.status_code)
 
         print("Length of Response: " + str(len(response.json())))
 
+        # get response in json format and append to totalResults list
         resultsReadingType = response.json()
         totalResults.append(resultsReadingType)
 
+        # if length of response is 0, then there is no more data to return
         if len(resultsReadingType) == 0:
             # triggers while loop to end when no more data is returned and length of response is 0
             nextPage = False
 
         pageNumber = pageNumber + 1  # increment page number by 1 for pagination
 
+    # set initial variables
     readingVolume = 0
+    dataSource = "di"
 
-    headers = ["AssetId", "Name", "ReadingVolume",
-               "NetworkName", "Date", "Product", "Disposition"]
-    rawTotalAssetProduction = pd.DataFrame(columns=headers)
+    # create empty dataframe to store results with correct headers for JOYN API
+    headersJoynRaw = ["AssetId", "Name", "ReadingVolume",
+                      "NetworkName", "Date", "Product", "Disposition"]
 
-    headersFinal = ["API Number", "Well Name", "Date",
-                    "Oil Volume", "Gas Volume", "Water Volume"]
-
-    headersMerge = [
+    headersFinal = [
         "Date",
         "Client",
         "API",
@@ -202,10 +218,11 @@ def getDailyAllocatedProduction(workingDataDirectory):
         "State"
     ]
 
-    currentRunTotalAssetProductionJoyn = pd.DataFrame(columns=headersMerge)
+    # create empty dataframe to store results with correct headers for JOYN API for both raw and final data pivot
+    rawJoynTotalAssetProduction = pd.DataFrame(columns=headersJoynRaw)
+    currentRunTotalAssetProductionJoyn = pd.DataFrame(columns=headersFinal)
 
-    dataSource = "di"
-
+    ## Master loop through all results from JOYN API ##
     for i in range(0, len(totalResults)):
         for j in range(0, len(totalResults[i])):
             # JOYN unquie ID for each asset
@@ -232,12 +249,9 @@ def getDailyAllocatedProduction(workingDataDirectory):
             if isDeleted == True:
                 continue
 
+            # checking to confirm that the record is not deleted or if its oil sold volume
             if disposition == 760098 or disposition == 760101 or disposition == 760094 or disposition == 760095 or disposition == 760097:
-                # oilSalesVolume = readingVolume
-                # readingVolume = 0  # set reading volume to 0 if sold
                 newProduct = "Oil Sales Volume"
-            # else:
-            #     oilSalesVolume = 0
 
             if disposition == 760096 or newProduct == "Oil Sales Volume":
                 row = [apiNumber, wellName, readingVolume, networkName,
@@ -246,15 +260,16 @@ def getDailyAllocatedProduction(workingDataDirectory):
                 continue
 
             # append row to dataframe
-            rawTotalAssetProduction.loc[len(rawTotalAssetProduction)] = row
+            rawJoynTotalAssetProduction.loc[len(
+                rawJoynTotalAssetProduction)] = row
 
     # convert date column to datetime format for sorting purposes
-    rawTotalAssetProduction["Date"] = pd.to_datetime(
-        rawTotalAssetProduction["Date"])
+    rawJoynTotalAssetProduction["Date"] = pd.to_datetime(
+        rawJoynTotalAssetProduction["Date"])
     forecastedProductionData["Date"] = pd.to_datetime(
         forecastedProductionData["Date"])
     # sort dataframe by date for loop to get daily production
-    rawTotalAssetProductionSorted = rawTotalAssetProduction.sort_values(by=[
+    rawTotalAssetProductionSorted = rawJoynTotalAssetProduction.sort_values(by=[
         "Date"])
 
     # Setting some initial variables for loop
@@ -263,7 +278,6 @@ def getDailyAllocatedProduction(workingDataDirectory):
     dailyRawWellName = []
     dailyRawDate = []
     dailyClientName = []
-    dailyOilSalesVolume = []
     dailyForecastedProduction = np.zeros([200, 3])
     priorDate = -999
     wellCounter = 0
@@ -284,15 +298,16 @@ def getDailyAllocatedProduction(workingDataDirectory):
         forecastVolumes = getForecast(
             apiNumberPivot, datePivot)
 
+        # Loops through all the rows and pivots the data from 3 records per well per date to one record per well per date with 3 columns: Oil, Gas, Water and 1 column for Oil Sales Volume along with forecasted volumes
         if datePivot != priorDate and priorDate != -999:
-
+            # prints all the data for the day
             for j in range(0, wellCounter):
-                rowCounter = [dailyRawDate[j], dailyClientName[j], dailyRawAssetId[j], dailyRawWellName[j], dailyRawProduction[j][0], dailyRawProduction[j]
-                              [1], dailyRawProduction[j][2], dailyRawProduction[j][3], dailyForecastedProduction[j][0], dailyForecastedProduction[j][1], dailyForecastedProduction[j][2], dataSource, stateName]
+                row = [dailyRawDate[j], dailyClientName[j], dailyRawAssetId[j], dailyRawWellName[j], dailyRawProduction[j][0], dailyRawProduction[j]
+                       [1], dailyRawProduction[j][2], dailyRawProduction[j][3], dailyForecastedProduction[j][0], dailyForecastedProduction[j][1], dailyForecastedProduction[j][2], dataSource, stateName]
 
                 currentRunTotalAssetProductionJoyn.loc[lastIndex +
-                                                       j] = rowCounter
-
+                                                       j] = row
+            # resets the daily variables
             dailyRawProduction = np.zeros([200, 4])
             dailyForecastedProduction = np.zeros([200, 3])
             dailyRawAssetId = []
@@ -301,10 +316,10 @@ def getDailyAllocatedProduction(workingDataDirectory):
             dailyClientName = []
             wellCounter = 0  # keeping track of how many results we have on the same day
             lastIndex = lastIndex + j + 1
-
+        # if API number is in the list, then we need to update the dailyRawProduction array
         if apiNumberPivot in dailyRawAssetId:
             index = dailyRawAssetId.index(apiNumberPivot)
-
+            # update the dailyRawProduction array with correct index
             if productTypePivot == "Oil":
                 dailyRawProduction[index][0] = readingVolumePivot
             elif productTypePivot == "Gas":
@@ -313,7 +328,7 @@ def getDailyAllocatedProduction(workingDataDirectory):
                 dailyRawProduction[index][2] = readingVolumePivot
             elif productTypePivot == "Oil Sales Volume":
                 dailyRawProduction[index][3] = readingVolumePivot
-
+        # if API number is not in the list, then we need to add it to the list and update the dailyRawProduction array
         else:
             dailyRawAssetId.append(apiNumberPivot)
             dailyRawWellName.append(wellNamePivot)
@@ -332,17 +347,17 @@ def getDailyAllocatedProduction(workingDataDirectory):
             elif productTypePivot == "Oil Sales Volume":
                 dailyRawProduction[wellCounter][3] = readingVolumePivot
             wellCounter = wellCounter + 1
-
+        # update priorDate to current date
         priorDate = datePivot
 
-        # write the last day out after we have processed the last row of the last data
-
+    # write the last day out after we have processed the last row of the last data
     for j in range(0, wellCounter):
-        rowCounter = [dailyRawDate[j], dailyClientName[j], dailyRawAssetId[j], dailyRawWellName[j], dailyRawProduction[j][0], dailyRawProduction[j]
-                      [1], dailyRawProduction[j][2], dailyRawProduction[j][3], dailyForecastedProduction[j][0], dailyForecastedProduction[j][1], dailyForecastedProduction[j][2], dataSource, stateName]
+        row = [dailyRawDate[j], dailyClientName[j], dailyRawAssetId[j], dailyRawWellName[j], dailyRawProduction[j][0], dailyRawProduction[j]
+               [1], dailyRawProduction[j][2], dailyRawProduction[j][3], dailyForecastedProduction[j][0], dailyForecastedProduction[j][1], dailyForecastedProduction[j][2], dataSource, stateName]
 
-        currentRunTotalAssetProductionJoyn.loc[lastIndex + j] = rowCounter
+        currentRunTotalAssetProductionJoyn.loc[lastIndex + j] = row
 
+    # merge currentRunTotalAssetProductionJoyn into masterJoynData
     masterJoynData = mergeBIntoA(
         masterJoynData, currentRunTotalAssetProductionJoyn)
 
@@ -358,29 +373,30 @@ Two of those columns must be "Date" and "API". The function will merge B into A
 
 
 def mergeBIntoA(A, B):
-
+    # convert date column to datetime format for sorting purposes
     A["Date"] = pd.to_datetime(A["Date"])
     A["Date"] = A["Date"].dt.strftime("%m/%d/%Y")
-
     B["Date"] = pd.to_datetime(B["Date"])
     B["Date"] = B["Date"].dt.strftime("%m/%d/%Y")
-
+    # compare rows in B to rows in A
     for i in range(0, len(B)):
         row = B.iloc[i]
+        # get index of row in A that matches row in B
         index = A.index[(A["Date"] == row["Date"]) &
                         (A["API"] == row["API"])].tolist()
-
+        # if no index is found, then append row to A
         if len(index) > 1:
             print("Error: More than one row found")
-
+        # if no index is found, then append row to A
         if len(index) == 0:
             A.loc[len(A)] = row
         else:
             A.iloc[index] = row
 
+    # convert date column to datetime format for sorting purposes
     A["Date"] = pd.to_datetime(A["Date"])
     A.sort_values(by=["Date"], inplace=True, ascending=True)
-
+    # convert date column to string format for viewing purposes
     A["Date"] = A["Date"].dt.strftime("%m/%d/%Y")
 
     return A

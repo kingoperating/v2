@@ -5,7 +5,6 @@ import re
 from dotenv import load_dotenv
 import json
 import pandas as pd
-import numpy as np
 from combocurve_api_v1 import ComboCurveAuth
 
 """
@@ -614,7 +613,12 @@ def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey,
     return eurData
 
 
-# This code puts the well comments into ComboCurve from Greasebook
+"""
+This code puts the well comments into ComboCurve from Greasebook
+
+"""
+
+
 def putWellComments(cleanJson, serviceAccount, comboCurveApi):
     # connect to service account
     service_account = serviceAccount
@@ -646,7 +650,12 @@ def putWellComments(cleanJson, serviceAccount, comboCurveApi):
     print("PUT COMPLETE")
 
 
-# This function gest the daily forecast volumes from a given ComboCurve project and forecast id
+"""
+
+This function gest the daily forecast volumes from a given ComboCurve project and forecast id
+
+"""
+
 
 def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCurveApi):
 
