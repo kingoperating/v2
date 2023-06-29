@@ -68,8 +68,8 @@ def getWellProductionData(apiKey, wellApi14):
         wellProdData = pd.concat([wellProdData, wellProdDataResponse])
         dataLength = len(wellProdDataResponse)
 
-    dateList = wellProdData['ProducingMonth'].tolist()
-    dateListClean = convertDateEnv(dateList)
+    print("Number of Records in Well Production Data: " + str(len(wellProdData)))
+    print("Finished Getting Well Production Data")
 
     return wellProdData
 

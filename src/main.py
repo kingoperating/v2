@@ -1,7 +1,7 @@
 """
 Main Script for KOC v2 Python Packages
 
-Developed by: Michael Tanner
+Developed and Maintained by: Michael Tanner & Gabe Tatman
 
 """
 # KOC v2.0.8 Python Packages
@@ -30,11 +30,6 @@ SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER. CURREN
 # Working Directories
 workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
 kocDatawarehouse = os.getenv("KOC_DATAWAREHOUSE")
-
-# Master Greasebook Data
-print("Reading Master Greasebook Data...")
-masterGreasebookData = pd.read_excel(os.getenv("MASTER_GREASEBOOK_DATA"))
-print("Finished Reading Master Greasebook Data")
 
 # getting API keys
 enverusApiKey = os.getenv('ENVERUS_API')
@@ -115,9 +110,7 @@ browing518HProductionMonthtlyData = enverus.getWellProductionData(
     wellApi14=browning5181H
 )
 
-# prints results for number of records in the dataframe
-print("Number of Records in Fluvanna 518H: " +
-      str(len(browing518HProductionMonthtlyData)))
+# exports results for number of records in the dataframe
 browing518HProductionMonthtlyData.to_excel(
     kocDatawarehouse + r"\browningWell.xlsx", index=False)
 
@@ -128,10 +121,10 @@ pumperNotReportedList = greasebook.getBatteryProductionData(
     greasebookApi=greasebookApi
 )
 
-greasebook.sendPumperEmail(
-    pumperNotReportedList=pumperNotReportedList[0],
-    workingDataDirectory=kocDatawarehouse
-)
+# greasebook.sendPumperEmail(
+#     pumperNotReportedList=pumperNotReportedList[0],
+#     workingDataDirectory=kocDatawarehouse
+# )
 
 totalAssetProduction = pumperNotReportedList[1]
 totalAssetProduction.to_csv(
@@ -145,11 +138,13 @@ allocatedProductionData = greasebook.allocateWells(
     edgeCaseRollingAverage=7
 )
 
+print("Begin Exporting Greasebook Allocated Production Data to KOC Datawarehouse...")
 # KOC Datawarehouse LIVE DUMP
 allocatedProductionData.to_excel(
     kocDatawarehouse + r"\production\comboCurveAllocatedProduction.xlsx", index=False)
 allocatedProductionData.to_json(
     kocDatawarehouse + r"\production\comboCurveAllocatedProduction.json", orient="records")
+print("Finished Exporting Greasebook Allocated Production Data to KOC Datawarehouse!")
 
 # JOYN STACK
 # DAILY ALLOCATED PRODUCTION
@@ -159,6 +154,12 @@ joynData = joyn.getDailyAllocatedProduction(
 
 joynData.to_excel(kocDatawarehouse +
                   r"\production\masterJoynData.xlsx", index=False)
+print("Finished Exporting Master Joyn Data to KOC Datawarehouse!")
+
+# Master Greasebook Data
+print("Reading Master Greasebook Data...")
+masterGreasebookData = pd.read_excel(os.getenv("MASTER_GREASEBOOK_DATA"))
+print("Finished Reading Master Greasebook Data!")
 
 # MERGE JOYN DATA WITH MASTER GREASEBOOK DATA
 masterData = joyn.mergeBIntoA(
@@ -167,11 +168,14 @@ masterData = joyn.mergeBIntoA(
 )
 
 # EXPORT MASTER DATA TO KOC DATAWAREHOUSE
+print("Begin Exporting Master Data to KOC Datawarehouse...")
 masterData.to_excel(
     kocDatawarehouse + r"\production\masterAllocatedProductionData.xlsx", index=False)
 
 masterData.to_json(kocDatawarehouse +
                    r"\production\masterAllocatedProductionData.json", orient="records")
+print("Finished Exporting Master Data to KOC Datawarehouse!")
+
 
 combocurve.putGreasebookWellProductionData(
     workingDataDirectory=kocDatawarehouse,
