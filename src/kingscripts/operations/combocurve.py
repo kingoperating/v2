@@ -31,6 +31,8 @@ def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
 
     # converts API to int (removing decimals) and then back to string for JSON
 
+    masterJoynData["Date"] = pd.to_datetime(masterJoynData["Date"])
+
     masterJoynData = masterJoynData.astype({
         "Date": "string", "API": "string"})
 
@@ -47,10 +49,6 @@ def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
     # renames columns to match ComboCurve
     masterJoynDataLastRows.rename(
         columns={"Oil Volume": "oil", "Date": "date", "Gas Volume": "gas", "Water Volume": "water", "API": "chosenID", "Data Source": "dataSource", "Oil Sold Volume": "customNumber0"}, inplace=True)
-
-    # exports to json for storage
-    masterJoynDataLastRows.to_json(
-        r".\kingoperating\data\totalAssetsProductionJoyn.json", orient="records")
 
     totalAssetProductionJson = masterJoynDataLastRows.to_json(
         orient="records")  # converts to internal json format
@@ -77,10 +75,13 @@ def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
         # finds the index of successCount
         # prints the successCount and the number of data points sent
         indexOfSuccessFail = responseText.index("successCount")
-        print(responseText[indexOfSuccessFail:])
+        text = responseText[indexOfSuccessFail:]
+        print(text)
 
     print("Finished PUT " + str(len(cleanTotalAssetProduction)) +
-          " Rows of New Production Data to ComboCurve")
+          " Rows of New Production Data to ComboCurve from JOYN")
+
+    return text
 
 
 """
