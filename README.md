@@ -1,5 +1,9 @@
 # kingscripts Python Package
 
+<p align="center">
+  <img src="C:\Users\mtanner\OneDrive - King Operating\Marketing\Logos+Marks\Logo.White.png" width="350" title="hover text">
+</p>
+
 This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 3.0.0
 
 Developed and Maintained by Michael Tanner and Gabe Tatman. Please email mtanner@kingoperating.com with any questions.
@@ -141,7 +145,6 @@ One (1) package `afe.py` and three (3) functions
 
 15. `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
 
-
     - Note: see `afe.py` to set correct paths to data folder
     - Arguments
       - `workingDataDirectory`: Data directory where all exports and imports come from `str`
@@ -149,14 +152,12 @@ One (1) package `afe.py` and three (3) functions
 
 16. `afe.variance`
 
-
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments
         - `workingDataDirectory`: Data directory where all exports and imports come from `str`
         - `name`: Name of the well, see masterWellList for details
 
 17. `afe.combineAfeFiles`
-
 
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments
