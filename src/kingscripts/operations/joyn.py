@@ -168,10 +168,10 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
     urlBase = "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate=2023-06-25&todate=2023-07-01&pagesize=1000&pagenumber="
 
     pageNumber = 1  # set page number to 1
-    nextPage = True  # set nextPage to True to start while loop
+    nextPage = False  # set nextPage to True to start while loop
     totalResults = []  # create empty list to store results
 
-    while nextPage == True:  # loop through all pages of data
+    while not nextPage:  # loop through all pages of data
         url = urlBase + str(pageNumber)
         # makes the request to the API
         response = requests.request(
@@ -184,12 +184,13 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
 
         # get response in json format and append to totalResults list
         resultsReadingType = response.json()
-        totalResults.append(resultsReadingType)
 
         # if length of response is 0, then there is no more data to return
         if len(resultsReadingType) == 0:
+            break
             # triggers while loop to end when no more data is returned and length of response is 0
-            nextPage = False
+
+        totalResults.append(resultsReadingType)
 
         pageNumber = pageNumber + 1  # increment page number by 1 for pagination
 
