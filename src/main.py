@@ -101,23 +101,6 @@ listOfWells = [
 WORKING ZONE
 
 '''
-# AFE Stack Miller Ranch A502V
-afe.dailyCost(
-    workingDataDirectory=kocDatawarehouse,
-    name=millerranchc302mh
-)
-afe.variance(
-    workingDataDirectory=kocDatawarehouse,
-    name=millerranchc302mh
-)
-
-# Combine AFE files and place in data warehouse
-afe.combineAfeFiles(
-    workingDataDirectory=kocDatawarehouse,
-    listOfWells=listOfWells
-)
-
-
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
@@ -251,6 +234,16 @@ afe.dailyCost(
 afe.variance(
     workingDataDirectory=kocDatawarehouse,
     name=millerrancha502v
+)
+
+# AFE Stack Miller Ranch A502V
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerranchc302mh
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerranchc302mh
 )
 
 # Combine AFE files and place in data warehouse
