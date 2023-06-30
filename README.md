@@ -1,16 +1,16 @@
 # kingscripts Python Package
 
-This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 2.0.8
+This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 3.0.0
 
-Developed and Maintained by Michael Tanner. Please email mtanner@kingoperating.com with any questions.
+Developed and Maintained by Michael Tanner and Gabe Tatman. Please email mtanner@kingoperating.com with any questions.
 
 Visit [KOC Development Site](https://mtanner161.github.io/kingdashboard/#/kingdashboard) for our ongoing front-end application development
 
 ## Documentation
 
-Use `git clone` download and access packages. There are four different modules withing `kingscripts` - `afe`, `finance` `operations` and `analytics`. Each of these packages connect with different data products within the King ecosystem.
+There are four different modules withing `kingscripts` - `afe`, `finance` `operations` and `analytics`. Each of these packages connect with different data products within the King ecosystem.
 
-To import these modules, first create a working directory and `git clone https://github.com/kingoperating/v2.git` into that working directory. Create a `kingoperating\data` sub folder to house all data, with subfolders of `afe` and `loe`
+To import these modules, you must `git clone https://github.com/kingoperating/v2.git` and then connect to our KOC Datawarehouse. See Michael Tanner for access to database
 
 Then, import the packages below:
 
@@ -21,27 +21,11 @@ from kingscripts.afe import afe
 from kingscripts.finance import tech, wenergy
 ```
 
-## afe Module
-
-One (1) package `afe.py` and two (2) functions
-
-1.  `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
-
-    - Note: see `afe.py` to set correct paths to data folder
-    - Arguments
-      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
-      - `name`: Name of the well, see masterWellList for details `str`
-
-2.  `afe.variance`
-
-    - Note: see `afe.py` to set correct paths to data folder
-      - Arguments
-        - `workingDataDirectory`: Data directory where all exports and imports come from `str`
-        - `name`: Name of the well, see masterWellList for details
-
 ## operations Module
 
-Three (2) packages `greasebook`, `joyn` and `combocurve`
+Three (3) packages `greasebook`, `joyn` and `combocurve`
+
+### greasebook
 
 1. `greasebook.getProductionData` - pulls production data from Greasebook, formats and exports CSV into working data folder
 
@@ -71,7 +55,16 @@ Three (2) packages `greasebook`, `joyn` and `combocurve`
      - `pumperNotReportedList`: list of `str` that represent pumpers who have failed to submit production data
      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
 
-5. `combocurve.putWellProductionData` - requests data from Greasebooks and inserts into ComboCurve
+### combocurve
+
+5. `combocurve.putJoynWellProductionData` - takes last modifed JOYN data and loads it into ComboCurve
+
+   - Arguments
+     - `currentJoynData`: pandas Dataframe of modifed data in JOYN for last 7 days `dataframe`
+     - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
+     - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
+
+6. `combocurve.putGreasebookWellProductionData` - requests data from Greasebooks and inserts into ComboCurve
 
    - Arguments
      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
@@ -80,7 +73,7 @@ Three (2) packages `greasebook`, `joyn` and `combocurve`
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
      - `daysToPull`: Number of days to pull, if `pullFromAllocation=True` set to 0 `int`
 
-6. `combocurve.getLatestScenario` - returns pandas dataframe of the latest scenerio given a projectId and scenerioId
+7. `combocurve.getLatestScenario` - returns pandas dataframe of the latest scenerio given a projectId and scenerioId
 
    - Arguments
      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
@@ -89,19 +82,43 @@ Three (2) packages `greasebook`, `joyn` and `combocurve`
      - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
 
-7. `joyn.getWells` - returns pandas dataframe of latest production data from JOYN during given data length - COMING SOONB
+8. `combocurve.putGreasebookWellComments` - takes Greasebook well comments and load them in ComboCurve under customString2
+
+   - Arguments
+     - `cleanJson`: takes JSON formatted comment dataset `json`
+     - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
+     - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
+
+9. `combocurve.getDailyForecastVolume` - gets daily forecast volumes for given CC project ID and forecast ID
+
+   - Arguments
+     - `projectIdKey`: ComboCurve specific project id - get through front-end UI `str`
+     - `forecastIdKey`: ComboCurve specific scenerio id - get through front-end UI `str`
+     - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
+     - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
+
+### joyn
+
+10. `joyn.getDailyAllocatedProduction` - returns pandas dataframe of modified production data from JOYN during given data length
+
+11. `joyn.mergeBIntoA` - merges two dataframes together and updates A if B is different
+
+    - Arguments
+      - `A`: pandas dataframe which will be updated `dataframe`
+      - `B`: pandas datafrme which will do the updating `dataframe`
 
 ## analytics Module
 
-One package `enverus`
+One package `enverus` and functions 2 functions
 
-1.  `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
+12. `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
 
 - Arguments:
   - `apiKey`: Enverus API authentication `object`
   - `wellApi14`: Well API14 of interest `str`
 
-2.  `enverus.checkWellStatus` - chekcs the status a specific operator in a specific basin
+13. `enverus.checkWellStatus` - chekcs the status a specific operator in a specific basin
+
     - Arguments:
       - `apiKey`: Enverus API authentication `object`
       - `operatorName`: Name of operator of interest `str`
@@ -111,9 +128,41 @@ One package `enverus`
 
 Two packages `tech` and `wenergy`
 
-1. `tech.getItSpend` - returns a dataframe all of all coded invoices by M. Tanner
+### tech
+
+14. `tech.getItSpend` - returns a dataframe all of all coded invoices by M. Tanner
 
 - Arguments:
   - None
+
+## afe Module
+
+One (1) package `afe.py` and three (3) functions
+
+15. `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
+
+
+    - Note: see `afe.py` to set correct paths to data folder
+    - Arguments
+      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
+      - `name`: Name of the well, see masterWellList for details `str`
+
+16. `afe.variance`
+
+
+    - Note: see `afe.py` to set correct paths to data folder
+      - Arguments
+        - `workingDataDirectory`: Data directory where all exports and imports come from `str`
+        - `name`: Name of the well, see masterWellList for details
+
+17. `afe.combineAfeFiles`
+
+
+    - Note: see `afe.py` to set correct paths to data folder
+      - Arguments
+        - `workingDataDirectory`: Data directory where all exports and imports come from `str`
+        - `listOfWells`: List of wells in KOC Datawarehouse afe folder and is a `list`
+
+### wenergy
 
 `wenergy` - COMING SOON
