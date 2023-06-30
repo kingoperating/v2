@@ -65,6 +65,7 @@ millerranchb501mh = "millerranchb501mh"
 millerrancha502v = "millerrancha502v"
 millerrancha501mh = "millerrancha501mh"
 millerranchc301 = "millerranchc301"
+millerranchc302mh = "millerranchc302mh"
 thurman23v = "thurman23v"
 chunn923v = "chunn923v"
 ayres79v = "ayres79v"
@@ -92,19 +93,28 @@ listOfWells = [
     millerrancha501mh,
     millerrancha502v,
     millerranchb501mh,
-    millerranchc301
+    millerranchc301,
+    millerranchc302mh
 ]
 
 '''
 WORKING ZONE
 
 '''
-# JOYN STACK
-# DAILY ALLOCATED PRODUCTION
-joynData = joyn.getDailyAllocatedProduction(
+# AFE Stack Miller Ranch A502V
+afe.dailyCost(
     workingDataDirectory=kocDatawarehouse,
-    joynUsername=joynUsername,
-    joynPassword=joynPassword
+    name=millerranchc302mh
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerranchc302mh
+)
+
+# Combine AFE files and place in data warehouse
+afe.combineAfeFiles(
+    workingDataDirectory=kocDatawarehouse,
+    listOfWells=listOfWells
 )
 
 
@@ -133,10 +143,10 @@ pumperNotReportedList = greasebook.getBatteryProductionData(
     greasebookApi=greasebookApi
 )
 
-greasebook.sendPumperEmail(
-    pumperNotReportedList=pumperNotReportedList[0],
-    workingDataDirectory=kocDatawarehouse
-)
+# greasebook.sendPumperEmail(
+#     pumperNotReportedList=pumperNotReportedList[0],
+#     workingDataDirectory=kocDatawarehouse
+# )
 
 allocatedProductionData = greasebook.allocateWells(
     days=daysToPull,
@@ -157,7 +167,9 @@ print("Finished Exporting Greasebook Allocated Production Data to KOC Datawareho
 # JOYN STACK
 # DAILY ALLOCATED PRODUCTION
 joynData = joyn.getDailyAllocatedProduction(
-    workingDataDirectory=kocDatawarehouse
+    workingDataDirectory=kocDatawarehouse,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
 )
 
 print("Begin Exporting Master Joyn Data to KOC Datawarehouse...")
