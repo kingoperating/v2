@@ -1,7 +1,7 @@
 # kingscripts Python Package
 
 <p align="center">
-  <img src="C:\Users\mtanner\OneDrive - King Operating\Marketing\Logos+Marks\Logo.White.png" width="350" title="hover text">
+  <img src=".\kingoperating\v2\src\images\logo.png" width="350" title="hover text">
 </p>
 
 This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 3.0.0
