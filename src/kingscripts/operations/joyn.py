@@ -7,7 +7,6 @@ import os
 from dotenv import load_dotenv
 import numpy as np
 from kingscripts.operations.combocurve import *
-from combocurve_api_v1 import ServiceAccount
 
 """
     

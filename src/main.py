@@ -1,7 +1,7 @@
 """
-Main Script for KOC v2 Python Packages
+Main Script for KOC Python Packages
 
-Developed and Maintained by: Michael Tanner & Gabe Tatman
+Developer: Michael Tanner
 
 """
 # KOC v2.0.8 Python Packages
@@ -126,10 +126,10 @@ pumperNotReportedList = greasebook.getBatteryProductionData(
     greasebookApi=greasebookApi
 )
 
-# greasebook.sendPumperEmail(
-#     pumperNotReportedList=pumperNotReportedList[0],
-#     workingDataDirectory=kocDatawarehouse
-# )
+greasebook.sendPumperEmail(
+    pumperNotReportedList=pumperNotReportedList[0],
+    workingDataDirectory=kocDatawarehouse
+)
 
 allocatedProductionData = greasebook.allocateWells(
     days=daysToPull,
