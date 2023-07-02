@@ -41,6 +41,8 @@ kingServer = str(os.getenv('SQL_SERVER'))
 kingDatabase = str(os.getenv('SQL_KING_DATABASE'))
 joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
+michaelTanner = os.getenv("MICHAEL_TANNER_EMAIL")
+michaelTannerName = os.getenv("MICHAEL_TANNER_NAME")
 
 # Getting Date Variables
 dateToday = dt.datetime.today()
@@ -81,6 +83,7 @@ pshigoda752h = "pshigoda752h"
 itSqlTable = "itSpend"
 daysToPull = 35
 daysToLookBack = 7
+testFile = r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\assetPrettyName.xlsx"
 listOfWells = [
     thurman23v,
     chunn923v,
@@ -253,6 +256,20 @@ afe.combineAfeFiles(
     workingDataDirectory=kocDatawarehouse,
     listOfWells=listOfWells
 )
+
+# King Module
+subject = "KOC Daily Report - " + yesDateString
+message = "This is a Test"
+
+# Send Email
+king.sendEmail(
+    emailRecipient=michaelTanner,
+    emailRecipientName=michaelTannerName,
+    emailSubject=subject,
+    emailMessage=message,
+    attachmentOne=testFile
+)
+
 
 print("Finished with kingscripts")
 

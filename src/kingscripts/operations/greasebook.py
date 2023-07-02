@@ -1209,7 +1209,7 @@ def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseR
 
 
 '''
-This function is used to send Operations an email of the pumpers who have not gotten their data in for the day
+This function is used to send Operations an email of the pumpers who have not gotten their data in for the day - LEGACY CODE
 
 '''
 
