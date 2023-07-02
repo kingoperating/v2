@@ -22,7 +22,7 @@ def dailyCost(workingDataDirectory, name):
     masterMatchFileString = pathOfWorkingDir + \
         r"\master\welldriveWolfepakMatch.xlsx"
     masterMatchFile = pd.read_excel(masterMatchFileString)
-    pathOfMasterFile = pathOfAfe + "\\" + "fullreport.xlsx"
+    pathOfMasterFile = pathOfAfe + "\\" + nameOfWell + "fullreport.xlsx"
     masterAfe = pd.read_excel(pathOfMasterFile)
     actualWellCostWolfepak = pd.read_excel(actualSpendString)
     budgetRawFile = pd.read_excel(budgetRawString)
@@ -253,7 +253,7 @@ def variance(workingDataDirectory, name):
     masterMatchFileString = pathOfWorkingDir + \
         r"\master\welldriveWolfepakMatch.xlsx"
     masterMatchFile = pd.read_excel(masterMatchFileString)
-    pathOfMasterFile = pathOfAfe + "\\" + "fullreport.xlsx"
+    pathOfMasterFile = pathOfAfe + "\\" + nameOfWell + "fullreport.xlsx"
     masterAfe = pd.read_excel(pathOfMasterFile)
     actualWellCostWolfepak = pd.read_excel(actualSpendString)
     budgetRawFile = pd.read_excel(budgetRawString)
