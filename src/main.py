@@ -130,11 +130,7 @@ pumperNotReportedList = greasebook.getBatteryProductionData(
     greasebookApi=greasebookApi
 )
 
-greasebook.sendPumperEmail(
-    pumperNotReportedList=pumperNotReportedList[0],
-    workingDataDirectory=kocDatawarehouse
-)
-
+# Allocate Wells From Greasebook
 allocatedProductionData = greasebook.allocateWells(
     days=daysToPull,
     workingDataDirectory=kocDatawarehouse,
