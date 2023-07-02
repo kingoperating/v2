@@ -80,6 +80,7 @@ irvinsisters53m1h = "irvinsisters53m1h"
 pshigoda752h = "pshigoda752h"
 itSqlTable = "itSpend"
 daysToPull = 35
+daysToLookBack = 7
 listOfWells = [
     thurman23v,
     chunn923v,
@@ -101,16 +102,6 @@ listOfWells = [
 WORKING ZONE
 
 '''
-# JOYN STACK
-# DAILY ALLOCATED PRODUCTION
-joynData = joyn.getDailyAllocatedProduction(
-    workingDataDirectory=kocDatawarehouse,
-    joynUsername=joynUsername,
-    joynPassword=joynPassword,
-    daysToLookBack=7
-)
-
-
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
@@ -163,6 +154,7 @@ joynData = joyn.getDailyAllocatedProduction(
     workingDataDirectory=kocDatawarehouse,
     joynUsername=joynUsername,
     joynPassword=joynPassword,
+    daysToLookBack=daysToLookBack
 )
 
 print("Begin Exporting Master Joyn Data to KOC Datawarehouse...")
@@ -261,6 +253,8 @@ afe.combineAfeFiles(
     workingDataDirectory=kocDatawarehouse,
     listOfWells=listOfWells
 )
+
+print("Finished with kingscripts")
 
 
 '''
