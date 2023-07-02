@@ -175,9 +175,7 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
 
     idToken = getIdToken()  # get idToken from authJoyn function
 
-    # set correct URL for Reading Data API JOYN - use idToken as header for authorization. Note the isCustom=true is required for custom entities and todate and fromdate are based on modified timestamp
-    urlBase = "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate=2023-06-25&todate=2023-07-01&pagesize=1000&pagenumber="
-
+    # set correct URL for Reading Data API JOYN - use idToken as header for authorization. Note the isCustom=true is required for custom entities and todate and fromdate are based on modified timestamp and rolling 7 days lookback
     urlRolling = (
         "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate="
         + dateToLookBackString
