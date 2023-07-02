@@ -15,9 +15,20 @@ This script gets all the modifed daily allocated production over to the master J
 """
 
 
-def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword):
+def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword, daysToLookBack):
 
     load_dotenv()
+
+    if daysToLookBack == 0 or type(daysToLookBack) != int:
+        print("Error: daysToLookBack must be an integer greater than 0")
+        return
+
+    # Date values
+    dateToday = dt.datetime.today()
+    dateTomorrow = dateToday + dt.timedelta(days=1)
+    dateToLookBack = dateToday - timedelta(days=daysToLookBack)
+    dateTomorrowString = dateTomorrow.strftime("%Y-%m-%d")
+    dateToLookBackString = dateToLookBack.strftime("%Y-%m-%d")
 
     # Read in Master Data
     masterAllocationData = pd.read_excel(
@@ -167,12 +178,21 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
     # set correct URL for Reading Data API JOYN - use idToken as header for authorization. Note the isCustom=true is required for custom entities and todate and fromdate are based on modified timestamp
     urlBase = "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate=2023-06-25&todate=2023-07-01&pagesize=1000&pagenumber="
 
+    urlRolling = (
+        "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate="
+        + dateToLookBackString
+        + "&todate="
+        + dateTomorrowString
+        + "&pagesize=1000&pagenumber="
+
+    )
+
     pageNumber = 1  # set page number to 1
     nextPage = False  # set nextPage to True to start while loop
     totalResults = []  # create empty list to store results
 
     while not nextPage:  # loop through all pages of data
-        url = urlBase + str(pageNumber)
+        url = urlRolling + str(pageNumber)
         # makes the request to the API
         response = requests.request(
             "GET", url, headers={"Authorization": idToken})

@@ -101,6 +101,16 @@ listOfWells = [
 WORKING ZONE
 
 '''
+# JOYN STACK
+# DAILY ALLOCATED PRODUCTION
+joynData = joyn.getDailyAllocatedProduction(
+    workingDataDirectory=kocDatawarehouse,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    daysToLookBack=7
+)
+
+
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
