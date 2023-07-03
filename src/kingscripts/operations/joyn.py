@@ -236,6 +236,7 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
         "State"
     ]
 
+    counter = 0
     # create empty dataframe to store results with correct headers for JOYN API for both raw and final data pivot
     rawJoynTotalAssetProduction = pd.DataFrame(columns=headersJoynRaw)
     currentRunTotalAssetProductionJoyn = pd.DataFrame(columns=headersFinal)
@@ -263,23 +264,27 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
             # disposition for current allocation row
             disposition = totalResults[i][j]["Disposition"]
 
-            # checking to confirm that the record is not deleted
+            if readingVolume == 500:
+                counter = counter + 1
+
             if isDeleted == True:
                 continue
 
             # checking to confirm that the record is not deleted or if its oil sold volume
             if disposition == 760098 or disposition == 760101 or disposition == 760094 or disposition == 760095 or disposition == 760097:
-                newProduct = "Oil Sales Volume"
+                if isDeleted != True:
+                    newProduct = "Oil Sales Volume"
+                else:
+                    continue
 
             if disposition == 760096 or newProduct == "Oil Sales Volume":
                 row = [apiNumber, wellName, readingVolume, networkName,
                        dateBetter, newProduct, disposition]
+                # append row to dataframe
+                rawJoynTotalAssetProduction.loc[len(
+                    rawJoynTotalAssetProduction)] = row
             else:
                 continue
-
-            # append row to dataframe
-            rawJoynTotalAssetProduction.loc[len(
-                rawJoynTotalAssetProduction)] = row
 
     # convert date column to datetime format for sorting purposes
     rawJoynTotalAssetProduction["Date"] = pd.to_datetime(
