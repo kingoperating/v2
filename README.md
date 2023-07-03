@@ -4,7 +4,7 @@
   <img src=".\src\images\logo.png" width="400" title="kingscripts">
 </p>
 
-This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 3.0.0
+This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 3.0.1
 
 Developed and Maintained by Michael Tanner and Gabe Tatman. Please email mtanner@kingoperating.com with any questions.
 
@@ -132,7 +132,8 @@ Two (2) packages `enverus` and `king` with 3 functions
 
 ### king
 
-14. `king.sendEmail
+14. `king.sendEmail`
+
     - Arugments:
       - `emailRecipient` - email address of the person to email `str`
       - `emailRecipientName` - name of the person emailing - used for looping `str`
@@ -140,13 +141,20 @@ Two (2) packages `enverus` and `king` with 3 functions
       - `emailMessage` - email message body `str`
       - `attachment` - (optional) attachment to be sent (any type)
 
+15. `king.getAverageDailyVolumes`
+
+    - Arugments:
+      - `masterKingProdData` - master allocated volumes excel sheet in KOC Datawarehouse `dataframe`
+      - `startDate` - YYYY-MM-DD
+      - `endDate` - YYYY-MM-DD
+
 ## finance Module
 
 Two packages `tech` and `wenergy`
 
 ### tech
 
-14. `tech.getItSpend` - returns a dataframe all of all coded invoices by M. Tanner
+16. `tech.getItSpend` - returns a dataframe all of all coded invoices by M. Tanner
 
     - Arguments:
       - None
@@ -155,21 +163,21 @@ Two packages `tech` and `wenergy`
 
 One (1) package `afe.py` and three (3) functions
 
-15. `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
+17. `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
 
     - Note: see `afe.py` to set correct paths to data folder
     - Arguments
       - `workingDataDirectory`: Data directory where all exports and imports come from `str`
       - `name`: Name of the well, see masterWellList for details `str`
 
-16. `afe.variance`
+18. `afe.variance`
 
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments
         - `workingDataDirectory`: Data directory where all exports and imports come from `str`
         - `name`: Name of the well, see masterWellList for details
 
-17. `afe.combineAfeFiles`
+19. `afe.combineAfeFiles`
 
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments
