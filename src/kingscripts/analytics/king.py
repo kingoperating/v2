@@ -56,7 +56,7 @@ def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, at
         server.login(os.getenv("USERNAME_KING"),
                      os.getenv("PASSWORD_KING"))
         server.sendmail(email_sender, emailRecipient, text)
-        print("Bad Pumper Email sent successfully to " +
+        print("Email sent successfully to " +
               emailRecipientName + "")
         server.quit()
 

@@ -55,6 +55,7 @@ yesYear = int(dateYesterday.strftime("%Y"))
 yesMonth = int(dateYesterday.strftime("%m"))
 yesDay = int(dateYesterday.strftime("%d"))
 yesDateString = dateYesterday.strftime("%Y-%m-%d")
+todayDateString = dateToday.strftime("%Y-%m-%d")
 
 # Important Variables for scripts
 browning5181H = "42033325890000"
@@ -105,6 +106,22 @@ listOfWells = [
 WORKING ZONE
 
 '''
+# King Module
+subject = "KOC Daily Scripts - " + todayDateString
+message = "KOC Daily Scripts successfully ran for " + yesDateString
+
+message = message + "\n\n" + \
+    "Refresh any PowerBi Dashboards that are connected to the KOC Datawarehouse."
+
+# Send Email - attacment is optional
+king.sendEmail(
+    emailRecipient=michaelTanner,
+    emailRecipientName=michaelTannerName,
+    emailSubject=subject,
+    emailMessage=message,
+)
+
+
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
@@ -254,8 +271,11 @@ afe.combineAfeFiles(
 )
 
 # King Module
-subject = "KOC Daily Report - " + yesDateString
-message = "This is a Test"
+subject = "KOC Daily Scripts - " + todayDateString
+message = "KOC Daily Scripts successfully ran for " + yesDateString
+
+message = message + "\n\n" + \
+    "Refresh any PowerBi Dashboards that are connected to the KOC Datawarehouse."
 
 # Send Email - attacment is optional
 king.sendEmail(
@@ -263,11 +283,7 @@ king.sendEmail(
     emailRecipientName=michaelTannerName,
     emailSubject=subject,
     emailMessage=message,
-    attachment=testFile
 )
-
-
-print("Finished with kingscripts")
 
 
 '''
