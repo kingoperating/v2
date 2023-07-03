@@ -17,7 +17,7 @@ Send Email Function - using production@kingoperating.com as the email sender
 """
 
 
-def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, attachmentOne):
+def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, attachment=1):
 
     load_dotenv()  # loads the .env file
 
@@ -27,25 +27,25 @@ def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, at
     msg["To"] = emailRecipient
     msg["Subject"] = emailSubject
     msg.attach(MIMEText(emailMessage, "plain"))
+    if attachment != 1:
+        # OPENS EACH ATTACHMENTS
+        with open(attachment, "rb") as attachment:
+            # Add file as application/octet-stream
+            # Email client can usually download this automatically as attachment
+            partTwo = MIMEBase("application", "octet-stream")
+            partTwo.set_payload(attachment.read())
 
-    # OPENS EACH ATTACHMENTS
-    with open(attachmentOne, "rb") as attachment:
-        # Add file as application/octet-stream
-        # Email client can usually download this automatically as attachment
-        partTwo = MIMEBase("application", "octet-stream")
-        partTwo.set_payload(attachment.read())
+        # Encode file in ASCII characters to send by email
+        encoders.encode_base64(partTwo)
 
-    # Encode file in ASCII characters to send by email
-    encoders.encode_base64(partTwo)
+        partTwo.add_header(
+            "Content-Disposition",
+            f"attachment; filename= yesterdayWellReport.csv",
+        )
 
-    partTwo.add_header(
-        "Content-Disposition",
-        f"attachment; filename= yesterdayWellReport.csv",
-    )
+        # ATTACHES EACH FILE TO EMAIL
 
-    # ATTACHES EACH FILE TO EMAIL
-
-    msg.attach(partTwo)
+        msg.attach(partTwo)
 
     text = msg.as_string()
 

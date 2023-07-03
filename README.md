@@ -20,7 +20,7 @@ Then, import the packages below:
 
 ```python
 from kingscripts.operations import greasebook, combocurve, joyn
-from kingscripts.analytics import enverus
+from kingscripts.analytics import enverus, king
 from kingscripts.afe import afe
 from kingscripts.finance import tech, wenergy
 ```
@@ -113,7 +113,9 @@ Three (3) packages `greasebook`, `joyn` and `combocurve`
 
 ## analytics Module
 
-One package `enverus` and functions 2 functions
+Two (2) packages `enverus` and `king` with 3 functions
+
+### enverus
 
 12. `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
 
@@ -128,6 +130,16 @@ One package `enverus` and functions 2 functions
       - `operatorName`: Name of operator of interest `str`
       - `basin`: Name of basin of interest `str
 
+### king
+
+14. `king.sendEmail
+    - Arugments:
+      - `emailRecipient` - email address of the person to email `str`
+      - `emailRecipientName` - name of the person emailing - used for looping `str`
+      - `emailSubject` - email subject line `str`
+      - `emailMessage` - email message body `str`
+      - `attachment` - (optional) attachment to be sent (any type)
+
 ## finance Module
 
 Two packages `tech` and `wenergy`
@@ -136,8 +148,8 @@ Two packages `tech` and `wenergy`
 
 14. `tech.getItSpend` - returns a dataframe all of all coded invoices by M. Tanner
 
-- Arguments:
-  - None
+    - Arguments:
+      - None
 
 ## afe Module
 

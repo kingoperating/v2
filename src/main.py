@@ -257,13 +257,13 @@ afe.combineAfeFiles(
 subject = "KOC Daily Report - " + yesDateString
 message = "This is a Test"
 
-# Send Email
+# Send Email - attacment is optional
 king.sendEmail(
     emailRecipient=michaelTanner,
     emailRecipientName=michaelTannerName,
     emailSubject=subject,
     emailMessage=message,
-    attachmentOne=testFile
+    attachment=testFile
 )
 
 
