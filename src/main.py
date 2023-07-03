@@ -106,7 +106,6 @@ listOfWells = [
 
 '''
 WORKING ZONE
-
 '''
 # IT SPEND
 itSpend = tech.getItSpend(
@@ -276,6 +275,17 @@ king.sendEmail(
     emailRecipientName=gabeTatmanName,
     emailSubject=subject,
     emailMessage=message,
+)
+
+print("Begin Reading...")
+masterAllocatedDate = pd.read_excel(
+    r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
+print("Finished Reading Master Allocated Production Data!")
+
+data = king.getAverageDailyVolumes(
+    masterKingProdData=masterAllocatedDate,
+    startDate="2023-06-19",
+    endDate="2023-06-25"
 )
 
 

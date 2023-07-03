@@ -8,6 +8,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 import os.path
+import pandas as pd
 
 
 """
@@ -64,3 +65,61 @@ def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, at
         print("SMPT server connection error")
 
     return True
+
+
+"""
+
+Get Oil, Gas and BOE Averagy Daily Volumes and return them as a dataframe
+
+"""
+
+
+def getAverageDailyVolumes(masterKingProdData, startDate, endDate):
+
+    # convert the dates to datetime
+    masterKingProdData["Date"] = pd.to_datetime(masterKingProdData["Date"])
+    masterKingProdData = masterKingProdData.sort_values(
+        by=["Date"])
+
+    startDate = pd.to_datetime(startDate)
+    endDate = pd.to_datetime(endDate)
+
+    duration = endDate - startDate
+    days = duration.days
+
+    # Filter the data by date range
+    masterKingProdData = masterKingProdData[(masterKingProdData["Date"] >= startDate) & (
+        masterKingProdData["Date"] <= endDate)]
+
+    masterKingProdData = masterKingProdData.reset_index()
+    masterKingProdData = masterKingProdData.drop(columns=["index"])
+
+    for i in range(0, len(masterKingProdData)):
+        row = masterKingProdData.iloc[i]
+        name = row["Well Accounting Name"]
+        if name == "Read 332H" or name == "Read 342H":
+            indexReplace = i
+            oilVolume = row["Oil Volume"]
+            netOilVolume = oilVolume * 0.5
+            gasVolume = row["Gas Volume"]
+            netGasVolume = 0
+            masterKingProdData.at[indexReplace, "Oil Volume"] = netOilVolume
+            masterKingProdData.at[indexReplace, "Gas Volume"] = netGasVolume
+            x = 5
+
+    # Get the average daily volumes for each column
+    oilAvgDaily = masterKingProdData["Oil Volume"].sum() / days
+    gasAvgDaily = masterKingProdData["Gas Volume"].sum() / days
+    boeAvgDaily = oilAvgDaily + (gasAvgDaily / 6)
+
+    # Create a dictionary
+    avgDailyVolumes = {
+        "Oil (Bbls/day)": [oilAvgDaily],
+        "Gas (Mcf/day)": [gasAvgDaily],
+        "BOE/day": [boeAvgDaily]
+    }
+
+    # Create a dataframe
+    avgDailyVolumes = pd.DataFrame(avgDailyVolumes)
+
+    return avgDailyVolumes
