@@ -43,6 +43,8 @@ joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
 michaelTanner = os.getenv("MICHAEL_TANNER_EMAIL")
 michaelTannerName = os.getenv("MICHAEL_TANNER_NAME")
+gabeTatman = os.getenv("GABE_TATMAN_EMAIL")
+gabeTatmanName = os.getenv("GABE_TATMAN_NAME")
 
 # Getting Date Variables
 dateToday = dt.datetime.today()
@@ -265,6 +267,13 @@ message = message + "\n\n" + \
 king.sendEmail(
     emailRecipient=michaelTanner,
     emailRecipientName=michaelTannerName,
+    emailSubject=subject,
+    emailMessage=message,
+)
+
+king.sendEmail(
+    emailRecipient=gabeTatman,
+    emailRecipientName=gabeTatmanName,
     emailSubject=subject,
     emailMessage=message,
 )
