@@ -264,9 +264,6 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
             # disposition for current allocation row
             disposition = totalResults[i][j]["Disposition"]
 
-            if readingVolume == 500:
-                counter = counter + 1
-
             if isDeleted == True:
                 continue
 
