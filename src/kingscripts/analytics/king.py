@@ -17,7 +17,7 @@ Send Email Function - using production@kingoperating.com as the email sender
 """
 
 
-def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, attachment=1):
+def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, attachment=None):
 
     load_dotenv()  # loads the .env file
 
@@ -27,7 +27,7 @@ def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, at
     msg["To"] = emailRecipient
     msg["Subject"] = emailSubject
     msg.attach(MIMEText(emailMessage, "plain"))
-    if attachment != 1:
+    if attachment != None:
         # OPENS EACH ATTACHMENTS
         with open(attachment, "rb") as attachment:
             # Add file as application/octet-stream
