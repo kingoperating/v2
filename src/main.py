@@ -106,22 +106,6 @@ listOfWells = [
 WORKING ZONE
 
 '''
-# King Module
-subject = "KOC Daily Scripts - " + todayDateString
-message = "KOC Daily Scripts successfully ran for " + yesDateString
-
-message = message + "\n\n" + \
-    "Refresh any PowerBi Dashboards that are connected to the KOC Datawarehouse."
-
-# Send Email - attacment is optional
-king.sendEmail(
-    emailRecipient=michaelTanner,
-    emailRecipientName=michaelTannerName,
-    emailSubject=subject,
-    emailMessage=message,
-)
-
-
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
