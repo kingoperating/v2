@@ -4,7 +4,7 @@ Main Script for KOC Python Packages
 Developer: Michael Tanner
 
 """
-# KOC v3.0.0 Python Packages
+# KOC v3.0.2 Python Packages
 from kingscripts.operations import greasebook, combocurve, joyn
 from kingscripts.analytics import enverus, king
 from kingscripts.afe import afe
@@ -250,28 +250,6 @@ afe.combineAfeFiles(
     listOfWells=listOfWells
 )
 
-# King Module
-subject = "KOC Daily Scripts - " + todayDateString
-message = "KOC Daily Scripts successfully ran for " + yesDateString
-
-message = message + "\n\n" + \
-    "Refresh any PowerBi Dashboards that are connected to the KOC Datawarehouse."
-
-# Send Email - attacment is optional
-king.sendEmail(
-    emailRecipient=michaelTanner,
-    emailRecipientName=michaelTannerName,
-    emailSubject=subject,
-    emailMessage=message,
-)
-
-king.sendEmail(
-    emailRecipient=gabeTatman,
-    emailRecipientName=gabeTatmanName,
-    emailSubject=subject,
-    emailMessage=message,
-)
-
 # Weekly EOS Email to Peter - needs to be sent on Tuesday
 if isTuseday == 1:
 
@@ -319,6 +297,28 @@ if isTuseday == 1:
         dateEightDaysAgo + " to " + dateLastSunday
     )
 
+
+# Send Daily Email to Michael Tanner and Gabe Tatman that scripts ran successfully
+subject = "KOC Daily Scripts - " + todayDateString
+message = "KOC Daily Scripts successfully ran for " + yesDateString
+
+message = message + "\n\n" + \
+    "Refresh any PowerBi Dashboards that are connected to the KOC Datawarehouse."
+
+# Send Email - attacment is optional
+king.sendEmail(
+    emailRecipient=michaelTanner,
+    emailRecipientName=michaelTannerName,
+    emailSubject=subject,
+    emailMessage=message,
+)
+
+king.sendEmail(
+    emailRecipient=gabeTatman,
+    emailRecipientName=gabeTatmanName,
+    emailSubject=subject,
+    emailMessage=message,
+)
 
 '''
 ALL SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mainAFE.py for more details
