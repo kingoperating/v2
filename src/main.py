@@ -48,7 +48,7 @@ gabeTatmanName = os.getenv("GABE_TATMAN_NAME")
 
 # Getting Date Variables
 dateToday = dt.datetime.today()
-tuseday = dateToday.weekday()
+isTuseday = dateToday.weekday()
 dateLastSunday = dateToday - timedelta(days=2)
 dateEightDaysAgo = dateToday - timedelta(days=8)
 dateYesterday = dateToday - timedelta(days=1)
@@ -273,8 +273,7 @@ king.sendEmail(
 )
 
 # Weekly EOS Email to Peter
-
-if tuseday == 1:
+if isTuseday == 1:
 
     print("It's Tuesday! Send Weekly Email to Peter")
     dateEightDaysAgo = dateEightDaysAgo.strftime("%Y-%m-%d")
@@ -293,10 +292,7 @@ if tuseday == 1:
 
     weeklyAverageData.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\eosWeeklyNumbers\eosWeeklyNumbers_" +
                                dateEightDaysAgo + "_to_" + dateLastSunday + ".xlsx", index=False)
-
-    weeklyAverageData = pd.read_excel(
-        r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\eosWeeklyNumbers\eosWeeklyNumbers_" + dateEightDaysAgo + "_to_" + dateLastSunday + ".xlsx")
-
+    # Send email to Michael Tanner
     king.sendEmail(
         emailRecipient=michaelTanner,
         emailRecipientName=michaelTannerName,
@@ -309,6 +305,7 @@ if tuseday == 1:
         nameOfFile="Weekly EOS Numbers for " +
         dateEightDaysAgo + " to " + dateLastSunday
     )
+    # Send email to Gabe Tatman
     king.sendEmail(
         emailRecipient=gabeTatman,
         emailRecipientName=gabeTatmanName,
