@@ -18,7 +18,7 @@ Send Email Function - using production@kingoperating.com as the email sender
 """
 
 
-def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, attachment=None):
+def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, nameOfFile, attachment=None):
 
     load_dotenv()  # loads the .env file
 
@@ -41,7 +41,7 @@ def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, at
 
         partTwo.add_header(
             "Content-Disposition",
-            f"attachment; filename= yesterdayWellReport.csv",
+            f"attachment; filename=" + nameOfFile + ".xlsx",
         )
 
         # ATTACHES EACH FILE TO EMAIL
@@ -123,3 +123,10 @@ def getAverageDailyVolumes(masterKingProdData, startDate, endDate):
     avgDailyVolumes = pd.DataFrame(avgDailyVolumes)
 
     return avgDailyVolumes
+
+
+"""
+
+Send Email to KOC Employee with the average daily volumes
+
+"""
