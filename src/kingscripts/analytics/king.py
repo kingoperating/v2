@@ -84,8 +84,8 @@ def getAverageDailyVolumes(masterKingProdData, startDate, endDate):
     startDate = pd.to_datetime(startDate)
     endDate = pd.to_datetime(endDate)
 
-    duration = endDate - startDate
-    days = duration.days
+    durationBetweenDates = endDate - startDate
+    daysBetweenDates = durationBetweenDates.days
 
     # Filter the data by date range
     masterKingProdData = masterKingProdData[(masterKingProdData["Date"] >= startDate) & (
@@ -108,8 +108,8 @@ def getAverageDailyVolumes(masterKingProdData, startDate, endDate):
             x = 5
 
     # Get the average daily volumes for each column
-    oilAvgDaily = masterKingProdData["Oil Volume"].sum() / days
-    gasAvgDaily = masterKingProdData["Gas Volume"].sum() / days
+    oilAvgDaily = masterKingProdData["Oil Volume"].sum() / daysBetweenDates
+    gasAvgDaily = masterKingProdData["Gas Volume"].sum() / daysBetweenDates
     boeAvgDaily = oilAvgDaily + (gasAvgDaily / 6)
 
     # Create a dictionary
