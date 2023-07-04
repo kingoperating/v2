@@ -48,6 +48,9 @@ gabeTatmanName = os.getenv("GABE_TATMAN_NAME")
 
 # Getting Date Variables
 dateToday = dt.datetime.today()
+tuseday = dateToday.weekday()
+dateLastSunday = dateToday - timedelta(days=2)
+dateEightDaysAgo = dateToday - timedelta(days=8)
 dateYesterday = dateToday - timedelta(days=1)
 todayYear = dateToday.strftime("%Y")
 todayMonth = dateToday.strftime("%m")
@@ -269,16 +272,55 @@ king.sendEmail(
     emailMessage=message,
 )
 
-print("Begin Reading...")
-masterAllocatedDate = pd.read_excel(
-    r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
-print("Finished Reading Master Allocated Production Data!")
+# Weekly EOS Email to Peter
 
-data = king.getAverageDailyVolumes(
-    masterKingProdData=masterAllocatedDate,
-    startDate="2023-06-19",
-    endDate="2023-06-25"
-)
+if tuseday == 1:
+
+    print("It's Tuesday! Send Weekly Email to Peter")
+    dateEightDaysAgo = dateEightDaysAgo.strftime("%Y-%m-%d")
+    dateLastSunday = dateLastSunday.strftime("%Y-%m-%d")
+
+    print("Begin Reading...")
+    masterAllocatedData = pd.read_excel(
+        r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
+    print("Finished Reading Master Allocated Production Data!")
+
+    weeklyAverageData = king.getAverageDailyVolumes(
+        masterKingProdData=masterAllocatedData,
+        startDate=dateEightDaysAgo,
+        endDate=dateLastSunday
+    )
+
+    weeklyAverageData.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\eosWeeklyNumbers\eosWeeklyNumbers_" +
+                               dateEightDaysAgo + "_to_" + dateLastSunday + ".xlsx", index=False)
+
+    weeklyAverageData = pd.read_excel(
+        r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\eosWeeklyNumbers\eosWeeklyNumbers_" + dateEightDaysAgo + "_to_" + dateLastSunday + ".xlsx")
+
+    king.sendEmail(
+        emailRecipient=michaelTanner,
+        emailRecipientName=michaelTannerName,
+        emailMessage="Weekly EOS Numbers for " + dateEightDaysAgo +
+        " to " + dateLastSunday + " are attached.",
+        emailSubject="Weekly EOS Numbers for " +
+        dateEightDaysAgo + " to " + dateLastSunday,
+        attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\eosWeeklyNumbers\eosWeeklyNumbers_" +
+        dateEightDaysAgo + "_to_" + dateLastSunday + ".xlsx",
+        nameOfFile="Weekly EOS Numbers for " +
+        dateEightDaysAgo + " to " + dateLastSunday
+    )
+    king.sendEmail(
+        emailRecipient=gabeTatman,
+        emailRecipientName=gabeTatmanName,
+        emailMessage="Weekly EOS Numbers for " + dateEightDaysAgo +
+        " to " + dateLastSunday + " are attached.",
+        emailSubject="Weekly EOS Numbers for " +
+        dateEightDaysAgo + " to " + dateLastSunday,
+        attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\eosWeeklyNumbers\eosWeeklyNumbers_" +
+        dateEightDaysAgo + "_to_" + dateLastSunday + ".xlsx",
+        nameOfFile="Weekly EOS Numbers for " +
+        dateEightDaysAgo + " to " + dateLastSunday
+    )
 
 
 '''
