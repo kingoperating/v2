@@ -272,7 +272,7 @@ king.sendEmail(
     emailMessage=message,
 )
 
-# Weekly EOS Email to Peter
+# Weekly EOS Email to Peter - needs to be sent on Tuesday
 if isTuseday == 1:
 
     print("It's Tuesday! Send Weekly Email to Peter")

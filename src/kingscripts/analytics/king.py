@@ -123,10 +123,3 @@ def getAverageDailyVolumes(masterKingProdData, startDate, endDate):
     avgDailyVolumes = pd.DataFrame(avgDailyVolumes)
 
     return avgDailyVolumes
-
-
-"""
-
-Send Email to KOC Employee with the average daily volumes
-
-"""
