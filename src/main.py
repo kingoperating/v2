@@ -124,14 +124,6 @@ browing518HProductionMonthtlyData = enverus.getWellProductionData(
 browing518HProductionMonthtlyData.to_excel(
     kocDatawarehouse + r"\browningWell.xlsx", index=False)
 
-# Gresebook Stack
-pumperNotReportedList = greasebook.getBatteryProductionData(
-    workingDataDirectory=kocDatawarehouse,
-    fullProd=False,
-    days=daysToPull,
-    greasebookApi=greasebookApi
-)
-
 # Allocate Wells From Greasebook
 allocatedProductionData = greasebook.allocateWells(
     days=daysToPull,
@@ -317,10 +309,6 @@ greasebook.getBatteryProductionData(
     fullProd=False,
     days=30,
     greasebookApi=greasebookApi
-)
-
-greasebook.sendPumperEmail(
-    pumperNotReportedList=pumperNotReportedList, workingDataDirectory=workingDirectoryData
 )
 
 greasebook.allocateWells(
