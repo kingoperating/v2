@@ -13,12 +13,12 @@ import pandas as pd
 
 """
 
-Send Email Function - using production@kingoperating.com as the email sender
+Send Email Function - using operations@kingoperating.com as the email sender
 
 """
 
 
-def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, nameOfFile, attachment=None):
+def sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, nameOfFile=None, attachment=None):
 
     load_dotenv()  # loads the .env file
 
