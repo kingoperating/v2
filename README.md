@@ -139,7 +139,8 @@ Two (2) packages `enverus` and `king` with 3 functions
       - `emailRecipientName` - name of the person emailing - used for looping `str`
       - `emailSubject` - email subject line `str`
       - `emailMessage` - email message body `str`
-      - `attachment` - (optional) attachment to be sent (any type)
+      - `nameOfFile` (optional) name of the file - user created
+      - `attachment` - (optional) attachment to be sent (Excel File only)
 
 15. `king.getAverageDailyVolumes`
 
