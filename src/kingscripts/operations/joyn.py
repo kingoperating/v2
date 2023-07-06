@@ -266,6 +266,8 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
 
             if isDeleted == True:
                 continue
+            if wellName == "Read 332H":
+                x = 5
 
             # checking to confirm that the record is not deleted or if its oil sold volume
             if disposition == 760098 or disposition == 760101 or disposition == 760094 or disposition == 760095 or disposition == 760097:

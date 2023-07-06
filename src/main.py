@@ -45,6 +45,8 @@ michaelTanner = os.getenv("MICHAEL_TANNER_EMAIL")
 michaelTannerName = os.getenv("MICHAEL_TANNER_NAME")
 gabeTatman = os.getenv("GABE_TATMAN_EMAIL")
 gabeTatmanName = os.getenv("GABE_TATMAN_NAME")
+garrettStacey = os.getenv("GARRETt_STACEY_EMAIL")
+garrettStaceyName = os.getenv("GARRETT_STACEY_NAME")
 
 # Getting Date Variables
 dateToday = dt.datetime.today()
