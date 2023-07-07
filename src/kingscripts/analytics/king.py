@@ -1,5 +1,6 @@
 # Importing libraries
 import datetime as dt
+from datetime import datetime
 import re
 from dotenv import load_dotenv
 import smtplib
@@ -123,3 +124,84 @@ def getAverageDailyVolumes(masterKingProdData, startDate, endDate):
     avgDailyVolumes = pd.DataFrame(avgDailyVolumes)
 
     return avgDailyVolumes
+
+
+"""
+Returns a List of Pumpers that have not submitted their daily reports
+
+"""
+
+
+def getNotReportedPumperList(masterAllocatedData, checkDate):
+
+    checkDate = datetime.strptime(checkDate, "%Y-%m-%d")
+
+    masterWellsList = pd.read_excel(
+        r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\master\masterWellAllocation.xlsx")
+
+    pumperNames = masterWellsList["Pumper Name"].to_list()
+    pumperNumbers = masterWellsList["Pumper Phone"].to_list()
+    masterApiList = masterWellsList["API"].to_list()
+
+    # Get the current date and sort the data by date
+    masterAllocatedData["Date"] = pd.to_datetime(masterAllocatedData["Date"])
+    masterAllocatedData = masterAllocatedData.sort_values(["Date"])
+
+    # Calculate Rolling Averge 14-day window for Oil and Gas
+    masterAllocatedData["Rolling 14 Day Oil Average"] = masterAllocatedData.groupby(
+        "Well Accounting Name")["Oil Volume"].transform(lambda x: x.rolling(14, 1).mean())
+    masterAllocatedData["Rolling 14 Day Gas Average"] = masterAllocatedData.groupby(
+        "Well Accounting Name")["Gas Volume"].transform(lambda x: x.rolling(14, 1).mean())
+
+    dataOnCheckDate = masterAllocatedData[masterAllocatedData["Date"] == checkDate]
+
+    pumperNaughtyList = []
+
+    for i in range(0, len(dataOnCheckDate)):
+        row = dataOnCheckDate.iloc[i]
+        oilVolume = row["Oil Volume"]
+        gasVolume = row["Gas Volume"]
+        rollingOilAverage = row["Rolling 14 Day Oil Average"]
+        rollingGasAverage = row["Rolling 14 Day Gas Average"]
+
+        if (oilVolume == 0 and rollingOilAverage > 0) or (gasVolume == 0 and rollingGasAverage > 0):
+            wellName = row["Well Accounting Name"]
+            api = row["API"]
+            indexOfApi = masterApiList.index(api)
+            pumperName = pumperNames[indexOfApi]
+            pumperNumber = pumperNumbers[indexOfApi]
+            pumperNaughtyList.append([wellName, pumperName, pumperNumber])
+
+    pumperNaughtyList = pd.DataFrame(pumperNaughtyList, columns=[
+                                     "Well Name", "Pumper Name", "Pumper Number"])
+
+    return pumperNaughtyList
+
+
+"""
+
+Creates the message that gets sent to pumpers - NOT SHARED IN DOCUMENTATION
+
+"""
+
+
+def createPumperMessage(badPumperData, badPumperTrimmedList, badPumperMessage):
+
+    for i in range(0, len(badPumperTrimmedList)):
+        pumperName = badPumperTrimmedList[i]
+        indices = badPumperData[badPumperData["Pumper Name"]
+                                == pumperName].index
+        pumperPhoneNumber = badPumperData["Pumper Number"][indices].to_list()
+        wellNames = badPumperData["Well Name"][indices].to_list()
+        badPumperMessage = badPumperMessage + \
+            "Pumper Name: " + str(pumperName) + " - Phone Number: " + \
+            str(pumperPhoneNumber[0]) + "\n"
+        badPumperMessage = badPumperMessage + "  Well Name(s): \n"
+
+        for j in range(0, len(wellNames)):
+            badPumperMessage = badPumperMessage + \
+                "     " + str(wellNames[j]) + "\n"
+
+        badPumperMessage = badPumperMessage + "\n"
+
+    return badPumperMessage

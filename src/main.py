@@ -63,6 +63,7 @@ yesMonth = int(dateYesterday.strftime("%m"))
 yesDay = int(dateYesterday.strftime("%d"))
 yesDateString = dateYesterday.strftime("%Y-%m-%d")
 todayDateString = dateToday.strftime("%Y-%m-%d")
+eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
 
 # Important Variables for scripts
 browning5181H = "42033325890000"
@@ -112,6 +113,36 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
+# print("Begin Reading...")
+# masterAllocatedData = pd.read_excel(
+#     r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
+# print("Finished Reading Master Allocated Production Data!")
+
+# badPumperData = king.getNotReportedPumperList(
+#     masterAllocatedData=masterAllocatedData,
+#     checkDate=yesDateString
+# )
+
+# subject = "Test Bad Pumper List"
+# badPumperMessage = "The following pumpers have not submitted their daily reports: \n\n"
+
+# badPumpers = badPumperData["Pumper Name"].to_list()
+# badPumpersUniqueList = [*set(badPumpers)]
+
+# badPumperMessage = king.createPumperMessage(
+#     badPumperData=badPumperData,
+#     badPumperTrimmedList=badPumpersUniqueList,
+#     badPumperMessage=badPumperMessage
+# )
+
+# king.sendEmail(
+#     emailRecipient=michaelTanner,
+#     emailRecipientName=michaelTannerName,
+#     emailSubject=subject,
+#     emailMessage=badPumperMessage
+# )
+
+
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
@@ -179,6 +210,38 @@ masterData.to_excel(
 masterData.to_json(kocDatawarehouse +
                    r"\production\masterAllocatedProductionData.json", orient="records")
 print("Finished Exporting Master Data to KOC Datawarehouse!")
+
+# Bad pumper Data email
+badPumperData = king.getNotReportedPumperList(
+    masterAllocatedData=masterData,
+    checkDate=yesDateString
+)
+
+subject = "Bad Pumper List for " + yesDateString
+badPumperMessage = "The following pumpers have not submitted their daily reports: \n\n"
+
+badPumpers = badPumperData["Pumper Name"].to_list()
+badPumpersUniqueList = [*set(badPumpers)]
+
+badPumperMessage = king.createPumperMessage(
+    badPumperData=badPumperData,
+    badPumperTrimmedList=badPumpersUniqueList,
+    badPumperMessage=badPumperMessage
+)
+
+king.sendEmail(
+    emailRecipient=michaelTanner,
+    emailRecipientName=michaelTannerName,
+    emailSubject=subject,
+    emailMessage=badPumperMessage
+)
+
+king.sendEmail(
+    emailRecipient=gabeTatman,
+    emailRecipientName=gabeTatmanName,
+    emailSubject=subject,
+    emailMessage=badPumperMessage
+)
 
 # ComboCurve PUT Statements
 combocurve.putGreasebookWellProductionData(
