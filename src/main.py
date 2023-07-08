@@ -113,36 +113,6 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
-# print("Begin Reading...")
-# masterAllocatedData = pd.read_excel(
-#     r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
-# print("Finished Reading Master Allocated Production Data!")
-
-# badPumperData = king.getNotReportedPumperList(
-#     masterAllocatedData=masterAllocatedData,
-#     checkDate=yesDateString
-# )
-
-# subject = "Test Bad Pumper List"
-# badPumperMessage = "The following pumpers have not submitted their daily reports: \n\n"
-
-# badPumpers = badPumperData["Pumper Name"].to_list()
-# badPumpersUniqueList = [*set(badPumpers)]
-
-# badPumperMessage = king.createPumperMessage(
-#     badPumperData=badPumperData,
-#     badPumperTrimmedList=badPumpersUniqueList,
-#     badPumperMessage=badPumperMessage
-# )
-
-# king.sendEmail(
-#     emailRecipient=michaelTanner,
-#     emailRecipientName=michaelTannerName,
-#     emailSubject=subject,
-#     emailMessage=badPumperMessage
-# )
-
-
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
