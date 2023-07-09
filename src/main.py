@@ -70,8 +70,8 @@ browning5181H = "42033325890000"
 browningOperatorName = "BROWNING OIL"
 basin = "MIDLAND"
 comboCurveProjectId = "612fc3d36880c20013a885df"
-comboCurveScenarioId = "632e70eefcea66001337cd43"
-comboCurveForecastId = "6495f222b89c6d001250fbf9"
+comboCurveScenarioId = "64a5c342f314ca0012002a2d"
+comboCurveForecastId = "64a5d95390c0320012a83df9"
 millerranchb501mh = "millerranchb501mh"
 millerrancha502v = "millerrancha502v"
 millerrancha501mh = "millerrancha501mh"
@@ -113,6 +113,17 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
+
+dailyForecastVolumes = combocurve.getDailyForecastVolume(
+    projectIdKey=comboCurveProjectId,
+    forecastIdKey=comboCurveForecastId,
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
+
+dailyForecastVolumes.to_csv(
+    r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\dailyForecastVolumes.csv", index=False)
+
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
@@ -357,115 +368,3 @@ king.sendEmail(
     emailSubject=subject,
     emailMessage=message,
 )
-
-'''
-ALL SCRIPTS - see mainEnverus.py, mainGreasebook.py, mainComboCurve.py, and mainAFE.py for more details
-
-'''
-
-# Enverus Stack
-browing518HProductionMonthtlyData = enverus.getWellData(
-    apiKey=enverusApiKey,
-    wellApi14=browning5181H
-)
-
-browing518HProductionMonthtlyData.to_excel(
-    workingDirectoryData + r"\browningWell.xlsx", index=False)
-updateDate = browing518HProductionMonthtlyData["Date"][1]
-print("Last update date: " + updateDate)
-
-enverus.checkWellStatus(
-    apiKey=enverusApiKey,
-    operatorName=browningOperatorName,
-    basin=basin
-)
-
-# Greasebook Stack
-greasebook.getBatteryProductionData(
-    workingDataDirectory=workingDirectoryData,
-    fullProd=False,
-    days=30,
-    greasebookApi=greasebookApi
-)
-
-greasebook.allocateWells(
-    days=30,
-    workingDataDirectory=workingDirectoryData,
-    greasebookApi=greasebookApi,
-    pullProd=False
-)
-
-# WELL COMMENTS
-
-greasebookComments = greasebook.getComments(
-    workingDataDirectory=kocDatawarehouse,
-    greasebookApi=greasebookApi,
-    prodStartDate="2022-01-01",
-    prodEndDate="2022-03-31"
-)
-
-# ComboCurve Stack
-combocurve.putGreasebookWellProductionData(
-    workingDataDirectory=workingDirectoryData,
-    pullFromAllocation=False,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey,
-    greasebookApi=greasebookApi,
-    daysToPull=60
-)
-
-pdpModel = combocurve.getLatestScenarioOneLiner(
-    workingDataDirectory=workingDirectoryData,
-    projectIdKey=comboCurveProjectId,
-    scenarioIdKey=comboCurveScenarioId,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey
-)
-
-pdpModel.to_excel(workingDirectoryData +
-                  r"\eurData.xlsx", index=False)
-
-
-latestPdpDailyForecast = combocurve.getDailyForecastVolume(
-    projectIdKey=comboCurveProjectId,
-    forecastIdKey=comboCurveForecastId,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey
-)
-
-latestPdpDailyForecast.to_excel(
-    kocDatawarehouse + r"\production\latestDailyForecast.xlsx", index=False)
-
-combocurve.putGreasebookWellComments(
-    cleanJson=greasebookComments,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey
-)
-
-combocurve.getDailyForecastVolume(
-    workingDataDirectory=kocDatawarehouse,
-    projectIdKey=comboCurveProjectId,
-    forecastIdKey=comboCurveForecastId,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey
-)
-
-# AFE Stack
-afe.dailyCost(
-    workingDataDirectory=workingDirectoryData,
-    name=millerranchb501mh
-)
-afe.variance(
-    workingDataDirectory=workingDirectoryData,
-    name=millerranchb501mh
-)
-# combine AFE files
-afe.combineAfeFiles(
-    workingDataDirectory=kocDatawarehouse,
-    listOfWells=listOfWells
-)
-
-# JOYN STACK
-joynData = joyn.getDailyAllocatedProduction()
-joynData.to_csv(workingDirectoryData +
-                r"\joynAllocatedProductionGoodTestMergred.csv", index=False)
