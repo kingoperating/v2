@@ -113,17 +113,6 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
-
-dailyForecastVolumes = combocurve.getDailyForecastVolume(
-    projectIdKey=comboCurveProjectId,
-    forecastIdKey=comboCurveForecastId,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey
-)
-
-dailyForecastVolumes.to_csv(
-    r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\dailyForecastVolumes.csv", index=False)
-
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
@@ -368,3 +357,5 @@ king.sendEmail(
     emailSubject=subject,
     emailMessage=message,
 )
+
+print("Finished Running KOC Daily Scripts! You rock man")
