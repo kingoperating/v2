@@ -331,6 +331,19 @@ if isTuseday == 1:
         nameOfFile="Weekly EOS Numbers for " +
         dateEightDaysAgo + " to " + dateLastSunday
     )
+    # Send email to Peter Snell
+    king.sendEmail(
+        emailRecipient="psnell@kingoperating.com",
+        emailRecipientName="Peter Snell",
+        emailMessage="Weekly EOS Numbers for " + dateEightDaysAgo +
+        " to " + dateLastSunday + " are attached.",
+        emailSubject="Weekly EOS Numbers for " +
+        dateEightDaysAgo + " to " + dateLastSunday,
+        attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\eosWeeklyNumbers\eosWeeklyNumbers_" +
+        dateEightDaysAgo + "_to_" + dateLastSunday + ".xlsx",
+        nameOfFile="Weekly EOS Numbers for " +
+        dateEightDaysAgo + " to " + dateLastSunday
+    )
 else:
     print("It's not Tuesday. No Weekly EOS Email to Peter")
 
