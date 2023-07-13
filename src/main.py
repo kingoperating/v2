@@ -91,7 +91,7 @@ irvinsisters53m1h = "irvinsisters53m1h"
 pshigoda752h = "pshigoda752h"
 itSqlTable = "itSpend"
 daysToPull = 35
-daysToLookBack = 7
+daysToLookBack = 2
 testFile = r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\assetPrettyName.xlsx"
 listOfWells = [
     thurman23v,
@@ -113,6 +113,15 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
+# combocurve.getLatestScenarioMonthly(
+#     workingDataDirectory=kocDatawarehouse,
+#     projectIdKey=comboCurveProjectId,
+#     scenarioIdKey=comboCurveScenarioId,
+#     serviceAccount=serviceAccount,
+#     comboCurveApi=comboCurveApiKey
+# )
+
+
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
