@@ -47,6 +47,8 @@ gabeTatman = os.getenv("GABE_TATMAN_EMAIL")
 gabeTatmanName = os.getenv("GABE_TATMAN_NAME")
 garrettStacey = os.getenv("GARRETt_STACEY_EMAIL")
 garrettStaceyName = os.getenv("GARRETT_STACEY_NAME")
+chandlerKnox = os.getenv("CHANDLER_KNOX_EMAIL")
+chandlerKnoxName = os.getenv("CHANDLER_KNOX_NAME")
 
 # Getting Date Variables
 dateToday = dt.datetime.today()
@@ -218,6 +220,13 @@ king.sendEmail(
 king.sendEmail(
     emailRecipient=gabeTatman,
     emailRecipientName=gabeTatmanName,
+    emailSubject=subject,
+    emailMessage=badPumperMessage
+)
+
+king.sendEmail(
+    emailRecipient=chandlerKnox,
+    emailRecipientName=chandlerKnoxName,
     emailSubject=subject,
     emailMessage=badPumperMessage
 )
