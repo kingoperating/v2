@@ -115,13 +115,15 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
-# combocurve.getLatestScenarioMonthly(
+# data = combocurve.getLatestScenarioMonthly(
 #     workingDataDirectory=kocDatawarehouse,
 #     projectIdKey=comboCurveProjectId,
 #     scenarioIdKey=comboCurveScenarioId,
 #     serviceAccount=serviceAccount,
 #     comboCurveApi=comboCurveApiKey
 # )
+
+# data.to_excel(kocDatawarehouse + r"\comboCurveTest.xlsx", index=False)
 
 
 # IT SPEND
