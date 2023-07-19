@@ -125,7 +125,6 @@ WORKING ZONE
 
 # data.to_excel(kocDatawarehouse + r"\comboCurveTest.xlsx", index=False)
 
-
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
