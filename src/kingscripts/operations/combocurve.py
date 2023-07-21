@@ -790,3 +790,218 @@ def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCur
     print("Done Getting Daily Forecast Volumes")
 
     return masterForecastData
+
+"""
+
+This function gets the rolled up scenerio data for a given project and scenerio id
+
+"""
+
+def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
+    
+    # FUNCTIONS
+    # GET request to get Well ID to API14
+    def getWellApi(wellIdComboCurve):
+        authComboCurveHeaders = combocurve_auth.get_auth_headers()
+        url = "https://api.combocurve.com/v1/wells/" + wellIdComboCurve
+        responseApi = requests.request(
+            "GET", url, headers=authComboCurveHeaders)
+        jsonStr = responseApi.text
+        dataObjBetter = json.loads(jsonStr)
+        return dataObjBetter["chosenID"]
+
+      # Get the next page URL from the response headers for pagination
+    def getNextPageUrlComboCurve(response_headers: dict) -> str:
+        urlHeader = response_headers.get('Link', "")
+        matchComboCurve = re.findall("<([^<>]+)>;rel=\"([^\"]+)\"", urlHeader)
+        for linkComboCurve, rel in matchComboCurve:
+            if rel == 'next':
+                return linkComboCurve
+        return None
+
+    def processNextPageUrlComboCurve(response_json):
+        for i in range(0, len(response_json)):
+            results = response_json[i]
+            wellId = results["well"]
+            output = results["output"]
+            wellIdList.append(wellId)
+            resultsList.append(output)
+    
+    def processNextPageUrlComboCurveResults(response_json):
+        results = response_json["results"]
+        resultsList.extend(results)
+
+    # load enviroment variables
+    load_dotenv()
+
+    # connect to service account
+    service_account = serviceAccount
+    # set API Key from enviroment variable
+    api_key = comboCurveApi
+    # specific Python ComboCurve authentication
+    combocurve_auth = ComboCurveAuth(service_account, api_key)
+
+    projectId = projectIdKey
+    scenarioId = scenarioIdKey
+
+    # This code chunk gets the  for given Scenerio
+    # Call Stack - Get Econ Id
+
+    authComboCurveHeaders = combocurve_auth.get_auth_headers()
+    # URl econid
+    url = (
+        "https://api.combocurve.com/v1/projects/"
+        + projectId
+        + "/scenarios/"
+        + scenarioId
+        + "/econ-runs"
+    )
+
+    response = requests.request(
+        "GET", url, headers=authComboCurveHeaders
+    )  # GET request to pull economic ID for next query
+    
+    jsonStr = response.text  # convert to JSON string
+    dataObjBetter = json.loads(jsonStr)  # pass to data object - allows for parsing
+    row = dataObjBetter[0]  # sets row equal to first string set (aka ID)
+    econId = row["id"]  # set ID equal to variable
+
+    print(econId)  # check that varaible is passed correctly
+
+    # Reautenticated client
+    auth_headers = combocurve_auth.get_auth_headers()
+    # Set new url parsed with updated econID
+    urlone = (
+        "https://api.combocurve.com/v1/projects/"
+        + projectId
+        + "/scenarios/"
+        + scenarioId
+        + "/econ-runs/"
+        + econId
+        + "/monthly-exports"
+    )
+
+    response = requests.request(
+        "POST", urlone, headers=auth_headers)  # runs POST request
+
+    # same as above chunk, parses JSON string and pull outs econRunID to be passed in next GET request
+    jsonStr = response.text
+    dataObjEconRunId = json.loads(jsonStr)
+    row = dataObjEconRunId
+    econRunId = row["id"]
+    print(econRunId)
+
+    # Reautenticated client
+    auth_headers = combocurve_auth.get_auth_headers()
+    # set new url with econRunID, skipping zero
+
+    urltwo = (
+        "https://api.combocurve.com/v1/projects/"
+        + projectId
+        + "/scenarios/"
+        + scenarioId
+        + "/econ-runs/"
+        + econId
+        + "/monthly-exports/"
+        + econRunId
+        + "?take=200"
+    )
+    
+    resultsList = []
+    wellIdList = []
+    
+    # boolean to check if there is a next page for pagination
+    hasNextLink = True
+    
+    while hasNextLink:
+        response = requests.request(
+            "GET", urltwo, headers=authComboCurveHeaders)
+        urltwo = getNextPageUrlComboCurve(response.headers)
+        processNextPageUrlComboCurveResults(response.json())
+        hasNextLink = urltwo is not None
+
+    numEntries = len(resultsList)
+    print(numEntries)
+    
+    # lists for each of the columns I need rolled up
+    netOilSalesVolume = []
+    netGasSalesVolume = []
+    oilRevenueTable = []
+    gasRevenueTable = []
+    totalNetRevenueTable = []
+    totalExpenseTable = []
+    netIncomeTable = []
+    totalCapexTable = []
+    beforeIncomeTaxCashFlowTable = []
+    totalTaxTable = []
+    dateTable = []
+
+    # Setting row, wellId and date to correct values
+    for i in range(0, numEntries):
+        row = resultsList[i]
+        wellId = row["well"]
+        output = row["output"]
+        date = row["date"]
+        oilPrice = output["oilPrice"]
+        gasPrice = output["gasPrice"]
+        # getting the total variables casted as floats for addition
+        totalNetOilVolume = float(output["netOilSalesVolume"])
+        totalNetRevenue = float(output["totalRevenue"])
+        totalNetGasVolume = float(output["netGasSalesVolume"])
+        oilRev = float(output["oilRevenue"])
+        gasRev = float(output["gasRevenue"])
+        totalExpense = float(output["totalExpense"])
+        netIncome = float(output["netIncome"])
+        totalTaxSum = (
+            float(output["totalSeveranceTax"])
+            + float(output["adValoremTax"])
+            + float(output["totalProductionTax"])
+        )
+
+        # loop to confirm new well and same date
+        for j in range(i + 1, numEntries):
+            row2 = resultsList[j]
+            wellId2 = row2["well"]
+            date2 = row2["date"]
+            # check to make sure wellID ISNT the same and the date is, then calculate all date
+            if (wellId2 != wellId) and (date2 == date):
+                output = row2["output"]
+                totalNetOilVolume = totalNetOilVolume + float(
+                    output["netOilSalesVolume"]
+                )
+                totalNetRevenue = totalNetRevenue + float(output["totalRevenue"])
+                totalNetGasVolume = totalNetGasVolume + float(
+                    output["netGasSalesVolume"]
+                )
+                oilRev = oilRev + float(output["oilRevenue"])
+                gasRev = gasRev + float(output["gasRevenue"])
+                totalExpense = totalExpense + float(output["totalExpense"])
+                netIncome = netIncome + float(output["netIncome"])
+                totalTaxSum = (
+                    totalTaxSum
+                    + float(output["totalSeveranceTax"])
+                    + float(output["adValoremTax"])
+                    + float(output["totalProductionTax"])
+                )
+        # counter to confirm same date
+        dateCount = dateTable.count(date)
+        # if dateCount is 0, then add each new summed variable to new list
+        if dateCount == 0:
+            dateTable.append(date)
+            netOilSalesVolume.append(totalNetOilVolume)
+            totalNetRevenueTable.append(totalNetRevenue)
+            netGasSalesVolume.append(totalNetGasVolume)
+            oilRevenueTable.append(oilRev)
+            gasRevenueTable.append(gasRev)
+            totalExpenseTable.append(totalExpense)
+            netIncomeTable.append(netIncome)
+            totalTaxTable.append(totalTaxSum)
+        
+    combinedLists = list(zip(dateTable, netOilSalesVolume, netGasSalesVolume, oilRevenueTable, gasRevenueTable, totalNetRevenueTable, totalExpenseTable, netIncomeTable, totalTaxTable))
+    
+    scenerioDataTable = pd.DataFrame(combinedLists, columns=["Date", "Net Oil Sales Volume", "Net Gas Sales Volume", "Oil Revenue", "Gas Revenue", "Total Net Revenue", "Total Expense", "Net Income", "Total Tax"])
+    
+    scenerioDataTable["Date"] = pd.to_datetime(scenerioDataTable["Date"])
+
+    return scenerioDataTable
+    
