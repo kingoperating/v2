@@ -6,7 +6,7 @@
 
 This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 3.1.0
 
-Developed and Maintained by Michael Tanner and Gabe Tatman. Please email mtanner@kingoperating.com with any questions.
+Developed and Maintained by Michael Tanner and Gabe Tatman. Please email development@kingoperating.com with any questions.
 
 Visit [KOC Development Site](https://mtanner161.github.io/kingdashboard/#/kingdashboard) for our ongoing front-end application development
 
