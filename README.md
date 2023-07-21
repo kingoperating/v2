@@ -4,7 +4,7 @@
   <img src=".\src\images\logo.png" width="400" title="kingscripts">
 </p>
 
-This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 3.0.2
+This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 3.1.0
 
 Developed and Maintained by Michael Tanner and Gabe Tatman. Please email mtanner@kingoperating.com with any questions.
 
@@ -101,11 +101,25 @@ Three (3) packages `greasebook`, `joyn` and `combocurve`
      - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
 
+10. `combocurve.getLatestScenarioMonthly` - gets monthly aggerate cash flow statement for given CC project ID and scenarioI ID
+
+- Arguments
+  - `projectIdKey`: ComboCurve specific project id - get through front-end UI `str`
+  - `forecastIdKey`: ComboCurve specific scenerio id - get through front-end UI `str`
+  - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
+  - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
+
 ### joyn
 
-10. `joyn.getDailyAllocatedProduction` - returns pandas dataframe of modified production data from JOYN during given data length
+11. `joyn.getDailyAllocatedProduction` - returns pandas dataframe of modified production data from JOYN during given data length
 
-11. `joyn.mergeBIntoA` - merges two dataframes together and updates A if B is different
+    - Arguments
+      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
+      - `joynUsername` - username for login to JOYN `str`
+      - `joynPassword` - password for JOYN `str`
+      - `daysToLookBack` - how many days to look back for modified production data? `int`
+
+12. `joyn.mergeBIntoA` - merges two dataframes together and updates A if B is different
 
     - Arguments
       - `A`: pandas dataframe which will be updated `dataframe`
@@ -117,13 +131,13 @@ Two (2) packages `enverus` and `king` with 3 functions
 
 ### enverus
 
-12. `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
+13. `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
 
 - Arguments:
   - `apiKey`: Enverus API authentication `object`
   - `wellApi14`: Well API14 of interest `str`
 
-13. `enverus.checkWellStatus` - chekcs the status a specific operator in a specific basin
+14. `enverus.checkWellStatus` - chekcs the status a specific operator in a specific basin
 
     - Arguments:
       - `apiKey`: Enverus API authentication `object`
@@ -132,7 +146,7 @@ Two (2) packages `enverus` and `king` with 3 functions
 
 ### king
 
-14. `king.sendEmail`
+15. `king.sendEmail`
 
     - Arugments:
       - `emailRecipient` - email address of the person to email `str`
@@ -142,12 +156,25 @@ Two (2) packages `enverus` and `king` with 3 functions
       - `nameOfFile` (optional) name of the file - user created
       - `attachment` - (optional) attachment to be sent (Excel File only)
 
-15. `king.getAverageDailyVolumes`
+16. `king.getAverageDailyVolumes`
 
     - Arugments:
       - `masterKingProdData` - master allocated volumes excel sheet in KOC Datawarehouse `dataframe`
-      - `startDate` - YYYY-MM-DD
-      - `endDate` - YYYY-MM-DD
+      - `startDate` - YYYY-MM-DD `datetime`
+      - `endDate` - YYYY-MM-DD `datetime`
+
+17. `king.getNotReportedPumperList` - refactored pumper naughty list which creates and returns a list of pumpers who have not entered there data
+
+    - Arugments:
+    - `masterKingProdData` - master allocated volumes excel sheet in KOC Datawarehouse `dataframe`
+    - `checkDate` - date to check `datetime`
+
+18. `king.createPumperMessage` - takes a list of names and orders them by well to create the email message that goes out the operations team about missing pumper data on a given data
+
+    - Arugments
+      - `badPumperData` - dataframe of wells,names and pumper number for naughty list `dataframe`
+      - `badPumperTrimmedList` - list of bad pumpers trimmed to only unquie pumper names `list`
+      - `badPumperMessage` - any header information you want to begin the message with `str`
 
 ## finance Module
 
@@ -155,7 +182,7 @@ Two packages `tech` and `wenergy`
 
 ### tech
 
-16. `tech.getItSpend` - returns a dataframe all of all coded invoices by M. Tanner
+19. `tech.getItSpend` - returns a dataframe all of all coded invoices by M. Tanner
 
     - Arguments:
       - None
@@ -164,21 +191,21 @@ Two packages `tech` and `wenergy`
 
 One (1) package `afe.py` and three (3) functions
 
-17. `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
+20. `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
 
     - Note: see `afe.py` to set correct paths to data folder
     - Arguments
       - `workingDataDirectory`: Data directory where all exports and imports come from `str`
       - `name`: Name of the well, see masterWellList for details `str`
 
-18. `afe.variance`
+21. `afe.variance`
 
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments
         - `workingDataDirectory`: Data directory where all exports and imports come from `str`
         - `name`: Name of the well, see masterWellList for details
 
-19. `afe.combineAfeFiles`
+22. `afe.combineAfeFiles`
 
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments
