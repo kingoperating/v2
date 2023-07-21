@@ -115,16 +115,6 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
-# data = combocurve.getLatestScenarioMonthly(
-#     workingDataDirectory=kocDatawarehouse,
-#     projectIdKey=comboCurveProjectId,
-#     scenarioIdKey=comboCurveScenarioId,
-#     serviceAccount=serviceAccount,
-#     comboCurveApi=comboCurveApiKey
-# )
-
-# data.to_excel(kocDatawarehouse + r"\comboCurveTest.xlsx", index=False)
-
 # IT SPEND
 itSpend = tech.getItSpend(
     serverName=kingServer,
@@ -195,7 +185,7 @@ print("Finished Exporting Master Data to KOC Datawarehouse!")
 
 # Bad pumper Data email
 badPumperData = king.getNotReportedPumperList(
-    masterAllocatedData=masterData,
+    masterKingProdData=masterData,
     checkDate=yesDateString
 )
 
