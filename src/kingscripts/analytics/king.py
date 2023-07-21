@@ -132,7 +132,7 @@ Returns a List of Pumpers that have not submitted their daily reports
 """
 
 
-def getNotReportedPumperList(masterAllocatedData, checkDate):
+def getNotReportedPumperList(masterKingProdData, checkDate):
 
     checkDate = datetime.strptime(checkDate, "%Y-%m-%d")
 
@@ -144,16 +144,16 @@ def getNotReportedPumperList(masterAllocatedData, checkDate):
     masterApiList = masterWellsList["API"].to_list()
 
     # Get the current date and sort the data by date
-    masterAllocatedData["Date"] = pd.to_datetime(masterAllocatedData["Date"])
-    masterAllocatedData = masterAllocatedData.sort_values(["Date"])
+    masterKingProdData["Date"] = pd.to_datetime(masterKingProdData["Date"])
+    masterKingProdData = masterKingProdData.sort_values(["Date"])
 
     # Calculate Rolling Averge 14-day window for Oil and Gas
-    masterAllocatedData["Rolling 14 Day Oil Average"] = masterAllocatedData.groupby(
+    masterKingProdData["Rolling 14 Day Oil Average"] = masterKingProdData.groupby(
         "Well Accounting Name")["Oil Volume"].transform(lambda x: x.rolling(14, 1).mean())
-    masterAllocatedData["Rolling 14 Day Gas Average"] = masterAllocatedData.groupby(
+    masterKingProdData["Rolling 14 Day Gas Average"] = masterKingProdData.groupby(
         "Well Accounting Name")["Gas Volume"].transform(lambda x: x.rolling(14, 1).mean())
 
-    dataOnCheckDate = masterAllocatedData[masterAllocatedData["Date"] == checkDate]
+    dataOnCheckDate = masterKingProdData[masterKingProdData["Date"] == checkDate]
 
     pumperNaughtyList = []
 
@@ -186,7 +186,7 @@ Creates the message that gets sent to pumpers - NOT SHARED IN DOCUMENTATION
 
 
 def createPumperMessage(badPumperData, badPumperTrimmedList, badPumperMessage):
-
+    
     for i in range(0, len(badPumperTrimmedList)):
         pumperName = badPumperTrimmedList[i]
         indices = badPumperData[badPumperData["Pumper Name"]
