@@ -4,7 +4,7 @@ Main Script for KOC Python Packages
 Developer: Michael Tanner
 
 """
-# KOC v3.0.2 Python Packages
+# KOC v3.1.0 Python Packages
 from kingscripts.operations import greasebook, combocurve, joyn
 from kingscripts.analytics import enverus, king
 from kingscripts.afe import afe
