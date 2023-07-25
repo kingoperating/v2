@@ -89,13 +89,15 @@ wu99 = "wu99"
 kinga199cv1h = "kinga199cv1h"
 kinga199cv2h = "kinga199cv2h"
 nameOfWell = "thurman23v"
-irvinsisters53m1h = "irvinsisters53m1h"
+irvinSisters53m1h = "irvinsisters53m1h"
 pshigoda752h = "pshigoda752h"
 itSqlTable = "itSpend"
 daysToPull = 35
 daysToLookBack = 2
 testFile = r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\assetPrettyName.xlsx"
 listOfWells = [
+    irvinSisters53m1h,
+    pshigoda752h,
     thurman23v,
     chunn923v,
     ayres79v,
