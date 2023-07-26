@@ -197,6 +197,8 @@ badPumperMessage = "The following pumpers have not submitted their daily reports
 badPumpers = badPumperData["Pumper Name"].to_list()
 badPumpersUniqueList = [*set(badPumpers)]
 
+badPumperData.to_excel(kocDatawarehouse + r"\production\badPumperData.xlsx", index=False)
+
 badPumperMessage = king.createPumperMessage(
     badPumperData=badPumperData,
     badPumperTrimmedList=badPumpersUniqueList,
