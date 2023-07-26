@@ -163,6 +163,7 @@ def getNotReportedPumperList(masterKingProdData, checkDate):
         gasVolume = row["Gas Volume"]
         rollingOilAverage = row["Rolling 14 Day Oil Average"]
         rollingGasAverage = row["Rolling 14 Day Gas Average"]
+        date = row["Date"]
 
         if (oilVolume == 0 and rollingOilAverage > 0) or (gasVolume == 0 and rollingGasAverage > 0):
             wellName = row["Well Accounting Name"]
@@ -170,11 +171,35 @@ def getNotReportedPumperList(masterKingProdData, checkDate):
             indexOfApi = masterApiList.index(api)
             pumperName = pumperNames[indexOfApi]
             pumperNumber = pumperNumbers[indexOfApi]
-            pumperNaughtyList.append([wellName, pumperName, pumperNumber])
-
+            rollingOilAverage = round(rollingOilAverage, 2)
+            rollingGasAverage = round(rollingGasAverage, 2)
+            pumperNaughtyList.append([wellName, pumperName, pumperNumber, rollingOilAverage, rollingGasAverage])
+    
+    
     pumperNaughtyList = pd.DataFrame(pumperNaughtyList, columns=[
-                                     "Well Name", "Pumper Name", "Pumper Number"])
+                                     "Well Name", "Pumper Name", "Pumper Number", "Rolling 14 Day Oil Average", "Rolling 14 Day Gas Average"])
 
+
+    pumperNaughtyListName = pumperNaughtyList["Well Name"].tolist()
+    
+    oilDate = []
+    gasDate = []
+    
+    for i in range (0, len(pumperNaughtyListName)):
+        wellName = pumperNaughtyListName[i]
+        trimmedWellData = masterKingProdData[masterKingProdData["Well Accounting Name"] == wellName]
+        lastNonZeroOilData = trimmedWellData[trimmedWellData["Oil Volume"] != 0]
+        lastNonZeroGasData = trimmedWellData[trimmedWellData["Gas Volume"] != 0]
+        
+        lastNonZeroOilDate = lastNonZeroOilData["Date"].max()
+        lastNonZeroGasDate = lastNonZeroGasData["Date"].max()
+        oilDate.append(lastNonZeroOilDate)
+        gasDate.append(lastNonZeroGasDate)
+    
+    pumperNaughtyList["Last Non-Zero Oil Date"] = oilDate
+    pumperNaughtyList["Last Non-Zero Gas Date"] = gasDate
+    
+        
     return pumperNaughtyList
 
 
