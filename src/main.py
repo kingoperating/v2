@@ -219,13 +219,6 @@ king.sendEmail(
     emailMessage=badPumperMessage
 )
 
-king.sendEmail(
-    emailRecipient=chandlerKnox,
-    emailRecipientName=chandlerKnoxName,
-    emailSubject=subject,
-    emailMessage=badPumperMessage
-)
-
 # ComboCurve PUT Statements
 combocurve.putGreasebookWellProductionData(
     workingDataDirectory=kocDatawarehouse,
