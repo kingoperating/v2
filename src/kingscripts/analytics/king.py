@@ -199,6 +199,9 @@ def getNotReportedPumperList(masterKingProdData, checkDate):
     pumperNaughtyList["Last Non-Zero Oil Date"] = oilDate
     pumperNaughtyList["Last Non-Zero Gas Date"] = gasDate
     
+    pumperNaughtyList["Last Non-Zero Oil Date"] = pd.to_datetime(pumperNaughtyList["Last Non-Zero Oil Date"])
+    pumperNaughtyList["Last Non-Zero Gas Date"] = pd.to_datetime(pumperNaughtyList["Last Non-Zero Gas Date"])
+    
         
     return pumperNaughtyList
 
