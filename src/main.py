@@ -157,7 +157,7 @@ joynData = joyn.getDailyAllocatedProduction(
     workingDataDirectory=kocDatawarehouse,
     joynUsername=joynUsername,
     joynPassword=joynPassword,
-    daysToLookBack=daysToLookBack
+    daysToLookBack=1
 )
 
 print("Begin Exporting Master Joyn Data to KOC Datawarehouse...")
@@ -197,6 +197,7 @@ badPumperMessage = "The following pumpers have not submitted their daily reports
 badPumpers = badPumperData["Pumper Name"].to_list()
 badPumpersUniqueList = [*set(badPumpers)]
 
+##print badPumperData file to KOC Datawarehouse
 badPumperData.to_excel(kocDatawarehouse + r"\production\badPumperData.xlsx", index=False)
 
 badPumperMessage = king.createPumperMessage(
