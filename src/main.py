@@ -37,8 +37,10 @@ greasebookApi = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(
     os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
-kingServer = str(os.getenv('SQL_SERVER'))
-kingDatabase = str(os.getenv('SQL_KING_DATABASE'))
+kingServerExpress = str(os.getenv('SQL_SERVER'))
+kingDatabaseExpress = str(os.getenv('SQL_KING_DATABASE'))
+kingLiveServer = str(os.getenv('SQL_SERVER_KING_DATAWAREHOUSE'))
+kingLiveDatabase = str(os.getenv('SQL_TEST_DATABASE'))
 joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
 michaelTanner = os.getenv("MICHAEL_TANNER_EMAIL")
@@ -117,12 +119,24 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
-# IT SPEND
-itSpend = tech.getItSpend(
-    serverName=kingServer,
-    databaseName=kingDatabase,
-    tableName=itSqlTable
+
+tech.putItSpend(
+    server=kingLiveServer,
+    database=kingLiveDatabase,
 )
+
+# # x= 5
+
+# # IT SPEND
+# itSpend = tech.getItSpend(
+#     serverName=kingServer,
+#     databaseName=kingDatabase,
+#     tableName=itSqlTable
+# )
+
+
+
+# itSpend.to_excel(kocDatawarehouse + r"\loe\it\itSpendMaster.xlsx", index=False)
 
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
@@ -132,11 +146,11 @@ browing518HProductionMonthtlyData = enverus.getWellProductionData(
 
 # exports results for number of records in the dataframe
 browing518HProductionMonthtlyData.to_excel(
-    kocDatawarehouse + r"\browningWell.xlsx", index=False)
+    kocDatawarehouse + r"\production\browningWell.xlsx", index=False)
 
 # Allocate Wells From Greasebook
 allocatedProductionData = greasebook.allocateWells(
-    days=daysToPull,
+    days=50,
     workingDataDirectory=kocDatawarehouse,
     greasebookApi=greasebookApi,
     pullProd=False,
@@ -157,7 +171,7 @@ joynData = joyn.getDailyAllocatedProduction(
     workingDataDirectory=kocDatawarehouse,
     joynUsername=joynUsername,
     joynPassword=joynPassword,
-    daysToLookBack=1
+    daysToLookBack=35
 )
 
 print("Begin Exporting Master Joyn Data to KOC Datawarehouse...")
