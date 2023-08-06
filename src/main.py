@@ -120,10 +120,10 @@ listOfWells = [
 WORKING ZONE
 '''
 
-tech.putItSpend(
-    server=kingLiveServer,
-    database=kingLiveDatabase,
-)
+# tech.putItSpend(
+#     server=kingLiveServer,
+#     database=kingLiveDatabase,
+# )
 
 # # x= 5
 
@@ -150,7 +150,7 @@ browing518HProductionMonthtlyData.to_excel(
 
 # Allocate Wells From Greasebook
 allocatedProductionData = greasebook.allocateWells(
-    days=50,
+    days=15,
     workingDataDirectory=kocDatawarehouse,
     greasebookApi=greasebookApi,
     pullProd=False,
@@ -171,7 +171,7 @@ joynData = joyn.getDailyAllocatedProduction(
     workingDataDirectory=kocDatawarehouse,
     joynUsername=joynUsername,
     joynPassword=joynPassword,
-    daysToLookBack=35
+    daysToLookBack=1
 )
 
 print("Begin Exporting Master Joyn Data to KOC Datawarehouse...")
