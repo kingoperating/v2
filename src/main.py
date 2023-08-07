@@ -150,7 +150,7 @@ browing518HProductionMonthtlyData.to_excel(
 
 # Allocate Wells From Greasebook
 allocatedProductionData = greasebook.allocateWells(
-    days=15,
+    days=30,
     workingDataDirectory=kocDatawarehouse,
     greasebookApi=greasebookApi,
     pullProd=False,
