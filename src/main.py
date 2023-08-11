@@ -119,12 +119,6 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
-
-# tech.putItSpend(
-#     server=kingLiveServer,
-#     database=kingLiveDatabase,
-# )
-
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
