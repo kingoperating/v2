@@ -125,19 +125,6 @@ WORKING ZONE
 #     database=kingLiveDatabase,
 # )
 
-# # x= 5
-
-# # IT SPEND
-# itSpend = tech.getItSpend(
-#     serverName=kingServer,
-#     databaseName=kingDatabase,
-#     tableName=itSqlTable
-# )
-
-
-
-# itSpend.to_excel(kocDatawarehouse + r"\loe\it\itSpendMaster.xlsx", index=False)
-
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
