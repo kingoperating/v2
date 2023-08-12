@@ -123,10 +123,6 @@ browing518HProductionMonthtlyData = enverus.getWellProductionData(
     wellApi14=browning5181H
 )
 
-# exports results for number of records in the dataframe
-browing518HProductionMonthtlyData.to_excel(
-    kocDatawarehouse + r"\production\browningWell.xlsx", index=False)
-
 # Allocate Wells From Greasebook
 allocatedProductionData = greasebook.allocateWells(
     days=30,
