@@ -287,7 +287,7 @@ afe.combineAfeFiles(
     listOfWells=listOfWells
 )
 
-# Weekly EOS Email to Peter - needs to be sent ONLY Tuesday
+# Weekly EOS Email - needs to be sent ONLY Tuesday
 if isTuseday == 1:
 
     print("It's Tuesday! Send Weekly Email to Peter")
@@ -334,7 +334,7 @@ if isTuseday == 1:
         dateEightDaysAgo + " to " + dateLastSunday
     )
 else:
-    print("It's not Tuesday. No Weekly EOS Email to Peter")
+    print("It's not Tuesday. No Weekly EOS Email")
 
 
 # Send Daily Email to Michael Tanner and Gabe Tatman that scripts ran successfully
