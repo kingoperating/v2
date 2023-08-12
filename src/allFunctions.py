@@ -58,4 +58,59 @@ itSpend = tech.getItSpend(
     tableName=itSqlTable
 )
 
+# AFE Stack Miller Ranch A502V
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name="INSERT NAME HERE"
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name="INSERT NAME HERE"
+)
+
+# Combine AFE files and place in data warehouse
+afe.combineAfeFiles(
+    workingDataDirectory=kocDatawarehouse,
+    listOfWells="INSERT NAME HERE"
+)
+
+# Gets Browning 518H Production Data
+browing518HProductionMonthtlyData = enverus.getWellProductionData(
+    apiKey=enverusApiKey,
+    wellApi14="INSERT WELL API14 HERE"
+)
+
+enverus.checkWellStatus(
+    apiKey=enverusApiKey,
+    operatorName="INSERT OPERATOR NAME HERE",
+    basin="INSERT BASIN HERE",
+)
+
+king.sendEmail(
+    emailRecipient="INSERT EMAIL RECIPIENT HERE",
+    emailRecipientName="INSERT EMAIL RECIPIENT NAME HERE",
+    emailSubject="INSERT EMAIL SUBJECT HERE",
+    emailMessage="INSERT EMAIL MESSAGE HERE",
+    nameOfFile="INSERT NAME OF FILE HERE", # can define as None if no attachment
+    attachment="INSERT ATTACHMENT HERE" # can define as None if no attachment
+)
+
+king.getAverageDailyVolumes(
+    masterKingProdData="INSERT MASTER ALLOCATED PRODUCTION DATA HERE",
+    startDate="INSERT START DATE HERE",
+    endDate="INSERT END DATE HERE",
+)
+
+king.getNotReportedPumperList(
+    masterKingProdData="INSERT MASTER ALLOCATED PRODUCTION DATA HERE",
+    checkDate="INSERT CHECK DATE HERE",
+)
+
+king.createPumperMessage(
+    badPumperData="INSERT BAD PUMPER DATA HERE",
+    badPumperTrimmedList="INSERT BAD PUMPER TRIMMED LIST HERE",
+    badPumperMessage="INSERT BAD PUMPER MESSAGE HERE",
+)
+
+
 print("done")
