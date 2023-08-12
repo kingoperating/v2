@@ -2,6 +2,8 @@ import pyodbc
 import pandas as pd
 import os
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+
 
 load_dotenv()
 
@@ -10,8 +12,8 @@ load_dotenv()
 
 def getItSpend(serverName, databaseName, tableName):
     # Set up the connection parameters
-    server = str(os.getenv('SQL_SERVER'))
-    database = str(os.getenv('SQL_KING_DATABASE'))
+    server = serverName
+    database = database
     # Establish the connection with Windows Authentication
     connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
     connection = pyodbc.connect(connection_string)
@@ -36,3 +38,18 @@ def getItSpend(serverName, databaseName, tableName):
 
     # Return the dataframe
     return itSpendData
+
+def putItSpend(server, database, tableName=None):
+    data = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\loe\it\itSpendMaster.xlsx")
+    #dataTwo = getItSpend(serverName=kingServer, databaseName=kingDatabase,tableName=itSqlTable)
+    # Set up the connection parameters
+    # Establish the connection with Windows Authentication
+    connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
+    
+    engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(connection_string))
+    
+    data.to_sql('itSpend', engine, if_exists='replace', index=False)
+    
+    print("Data has been added to the SQL Server Database")
+    
+     
