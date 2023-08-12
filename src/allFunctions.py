@@ -37,7 +37,7 @@ greasebookApi = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(
     os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
-kingServer = str(os.getenv('SQL_SERVER'))
+kingServer = str(os.getenv('SQL_SERVER_KING_DATAWAREHOUSE'))
 kingDatabase = str(os.getenv('SQL_KING_DATABASE'))
 joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
@@ -51,11 +51,16 @@ itSqlTable = "itSpend"
 ALL FUNCTIONS
 
 """
-# IT SPEND
-itSpend = tech.getItSpend(
+# GET DATA FROM king-arc1 server
+data = tech.getData(
     serverName=kingServer,
     databaseName=kingDatabase,
     tableName=itSqlTable
+)
+
+tech.putData(
+    server=kingServer,
+    database=kingDatabase,
 )
 
 # AFE Stack Miller Ranch A502V
@@ -112,5 +117,53 @@ king.createPumperMessage(
     badPumperMessage="INSERT BAD PUMPER MESSAGE HERE",
 )
 
+combocurve.putJoynWellProductionData(
+    currentJoynData="INSERT CURRENT JOYN DATA HERE",
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey,
+)
+
+combocurve.putGreasebookWellProductionData(
+    workingDataDirectory=kocDatawarehouse,
+    pullFromAllocation=False,
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey,
+    greasebookApi=greasebookApi,
+    daysToPull=30
+)
+
+combocurve.getLatestScenarioOneLiner(
+    workingDataDirectory=kocDatawarehouse,
+    projectIdKey="INSERT PROJECT ID KEY HERE",
+    scenarioIdKey="INSERT SCENARIO ID KEY HERE",
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
+
+combocurve.getDailyForecastVolume(
+    projectIdKey="INSERT PROJECT ID KEY HERE",
+    forecastIdKey="INSERT FORECAST ID KEY HERE",
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
+
+combocurve.getLatestScenarioMonthly(
+    projectIdKey="INSERT PROJECT ID KEY HERE",
+    scenarioIdKey="INSERT SCENARIO ID KEY HERE",
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
+
+joyn.getDailyAllocatedProduction(
+    workingDataDirectory=kocDatawarehouse,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    daysToLookBack=2
+)
+
+joyn.mergeBIntoA(
+    A="INSERT DATAFRAME HERE",
+    B="INSERT DATAFRAME HERE",
+)
 
 print("done")
