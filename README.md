@@ -182,30 +182,39 @@ Two packages `tech` and `wenergy`
 
 ### tech
 
-19. `tech.getItSpend` - returns a dataframe all of all coded invoices by M. Tanner
+19. `tech.getData` - returns a dataframe given KOC Datawarehouse parameters
 
     - Arguments:
-      - None
+      - `serverName` - name of server `str`
+      - `databaseName` - name of database `str`
+      - `tableName` - specific table to access `str`
+
+20. `tech.putData` - replaces entire table with dataframne given KOC Datawarehouse parameters
+
+    - Arguments:
+      - `serverName` - name of server `str`
+      - `databaseName` - name of database `str`
+      - `tableName` - specific table to access - optional `str`
 
 ## afe Module
 
 One (1) package `afe.py` and three (3) functions
 
-20. `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
+21. `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
 
     - Note: see `afe.py` to set correct paths to data folder
     - Arguments
       - `workingDataDirectory`: Data directory where all exports and imports come from `str`
       - `name`: Name of the well, see masterWellList for details `str`
 
-21. `afe.variance`
+22. `afe.variance`
 
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments
         - `workingDataDirectory`: Data directory where all exports and imports come from `str`
         - `name`: Name of the well, see masterWellList for details
 
-22. `afe.combineAfeFiles`
+23. `afe.combineAfeFiles`
 
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments
