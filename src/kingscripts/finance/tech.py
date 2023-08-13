@@ -10,10 +10,16 @@ load_dotenv()
 # Returns all the IT Spend Coded by Michael Tanner in using coding tool - returns a dataframe
 
 
-def getItSpend(serverName, databaseName, tableName):
+"""
+    
+GET Function - returns a dataframe given serverName, databaseName, and tableName from king-arc1
+    
+"""
+
+def getData(serverName, databaseName, tableName):
     # Set up the connection parameters
     server = serverName
-    database = database
+    database = databaseName
     # Establish the connection with Windows Authentication
     connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
     connection = pyodbc.connect(connection_string)
@@ -39,7 +45,14 @@ def getItSpend(serverName, databaseName, tableName):
     # Return the dataframe
     return itSpendData
 
-def putItSpend(server, database, tableName=None):
+
+"""
+    
+PUT Function - replaces entire table with dataframe given serverName, databaseName, and tableName from king-arc1
+    
+"""
+
+def putData(server, database, tableName=None):
     data = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\loe\it\itSpendMaster.xlsx")
     #dataTwo = getItSpend(serverName=kingServer, databaseName=kingDatabase,tableName=itSqlTable)
     # Set up the connection parameters
