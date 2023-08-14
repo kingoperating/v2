@@ -146,7 +146,7 @@ joynData = joyn.getDailyAllocatedProduction(
     workingDataDirectory=kocDatawarehouse,
     joynUsername=joynUsername,
     joynPassword=joynPassword,
-    daysToLookBack=3
+    daysToLookBack=15
 )
 
 print("Begin Exporting Master Joyn Data to KOC Datawarehouse...")
