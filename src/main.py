@@ -1,7 +1,7 @@
 """
 Main Script for KOC Python Packages 3.2.0
 
-Developer: Michael Tanner
+Developer: Michael Tanner - Gabe Tatman
 
 """
 # KOC v3.1.0 Python Packages
