@@ -168,16 +168,19 @@ def getNotReportedPumperList(masterKingProdData, checkDate):
         if (oilVolume == 0 and rollingOilAverage > 0) or (gasVolume == 0 and rollingGasAverage > 0):
             wellName = row["Well Accounting Name"]
             api = row["API"]
-            indexOfApi = masterApiList.index(api)
-            pumperName = pumperNames[indexOfApi]
-            pumperNumber = pumperNumbers[indexOfApi]
-            rollingOilAverage = round(rollingOilAverage, 2)
-            rollingGasAverage = round(rollingGasAverage, 2)
-            pumperNaughtyList.append([wellName, pumperName, pumperNumber, rollingOilAverage, rollingGasAverage])
-    
-    
+            ## handle the case where the api is not in the master list aka returns a blank row or something
+            if api not in masterApiList:
+                continue
+            else:
+                indexOfApi = masterApiList.index(api)
+                pumperName = pumperNames[indexOfApi]
+                pumperNumber = pumperNumbers[indexOfApi]
+                rollingOilAverage = round(rollingOilAverage, 2)
+                rollingGasAverage = round(rollingGasAverage, 2)
+                pumperNaughtyList.append([wellName, pumperName, pumperNumber, rollingOilAverage, rollingGasAverage])
+        
     pumperNaughtyList = pd.DataFrame(pumperNaughtyList, columns=[
-                                     "Well Name", "Pumper Name", "Pumper Number", "Rolling 14 Day Oil Average", "Rolling 14 Day Gas Average"])
+                                        "Well Name", "Pumper Name", "Pumper Number", "Rolling 14 Day Oil Average", "Rolling 14 Day Gas Average"])
 
 
     pumperNaughtyListName = pumperNaughtyList["Well Name"].tolist()
