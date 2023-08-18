@@ -47,8 +47,10 @@ michaelTanner = os.getenv("MICHAEL_TANNER_EMAIL")
 michaelTannerName = os.getenv("MICHAEL_TANNER_NAME")
 gabeTatman = os.getenv("GABE_TATMAN_EMAIL")
 gabeTatmanName = os.getenv("GABE_TATMAN_NAME")
-garrettStacey = os.getenv("GARRETt_STACEY_EMAIL")
+garrettStacey = os.getenv("GARRETT_STACEY_EMAIL")
 garrettStaceyName = os.getenv("GARRETT_STACEY_NAME")
+nathanMyers = os.getenv("NATHAN_MYERS_EMAIL")
+nathanMyersName = os.getenv("NATHAN_MYERS_NAME")
 
 # Getting Date Variables
 dateToday = dt.datetime.today()
@@ -318,6 +320,19 @@ if isTuseday == 1:
     king.sendEmail(
         emailRecipient=gabeTatman,
         emailRecipientName=gabeTatmanName,
+        emailMessage="Weekly EOS Numbers for " + dateEightDaysAgo +
+        " to " + dateLastSunday + " are attached.",
+        emailSubject="Weekly EOS Numbers for " +
+        dateEightDaysAgo + " to " + dateLastSunday,
+        attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\eosWeeklyNumbers\eosWeeklyNumbers_" +
+        dateEightDaysAgo + "_to_" + dateLastSunday + ".xlsx",
+        nameOfFile="Weekly EOS Numbers for " +
+        dateEightDaysAgo + " to " + dateLastSunday
+    )
+    # Send email to Nathan Myers
+    king.sendEmail(
+        emailRecipient=nathanMyers,
+        emailRecipientName=nathanMyersName,
         emailMessage="Weekly EOS Numbers for " + dateEightDaysAgo +
         " to " + dateLastSunday + " are attached.",
         emailSubject="Weekly EOS Numbers for " +
