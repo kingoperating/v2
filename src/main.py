@@ -74,7 +74,7 @@ browning5181H = "42033325890000"
 browningOperatorName = "BROWNING OIL"
 basin = "MIDLAND"
 comboCurveProjectId = "612fc3d36880c20013a885df"
-comboCurveScenarioId = "64a5c342f314ca0012002a2d"
+comboCurveScenarioId = "64443eaf0182000012fa2c25"
 comboCurveForecastId = "64a5d95390c0320012a83df9"
 millerranchb501mh = "millerranchb501mh"
 millerrancha502v = "millerrancha502v"
@@ -119,6 +119,17 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
+
+# data = combocurve.getLatestScenarioMonthly(
+#     projectIdKey=comboCurveProjectId,
+#     scenarioIdKey=comboCurveScenarioId,
+#     serviceAccount=serviceAccount,
+#     comboCurveApi=comboCurveApiKey
+# )
+
+# data.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFp.xlsx", index=False)
+
+
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
