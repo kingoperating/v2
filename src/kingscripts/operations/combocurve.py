@@ -924,12 +924,15 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
     print(numEntries)
     
     # lists for each of the columns I need rolled up
-    netOilSalesVolume = []
-    netGasSalesVolume = []
+    grossOilSalesVolume = []
+    grossGasSalesVolume = []
+    grossNglSalesVolume = []
+    grossWaterWellHeadVolume = []
+    grossFixedCost = []
     oilRevenueTable = []
     gasRevenueTable = []
     totalNetRevenueTable = []
-    totalExpenseTable = []
+    totalGrossFixedExpenseTable = []
     netIncomeTable = []
     totalCapexTable = []
     beforeIncomeTaxCashFlowTable = []
@@ -942,15 +945,15 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
         wellId = row["well"]
         output = row["output"]
         date = row["date"]
-        oilPrice = output["oilPrice"]
-        gasPrice = output["gasPrice"]
         # getting the total variables casted as floats for addition
-        totalNetOilVolume = float(output["netOilSalesVolume"])
-        totalNetRevenue = float(output["totalRevenue"])
-        totalNetGasVolume = float(output["netGasSalesVolume"])
+        totalGrossOilSalesVolume = float(output["grossOilSalesVolume"])
+        totalGrossGasSalesVolume = float(output["grossGasSalesVolume"])
+        totalGrossNglSalesVolume = float(output["grossNglSalesVolume"])
+        totalGrossWaterWellHeadVolume = float(output["grossWaterWellHeadVolume"])
+        totalGrossFixedExpense = float(output["totalFixedExpense"])
         oilRev = float(output["oilRevenue"])
         gasRev = float(output["gasRevenue"])
-        totalExpense = float(output["totalExpense"])
+        totalNetRevenue = float(output["totalRevenue"])
         netIncome = float(output["netIncome"])
         totalTaxSum = (
             float(output["totalSeveranceTax"])
@@ -966,16 +969,22 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
             # check to make sure wellID ISNT the same and the date is, then calculate all date
             if (wellId2 != wellId) and (date2 == date):
                 output = row2["output"]
-                totalNetOilVolume = totalNetOilVolume + float(
-                    output["netOilSalesVolume"]
+                totalGrossOilSalesVolume = totalGrossOilSalesVolume + float(
+                    output["grossOilSalesVolume"]
                 )
-                totalNetRevenue = totalNetRevenue + float(output["totalRevenue"])
-                totalNetGasVolume = totalNetGasVolume + float(
-                    output["netGasSalesVolume"]
+                totalGrossGasSalesVolume = totalGrossGasSalesVolume + float(
+                    output["grossGasSalesVolume"]
                 )
+                totalGrossNglSalesVolume = totalGrossNglSalesVolume + float(
+                    output["grossNglSalesVolume"]
+                )
+                totalGrossWaterWellHeadVolume = totalGrossWaterWellHeadVolume + float(
+                    output["grossWaterWellHeadVolume"]
+                )
+                totalGrossFixedExpense = totalGrossFixedExpense + float(output["totalFixedExpense"])
                 oilRev = oilRev + float(output["oilRevenue"])
                 gasRev = gasRev + float(output["gasRevenue"])
-                totalExpense = totalExpense + float(output["totalExpense"])
+                totalNetRevenue = totalNetRevenue + float(output["totalRevenue"])
                 netIncome = netIncome + float(output["netIncome"])
                 totalTaxSum = (
                     totalTaxSum
@@ -988,20 +997,101 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
         # if dateCount is 0, then add each new summed variable to new list
         if dateCount == 0:
             dateTable.append(date)
-            netOilSalesVolume.append(totalNetOilVolume)
-            totalNetRevenueTable.append(totalNetRevenue)
-            netGasSalesVolume.append(totalNetGasVolume)
+            grossOilSalesVolume.append(totalGrossOilSalesVolume)
+            grossGasSalesVolume.append(totalGrossGasSalesVolume)
+            grossNglSalesVolume.append(totalGrossNglSalesVolume)
+            grossWaterWellHeadVolume.append(totalGrossWaterWellHeadVolume)
+            totalGrossFixedExpenseTable.append(totalGrossFixedExpense)
+            totalNetRevenueTable.append(totalNetRevenue)            
             oilRevenueTable.append(oilRev)
             gasRevenueTable.append(gasRev)
-            totalExpenseTable.append(totalExpense)
             netIncomeTable.append(netIncome)
             totalTaxTable.append(totalTaxSum)
         
-    combinedLists = list(zip(dateTable, netOilSalesVolume, netGasSalesVolume, oilRevenueTable, gasRevenueTable, totalNetRevenueTable, totalExpenseTable, netIncomeTable, totalTaxTable))
+    combinedLists = list(zip(dateTable, grossOilSalesVolume, grossGasSalesVolume, grossNglSalesVolume, grossWaterWellHeadVolume, totalGrossFixedExpenseTable, oilRevenueTable, gasRevenueTable, totalNetRevenueTable, netIncomeTable, totalTaxTable))
     
-    scenerioDataTable = pd.DataFrame(combinedLists, columns=["Date", "Net Oil Sales Volume", "Net Gas Sales Volume", "Oil Revenue", "Gas Revenue", "Total Net Revenue", "Total Expense", "Net Income", "Total Tax"])
+    scenerioDataTable = pd.DataFrame(combinedLists, columns=["Date", "Gross Oil Sales Volume", "Gross Gas Sales Volume", "Gross NGL Sales Volume", "Gross Water Well Head Volume", "Total Gross Fixed Expense", "Oil Revenue", "Gas Revenue", "Total Net Revenue", "Net Income", "Total Tax"])
     
     scenerioDataTable["Date"] = pd.to_datetime(scenerioDataTable["Date"])
 
     return scenerioDataTable
+
+"""
+
+This function converts a ComboCurve getLatestScenarioMonthly dataframe into a CSV export ready for import to CrestFP
+
+"""
+
+def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor, gasShrinkFactor, oilPricePercent, gasPricePercent, nglPricePercent, oilSevPercent, gasSevPercent, nglSevPercent, adValoremPercent, oilVariableCost, gasVariableCost, nglVariableCost, waterVariableCost):
     
+    x=5
+    dateList = comboCurveScenarioData["Date"].tolist()
+    grossOilSalesVolumeList = comboCurveScenarioData["Gross Oil Sales Volume"].tolist()
+    grossGasSalesVolumeList = comboCurveScenarioData["Gross Gas Sales Volume"].tolist()
+    grossNglSalesVolumeList = comboCurveScenarioData["Gross NGL Sales Volume"].tolist()
+    grossWaterWellHeadVolumeList = comboCurveScenarioData["Gross Water Well Head Volume"].tolist()
+    totalGrossFixedExpenseTableList = comboCurveScenarioData["Total Gross Fixed Expense"].tolist()
+    
+    columns = [
+        "Date",
+        "Gross DC&E",
+        "Gross Oil (MBO)",
+        "Gross Gas (MMCF)",
+        "Gross NGL",
+        "NGL Yield",
+        "Gas Shrink (%)",
+        "Gas BTU Factor",
+        "Gross Water (MBO)",
+        "Oil Price %",
+        "Oil Deduct",
+        "Oil Severance %",
+        "Gas Price %",
+        "Gas Price Deduct",
+        "Gas Severance %",
+        "NGL Price %",
+        "NGL Deduct",
+        "NGL Severance %",
+        "Ad Valorem %",
+        "Gross Fixed Costs",
+        "Gross Other Capital",
+        "Oil Variable LOE",
+        "Gas Variable LOE",
+        "NGL Variable LOE",
+        "Water Variable LOE",
+    ]
+    
+    crestFpOutput = pd.DataFrame(index=range(0, len(comboCurveScenarioData)), columns=columns)
+    
+    for i in range(0,len(comboCurveScenarioData)):
+        date = dateList[i]
+        capex = 0
+        grossOilSalesVolume = grossOilSalesVolumeList[i]
+        grossGasSalesVolume = grossGasSalesVolumeList[i]
+        grossNglSalesVolume = grossNglSalesVolumeList[i]
+        nglYieldPrint = nglYield
+        gasShrinkPrint = gasShrinkFactor
+        gasBtuFactorPrint = gasBtuFactor
+        grossWaterWellHeadVolume = grossWaterWellHeadVolumeList[i]
+        oilPricePercentPrint = oilPricePercent
+        oilDeduct = 0
+        oilSevPercentPrint = oilSevPercent
+        gasPricePercentPrint = gasPricePercent
+        gasDeduct = 0
+        gasSevPercentPrint = gasSevPercent
+        nglPricePercentPrint = nglPricePercent
+        nglDeduct = 0
+        nglSevPercentPrint = nglSevPercent
+        adValoremPercentPrint = adValoremPercent
+        grossFixedCost = totalGrossFixedExpenseTableList[i]
+        grossOtherCapital = 0
+        oilVariableLoe = oilVariableCost
+        gasVariableLoe = gasVariableCost
+        nglVariableLoe = nglVariableCost
+        waterVariableLoe = waterVariableCost
+        
+        row = [date, capex, grossOilSalesVolume, grossGasSalesVolume, grossNglSalesVolume, nglYieldPrint, gasShrinkPrint, gasBtuFactorPrint, grossWaterWellHeadVolume, oilPricePercentPrint, oilDeduct, oilSevPercentPrint, gasPricePercentPrint, gasDeduct, gasSevPercentPrint, nglPricePercentPrint, nglDeduct, nglSevPercentPrint, adValoremPercentPrint, grossFixedCost, grossOtherCapital, oilVariableLoe, gasVariableLoe, nglVariableLoe, waterVariableLoe]
+        
+        crestFpOutput.loc[i] = row
+        
+        
+    return crestFpOutput

@@ -120,16 +120,6 @@ listOfWells = [
 WORKING ZONE
 '''
 
-# data = combocurve.getLatestScenarioMonthly(
-#     projectIdKey=comboCurveProjectId,
-#     scenarioIdKey=comboCurveScenarioId,
-#     serviceAccount=serviceAccount,
-#     comboCurveApi=comboCurveApiKey
-# )
-
-# data.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFp.xlsx", index=False)
-
-
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
@@ -381,3 +371,54 @@ king.sendEmail(
 )
 
 print("Finished Running KOC Daily Scripts! You rock man")
+
+################ Testing Section
+
+data = combocurve.getLatestScenarioMonthly(
+    projectIdKey=comboCurveProjectId,
+    scenarioIdKey=comboCurveScenarioId,
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
+
+data.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFp.xlsx", index=False)
+
+crest = combocurve.ccScenarioToCrestFpSingleWell(
+    comboCurveScenarioData=data,
+    nglYield=1,
+    gasBtuFactor=1.383,
+    gasShrinkFactor=1,
+    oilPricePercent=1,
+    gasPricePercent=1,
+    nglPricePercent=1,
+    oilSevPercent=.046,
+    gasSevPercent=.075,
+    nglSevPercent=.045,
+    adValoremPercent=.025,
+    oilVariableCost=2,
+    gasVariableCost=0.3,
+    nglVariableCost=0,
+    waterVariableCost=.3
+)
+
+crest.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestFp.xlsx", index=False)
+
+
+king.sendEmail(
+    emailRecipient="gpatterson@kingoperating.com",
+    emailRecipientName="Graham Patterson",
+    emailSubject="Crest FP Data Test Single Well",
+    emailMessage="Single Well Economics test",
+    nameOfFile="crestFpTest.xlsx",
+    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestFp.xlsx",
+)
+
+
+king.sendEmail(
+    emailRecipient=michaelTanner,
+    emailRecipientName=michaelTannerName,
+    emailSubject="Crest FP Data Test Single Well",
+    emailMessage="Single Well Economics test",
+    nameOfFile="crestFpTest",
+    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestFp.xlsx",
+)
