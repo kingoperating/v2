@@ -1018,13 +1018,21 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
 
 """
 
-This function converts a ComboCurve getLatestScenarioMonthly dataframe into a CSV export ready for import to CrestFP
+This function converts a ComboCurve getLatestScenarioMonthly single well economic dataframe into a CSV export ready for import to CrestFP
 
 """
 
-def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor, gasShrinkFactor, oilPricePercent, gasPricePercent, nglPricePercent, oilSevPercent, gasSevPercent, nglSevPercent, adValoremPercent, oilVariableCost, gasVariableCost, nglVariableCost, waterVariableCost):
+def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor, gasShrinkFactor, oilPricePercent, gasPricePercent, nglPricePercent, oilVariableCost, gasVariableCost, nglVariableCost, waterVariableCost, state):
     
+    ## SET STATE SPECIFIC VARIABLES
+    if state == "texas":
+        oilSevPercentPrint = .046
+        gasSevPercentPrint = .075
+        nglSevPercentPrint = .045
+        adValoremPercentPrint = .025
+
     x=5
+    
     dateList = comboCurveScenarioData["Date"].tolist()
     grossOilSalesVolumeList = comboCurveScenarioData["Gross Oil Sales Volume"].tolist()
     grossGasSalesVolumeList = comboCurveScenarioData["Gross Gas Sales Volume"].tolist()
@@ -1074,14 +1082,10 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
         grossWaterWellHeadVolume = grossWaterWellHeadVolumeList[i]
         oilPricePercentPrint = oilPricePercent
         oilDeduct = 0
-        oilSevPercentPrint = oilSevPercent
         gasPricePercentPrint = gasPricePercent
         gasDeduct = 0
-        gasSevPercentPrint = gasSevPercent
         nglPricePercentPrint = nglPricePercent
         nglDeduct = 0
-        nglSevPercentPrint = nglSevPercent
-        adValoremPercentPrint = adValoremPercent
         grossFixedCost = totalGrossFixedExpenseTableList[i]
         grossOtherCapital = 0
         oilVariableLoe = oilVariableCost
@@ -1095,3 +1099,15 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
         
         
     return crestFpOutput
+
+"""
+
+This function converts a ComboCurve getLatestScenarioMonthly PDP dataframe into a CSV export ready for import to CrestFP
+
+"""
+
+def ccScenarioToCrestFpPdp():
+    
+    x=5
+    
+    return x
