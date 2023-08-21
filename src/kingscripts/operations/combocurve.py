@@ -1012,6 +1012,8 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
     
     scenerioDataTable = pd.DataFrame(combinedLists, columns=["Date", "Gross Oil Sales Volume", "Gross Gas Sales Volume", "Gross NGL Sales Volume", "Gross Water Well Head Volume", "Total Gross Fixed Expense", "Oil Revenue", "Gas Revenue", "Total Net Revenue", "Net Income", "Total Tax"])
     
+   
+    
     scenerioDataTable["Date"] = pd.to_datetime(scenerioDataTable["Date"])
 
     return scenerioDataTable
@@ -1093,9 +1095,16 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
         nglVariableLoe = nglVariableCost
         waterVariableLoe = waterVariableCost
         
-        row = [date, capex, grossOilSalesVolume, grossGasSalesVolume, grossNglSalesVolume, nglYieldPrint, gasShrinkPrint, gasBtuFactorPrint, grossWaterWellHeadVolume, oilPricePercentPrint, oilDeduct, oilSevPercentPrint, gasPricePercentPrint, gasDeduct, gasSevPercentPrint, nglPricePercentPrint, nglDeduct, nglSevPercentPrint, adValoremPercentPrint, grossFixedCost, grossOtherCapital, oilVariableLoe, gasVariableLoe, nglVariableLoe, waterVariableLoe]
-        
-        crestFpOutput.loc[i] = row
+        if grossOilSalesVolume == 0 and grossGasSalesVolume == 0 and grossNglSalesVolume == 0:
+            continue
+        else:
+            row = [date, capex, grossOilSalesVolume, grossGasSalesVolume, grossNglSalesVolume, nglYieldPrint, gasShrinkPrint, gasBtuFactorPrint, grossWaterWellHeadVolume, oilPricePercentPrint, oilDeduct, oilSevPercentPrint, gasPricePercentPrint, gasDeduct, gasSevPercentPrint, nglPricePercentPrint, nglDeduct, nglSevPercentPrint, adValoremPercentPrint, grossFixedCost, grossOtherCapital, oilVariableLoe, gasVariableLoe, nglVariableLoe, waterVariableLoe]
+            
+            crestFpOutput.loc[i] = row
+    
+    crestFpOutput.dropna(
+        axis=0, how="all", inplace=True
+    )
         
         
     return crestFpOutput
