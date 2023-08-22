@@ -4,7 +4,7 @@ Main Script for KOC Python Packages 3.2.0
 Developer: Michael Tanner
 
 """
-# KOC v3.1.0 Python Packages
+# KOC v3.2.0 Python Packages
 from kingscripts.operations import greasebook, combocurve, joyn
 from kingscripts.analytics import enverus, king
 from kingscripts.afe import afe
@@ -74,7 +74,7 @@ browning5181H = "42033325890000"
 browningOperatorName = "BROWNING OIL"
 basin = "MIDLAND"
 comboCurveProjectId = "612fc3d36880c20013a885df"
-comboCurveScenarioId = "64aca0abaa25aa001201b299"
+comboCurveScenarioId = "64443eaf0182000012fa2c25"
 comboCurveForecastId = "64a5d95390c0320012a83df9"
 millerranchb501mh = "millerranchb501mh"
 millerrancha502v = "millerrancha502v"
@@ -145,14 +145,14 @@ crest = combocurve.ccScenarioToCrestFpSingleWell(
 
 crest.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestfpoutputs\crestFp.xlsx", index=False)
 
-king.sendEmail(
-    emailRecipient="gpatterson@kingoperating.com",
-    emailRecipientName="Graham Patterson",
-    emailSubject="Crest FP Data Test Single Well",
-    emailMessage="Single Well Economics - Wolfcamp Vertical P90",
-    nameOfFile="wolfcampverticalp90",
-    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestfpoutputs\crestFp.xlsx",
-)
+# king.sendEmail(
+#     emailRecipient="gpatterson@kingoperating.com",
+#     emailRecipientName="Graham Patterson",
+#     emailSubject="Crest FP Data Test Single Well",
+#     emailMessage="Single Well Economics - Wolfcamp Vertical P90",
+#     nameOfFile="wolfcampverticalp90",
+#     attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestfpoutputs\crestFp.xlsx",
+# )
 
 king.sendEmail(
     emailRecipient=michaelTanner,
