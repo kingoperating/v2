@@ -1115,7 +1115,7 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
     # insert month list into dataframe
     crestFpOutput.insert(0, "Month", monthList)
     
-    return crestFpOutput
+    return crestFpOutput # return dataframe
 
 """
 
