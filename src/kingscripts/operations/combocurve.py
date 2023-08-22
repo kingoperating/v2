@@ -1033,15 +1033,14 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
         nglSevPercentPrint = .045
         adValoremPercentPrint = .025
 
-    x=5
-    
-    dateList = comboCurveScenarioData["Date"].tolist()
+    # Set variables lists needed for crestFP
     grossOilSalesVolumeList = comboCurveScenarioData["Gross Oil Sales Volume"].tolist()
     grossGasSalesVolumeList = comboCurveScenarioData["Gross Gas Sales Volume"].tolist()
     grossNglSalesVolumeList = comboCurveScenarioData["Gross NGL Sales Volume"].tolist()
     grossWaterWellHeadVolumeList = comboCurveScenarioData["Gross Water Well Head Volume"].tolist()
     totalGrossFixedExpenseTableList = comboCurveScenarioData["Total Gross Fixed Expense"].tolist()
     
+    #setting correct columns needed for crestFP
     columns = [
         "Gross DC&E",
         "Gross Oil (MBO)",
@@ -1069,8 +1068,10 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
         "Water Variable LOE",
     ]
     
+    # setting correct datarframe size for crestFP
     crestFpOutput = pd.DataFrame(index=range(0, len(comboCurveScenarioData)), columns=columns)
     
+    ## LOOP THROUGH EACH ROW AND SET VARIABLES
     for i in range(0,len(comboCurveScenarioData)):
         capex = 0
         grossOilSalesVolume = grossOilSalesVolumeList[i]
@@ -1093,22 +1094,25 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
         nglVariableLoe = nglVariableCost
         waterVariableLoe = waterVariableCost
         
+        # skips rows that have no production
         if grossOilSalesVolume == 0 and grossGasSalesVolume == 0 and grossNglSalesVolume == 0:
             continue
-        else:
+        else: # print the row
             row = [capex, grossOilSalesVolume, grossGasSalesVolume, grossNglSalesVolume, nglYieldPrint, gasShrinkPrint, gasBtuFactorPrint, grossWaterWellHeadVolume, oilPricePercentPrint, oilDeduct, oilSevPercentPrint, gasPricePercentPrint, gasDeduct, gasSevPercentPrint, nglPricePercentPrint, nglDeduct, nglSevPercentPrint, adValoremPercentPrint, grossFixedCost, grossOtherCapital, oilVariableLoe, gasVariableLoe, nglVariableLoe, waterVariableLoe]
             
             crestFpOutput.loc[i] = row
     
+    # drop all rows that are empty
     crestFpOutput.dropna(
         axis=0, how="all", inplace=True
     )
     
+    #set empty list for storing month list
     monthList = []
-    
+    # create month list for printing
     for i in range(0, len(crestFpOutput)):
         monthList.append("Month " + str(i+1))
-    
+    # insert month list into dataframe
     crestFpOutput.insert(0, "Month", monthList)
     
     return crestFpOutput
