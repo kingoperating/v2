@@ -1043,7 +1043,6 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
     totalGrossFixedExpenseTableList = comboCurveScenarioData["Total Gross Fixed Expense"].tolist()
     
     columns = [
-        "Date",
         "Gross DC&E",
         "Gross Oil (MBO)",
         "Gross Gas (MMCF)",
@@ -1073,7 +1072,6 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
     crestFpOutput = pd.DataFrame(index=range(0, len(comboCurveScenarioData)), columns=columns)
     
     for i in range(0,len(comboCurveScenarioData)):
-        date = dateList[i]
         capex = 0
         grossOilSalesVolume = grossOilSalesVolumeList[i]
         grossGasSalesVolume = grossGasSalesVolumeList[i]
@@ -1098,15 +1096,21 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
         if grossOilSalesVolume == 0 and grossGasSalesVolume == 0 and grossNglSalesVolume == 0:
             continue
         else:
-            row = [date, capex, grossOilSalesVolume, grossGasSalesVolume, grossNglSalesVolume, nglYieldPrint, gasShrinkPrint, gasBtuFactorPrint, grossWaterWellHeadVolume, oilPricePercentPrint, oilDeduct, oilSevPercentPrint, gasPricePercentPrint, gasDeduct, gasSevPercentPrint, nglPricePercentPrint, nglDeduct, nglSevPercentPrint, adValoremPercentPrint, grossFixedCost, grossOtherCapital, oilVariableLoe, gasVariableLoe, nglVariableLoe, waterVariableLoe]
+            row = [capex, grossOilSalesVolume, grossGasSalesVolume, grossNglSalesVolume, nglYieldPrint, gasShrinkPrint, gasBtuFactorPrint, grossWaterWellHeadVolume, oilPricePercentPrint, oilDeduct, oilSevPercentPrint, gasPricePercentPrint, gasDeduct, gasSevPercentPrint, nglPricePercentPrint, nglDeduct, nglSevPercentPrint, adValoremPercentPrint, grossFixedCost, grossOtherCapital, oilVariableLoe, gasVariableLoe, nglVariableLoe, waterVariableLoe]
             
             crestFpOutput.loc[i] = row
     
     crestFpOutput.dropna(
         axis=0, how="all", inplace=True
     )
-        
-        
+    
+    monthList = []
+    
+    for i in range(0, len(crestFpOutput)):
+        monthList.append("Month " + str(i+1))
+    
+    crestFpOutput.insert(0, "Month", monthList)
+    
     return crestFpOutput
 
 """
