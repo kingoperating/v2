@@ -6,9 +6,9 @@ Developer: Michael Tanner
 """
 # KOC v3.2.0 Python Packages
 from kingscripts.operations import greasebook, combocurve, joyn
-from kingscripts.analytics import enverus, king
+from kingscripts.analytics import enverus, king, tech
 from kingscripts.afe import afe
-from kingscripts.finance import tech, wenergy
+from kingscripts.finance import wenergy
 
 # Python Packages
 from dotenv import load_dotenv
@@ -37,12 +37,17 @@ greasebookApi = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(
     os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
+joynUsername = str(os.getenv('JOYN_USERNAME'))
+joynPassword = str(os.getenv('JOYN_PASSWORD'))
+
+## SQL Server Variables - for KOC Datawarehouse 3.0
 kingServerExpress = str(os.getenv('SQL_SERVER'))
 kingDatabaseExpress = str(os.getenv('SQL_KING_DATABASE'))
 kingLiveServer = str(os.getenv('SQL_SERVER_KING_DATAWAREHOUSE'))
-kingLiveDatabase = str(os.getenv('SQL_TEST_DATABASE'))
-joynUsername = str(os.getenv('JOYN_USERNAME'))
-joynPassword = str(os.getenv('JOYN_PASSWORD'))
+kingLiveDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
+badPumperTable = "bad_pumper_data"
+
+## Names of KOC Employees
 michaelTanner = os.getenv("MICHAEL_TANNER_EMAIL")
 michaelTannerName = os.getenv("MICHAEL_TANNER_NAME")
 gabeTatman = os.getenv("GABE_TATMAN_EMAIL")
@@ -119,51 +124,6 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
-data = combocurve.getLatestScenarioMonthly(
-    projectIdKey=comboCurveProjectId,
-    scenarioIdKey=comboCurveScenarioId,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey
-)
-
-data.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFpWolfcampVerticalP50.xlsx", index=False)
-
-crest = combocurve.ccScenarioToCrestFpSingleWell(
-    comboCurveScenarioData=data,
-    nglYield=0,
-    gasBtuFactor=1,
-    gasShrinkFactor=0,
-    oilPricePercent=1,
-    gasPricePercent=1,
-    nglPricePercent=1,
-    oilVariableCost=2,
-    gasVariableCost=0.3,
-    nglVariableCost=0,
-    waterVariableCost=.3,
-    state="texas"
-)
-
-crest.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestfpoutputs\crestFp.xlsx", index=False)
-
-# king.sendEmail(
-#     emailRecipient="gpatterson@kingoperating.com",
-#     emailRecipientName="Graham Patterson",
-#     emailSubject="Crest FP Data Test Single Well",
-#     emailMessage="Single Well Economics - Wolfcamp Vertical P90",
-#     nameOfFile="wolfcampverticalp90",
-#     attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestfpoutputs\crestFp.xlsx",
-# )
-
-king.sendEmail(
-    emailRecipient=michaelTanner,
-    emailRecipientName=michaelTannerName,
-    emailSubject="Crest FP Data Test Single Well",
-    emailMessage="Single Well Economics - Wolfcamp Vertical P90",
-    nameOfFile="wolfcampverticalp90",
-    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestfpoutputs\crestFp.xlsx",
-)
-
-
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
@@ -227,14 +187,21 @@ badPumperData = king.getNotReportedPumperList(
     checkDate=yesDateString
 )
 
+## Put bad pumper data to KOC Datawarehouse
+tech.putData(
+    server=kingLiveServer,
+    database=kingLiveDatabase,
+    data=badPumperData,
+    tableName=badPumperTable
+)
+
+
 subject = "Bad Pumper List for " + yesDateString
 badPumperMessage = "The following pumpers have not submitted their daily reports: \n\n"
 
 badPumpers = badPumperData["Pumper Name"].to_list()
 badPumpersUniqueList = [*set(badPumpers)]
 
-##print badPumperData file to KOC Datawarehouse
-badPumperData.to_excel(kocDatawarehouse + r"\production\badPumperData.xlsx", index=False)
 
 badPumperMessage = king.createPumperMessage(
     badPumperData=badPumperData,
