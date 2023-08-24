@@ -62,6 +62,6 @@ def putData(server, database, data, tableName):
     
     data.to_sql(tableName, engine, if_exists='replace', index=False)
     
-    print("Data has been added to the SQL Server Database")
+    print("Data has been added to the " + str(tableName) + " in the " + str(database) + " database on the " + str(server) + " server.")
     
      

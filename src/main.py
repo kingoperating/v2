@@ -44,8 +44,8 @@ joynPassword = str(os.getenv('JOYN_PASSWORD'))
 kingServerExpress = str(os.getenv('SQL_SERVER'))
 kingDatabaseExpress = str(os.getenv('SQL_KING_DATABASE'))
 kingLiveServer = str(os.getenv('SQL_SERVER_KING_DATAWAREHOUSE'))
-kingLiveDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
-badPumperTable = "bad_pumper_data"
+kingProductionDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
+badPumperTable = "prod_bad_pumper_data"
 
 ## Names of KOC Employees
 michaelTanner = os.getenv("MICHAEL_TANNER_EMAIL")
@@ -79,7 +79,7 @@ browning5181H = "42033325890000"
 browningOperatorName = "BROWNING OIL"
 basin = "MIDLAND"
 comboCurveProjectId = "612fc3d36880c20013a885df"
-comboCurveScenarioId = "64443eaf0182000012fa2c25"
+comboCurveScenarioId = "64aca0abaa25aa001201b299"
 comboCurveForecastId = "64a5d95390c0320012a83df9"
 millerranchb501mh = "millerranchb501mh"
 millerrancha502v = "millerrancha502v"
@@ -124,6 +124,18 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
+# print("Begin Running KOC Daily Scripts...")
+# masterAllocatedData = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
+# print("Finished Reading Master Allocated Production Data!")
+
+
+# tech.putData(
+#     server=kingLiveServer,
+#     database=kingProductionDatabase,
+#     data=masterAllocatedData,
+#     tableName="prod_daily_allocated_volume"
+# )
+
 data = combocurve.getLatestScenarioMonthly(
     projectIdKey=comboCurveProjectId,
     scenarioIdKey=comboCurveScenarioId,
@@ -145,32 +157,32 @@ crestPdp = combocurve.ccScenarioToCrestFpPdp(
 
 crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFpPDP.xlsx", index=False)
 
-crest = combocurve.ccScenarioToCrestFpSingleWell(
-    comboCurveScenarioData=data,
-    nglYield=1,
-    gasBtuFactor=1.383,
-    gasShrinkFactor=1,
-    oilPricePercent=1,
-    gasPricePercent=1,
-    nglPricePercent=1,
-    oilVariableCost=2,
-    gasVariableCost=0.3,
-    nglVariableCost=0,
-    waterVariableCost=.3,
-    state="texas"
-)
+# crest = combocurve.ccScenarioToCrestFpSingleWell(
+#     comboCurveScenarioData=data,
+#     nglYield=1,
+#     gasBtuFactor=1.383,
+#     gasShrinkFactor=1,
+#     oilPricePercent=1,
+#     gasPricePercent=1,
+#     nglPricePercent=1,
+#     oilVariableCost=2,
+#     gasVariableCost=0.3,
+#     nglVariableCost=0,
+#     waterVariableCost=.3,
+#     state="texas"
+# )
 
 
-crest.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestFp.xlsx", index=False)
+# crest.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestFp.xlsx", index=False)
 
 
 king.sendEmail(
     emailRecipient=michaelTanner,
     emailRecipientName=michaelTannerName,
-    emailSubject="Crest FP Data Test Single Well",
-    emailMessage="Single Well Economics test",
+    emailSubject="Crest FP Data Test PDP",
+    emailMessage="PDP Well Economics test",
     nameOfFile="crestFpTest",
-    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestFp.xlsx",
+    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFpPDP.xlsx",
 )
 
 
@@ -240,7 +252,7 @@ badPumperData = king.getNotReportedPumperList(
 ## Put bad pumper data to KOC Datawarehouse
 tech.putData(
     server=kingLiveServer,
-    database=kingLiveDatabase,
+    database=kingProductionDatabase,
     data=badPumperData,
     tableName=badPumperTable
 )

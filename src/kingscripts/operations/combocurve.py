@@ -1065,9 +1065,8 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
     
     scenerioDataTable = pd.DataFrame(combinedLists, columns=["Date", "Gross Oil Sales Volume", "Gross Gas Sales Volume", "Gross NGL Sales Volume", "Gross Water Well Head Volume", "Total Gross Fixed Expense", "Net Oil Sales Volume", "Net Gas Sales Volume", "Net NGL Sales Volume", "Oil Revenue", "Gas Revenue", "NGL Revenue", "Total Net Revenue", "Net Income", "Total Tax", "Total Gross Variable Expense", "Total Oil Variable Expense", "Total Gas Variable Expense", "Total NGL Variable Expense", "Ad Valorem Tax", "Oil Severance Tax", "Gas Severance Tax", "NGL Severance Tax", "Water Disposal Expense"])
     
-   
-    
     scenerioDataTable["Date"] = pd.to_datetime(scenerioDataTable["Date"])
+    scenerioDataTable = scenerioDataTable.sort_values(by="Date")
 
     return scenerioDataTable
 
@@ -1179,9 +1178,9 @@ This function converts a ComboCurve getLatestScenarioMonthly PDP dataframe into 
 def ccScenarioToCrestFpPdp(comboCurveScenarioData, nglYield, gasBtuFactor, gasShrinkFactor, oilPricePercent, gasPricePercent, nglPricePercent):
     
      # Set variables lists needed for crestFP
-    netOilSalesVolumeList = comboCurveScenarioData["Gross Oil Sales Volume"].tolist()
-    netGasSalesVolumeList = comboCurveScenarioData["Gross Gas Sales Volume"].tolist()
-    netNglSalesVolumeList = comboCurveScenarioData["Gross NGL Sales Volume"].tolist()
+    netOilSalesVolumeList = comboCurveScenarioData["Net Oil Sales Volume"].tolist()
+    netGasSalesVolumeList = comboCurveScenarioData["Net Gas Sales Volume"].tolist()
+    netNglSalesVolumeList = comboCurveScenarioData["Net NGL Sales Volume"].tolist()
     grossWaterWellHeadVolumeList = comboCurveScenarioData["Gross Water Well Head Volume"].tolist()
     oilRevenueTableList = comboCurveScenarioData["Oil Revenue"].tolist()
     gasRevenueTableList = comboCurveScenarioData["Gas Revenue"].tolist()
