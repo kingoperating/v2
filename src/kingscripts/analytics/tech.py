@@ -33,17 +33,15 @@ def getData(serverName, databaseName, tableName):
     # Get the column names from the cursor object
     columnNames = [column[0] for column in cursor.description]
     # Create a Pandas DataFrame from the fetched data
-    itSpendData = pd.DataFrame.from_records(rows, columns=columnNames)
-    # Convert the "DateCoded" column to datetime format
-    itSpendData["DateCoded"] = pd.to_datetime(
-        itSpendData["DateCoded"], format="%Y-%m-%d")
+    data = pd.DataFrame.from_records(rows, columns=columnNames)
+
 
     # Close the cursor and the connection
     cursor.close()
     connection.close()
 
     # Return the dataframe
-    return itSpendData
+    return data
 
 
 """
