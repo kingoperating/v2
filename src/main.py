@@ -45,7 +45,10 @@ kingServerExpress = str(os.getenv('SQL_SERVER'))
 kingDatabaseExpress = str(os.getenv('SQL_KING_DATABASE'))
 kingLiveServer = str(os.getenv('SQL_SERVER_KING_DATAWAREHOUSE'))
 kingProductionDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
+kingPlanningDatabase = str(os.getenv('SQL_PLANNING_DATABASE'))
 badPumperTable = "prod_bad_pumper_data"
+kingPlanningDataRaw = str(os.getenv("KING_PLANNING_DATA_RAW"))
+kingPlanningData = pd.read_excel(kingPlanningDataRaw)
 
 ## Names of KOC Employees
 michaelTanner = os.getenv("MICHAEL_TANNER_EMAIL")
@@ -149,7 +152,7 @@ crestPdp = combocurve.ccScenarioToCrestFpPdp(
     comboCurveScenarioData=data,
     nglYield=1,
     gasBtuFactor=1,
-    gasShrinkFactor=1,
+    gasShrinkFactor=0,
     oilPricePercent=1,
     gasPricePercent=1,
     nglPricePercent=1,
@@ -181,7 +184,16 @@ king.sendEmail(
     emailRecipientName=michaelTannerName,
     emailSubject="Crest FP Data Test PDP",
     emailMessage="PDP Well Economics test",
-    nameOfFile="crestFpTest",
+    nameOfFile="crestFpTestPDP",
+    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFpPDP.xlsx",
+)
+
+king.sendEmail(
+    emailRecipient="gpatterson@kingoperating.com",
+    emailRecipientName="Graham Patterson",
+    emailSubject="Crest FP Data Test PDP",
+    emailMessage="PDP Well Economics test",
+    nameOfFile="crestFpTestPDP",
     attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFpPDP.xlsx",
 )
 
@@ -299,6 +311,14 @@ combocurve.putJoynWellProductionData(
     currentJoynData=joynData,
     comboCurveApi=comboCurveApiKey,
     serviceAccount=serviceAccount
+)
+
+## Update King Planning Ghantt Chart into SQL Server
+king.updateKingPlanningChart(
+    dataplan=kingPlanningData,
+    serverName=kingLiveServer,
+    databaseName=kingPlanningDatabase,
+    tableName="prod_king_planning_data"
 )
 
 # AFE Stack Miller Ranch C301
