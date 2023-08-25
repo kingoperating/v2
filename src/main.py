@@ -127,77 +127,6 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
-# print("Begin Running KOC Daily Scripts...")
-# masterAllocatedData = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
-# print("Finished Reading Master Allocated Production Data!")
-
-
-# tech.putData(
-#     server=kingLiveServer,
-#     database=kingProductionDatabase,
-#     data=masterAllocatedData,
-#     tableName="prod_daily_allocated_volume"
-# )
-
-data = combocurve.getLatestScenarioMonthly(
-    projectIdKey=comboCurveProjectId,
-    scenarioIdKey=comboCurveScenarioId,
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey
-)
-
-data.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFp.xlsx", index=False)
-
-crestPdp = combocurve.ccScenarioToCrestFpPdp(
-    comboCurveScenarioData=data,
-    nglYield=1,
-    gasBtuFactor=1,
-    gasShrinkFactor=0,
-    oilPricePercent=1,
-    gasPricePercent=1,
-    nglPricePercent=1,
-)
-
-crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFpPDP.xlsx", index=False)
-
-# crest = combocurve.ccScenarioToCrestFpSingleWell(
-#     comboCurveScenarioData=data,
-#     nglYield=1,
-#     gasBtuFactor=1.383,
-#     gasShrinkFactor=1,
-#     oilPricePercent=1,
-#     gasPricePercent=1,
-#     nglPricePercent=1,
-#     oilVariableCost=2,
-#     gasVariableCost=0.3,
-#     nglVariableCost=0,
-#     waterVariableCost=.3,
-#     state="texas"
-# )
-
-
-# crest.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestFp.xlsx", index=False)
-
-
-king.sendEmail(
-    emailRecipient=michaelTanner,
-    emailRecipientName=michaelTannerName,
-    emailSubject="Crest FP Data Test PDP",
-    emailMessage="PDP Well Economics test",
-    nameOfFile="crestFpTestPDP",
-    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFpPDP.xlsx",
-)
-
-king.sendEmail(
-    emailRecipient="gpatterson@kingoperating.com",
-    emailRecipientName="Graham Patterson",
-    emailSubject="Crest FP Data Test PDP",
-    emailMessage="PDP Well Economics test",
-    nameOfFile="crestFpTestPDP",
-    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFpPDP.xlsx",
-)
-
-
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
@@ -313,7 +242,7 @@ combocurve.putJoynWellProductionData(
     serviceAccount=serviceAccount
 )
 
-## Update King Planning Ghantt Chart into SQL Server
+## Update King Planning Ghantt Chart into SQL Server - use putData
 king.updateKingPlanningChart(
     dataplan=kingPlanningData,
     serverName=kingLiveServer,
@@ -476,11 +405,23 @@ data = combocurve.getLatestScenarioMonthly(
 
 data.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFp.xlsx", index=False)
 
+crestPdp = combocurve.ccScenarioToCrestFpPdp(
+    comboCurveScenarioData=data,
+    nglYield=1,
+    gasBtuFactor=1,
+    gasShrinkFactor=0,
+    oilPricePercent=1,
+    gasPricePercent=1,
+    nglPricePercent=1,
+)
+
+crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFpPDP.xlsx", index=False)
+
 crest = combocurve.ccScenarioToCrestFpSingleWell(
     comboCurveScenarioData=data,
     nglYield=1,
     gasBtuFactor=1.383,
-    gasShrinkFactor=1,
+    gasShrinkFactor=0,
     oilPricePercent=1,
     gasPricePercent=1,
     nglPricePercent=1,
@@ -491,24 +432,24 @@ crest = combocurve.ccScenarioToCrestFpSingleWell(
     state="texas"
 )
 
+
 crest.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestFp.xlsx", index=False)
-
-
-king.sendEmail(
-    emailRecipient="gpatterson@kingoperating.com",
-    emailRecipientName="Graham Patterson",
-    emailSubject="Crest FP Data Test Single Well",
-    emailMessage="Single Well Economics test",
-    nameOfFile="crestFpTest.xlsx",
-    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestFp.xlsx",
-)
 
 
 king.sendEmail(
     emailRecipient=michaelTanner,
     emailRecipientName=michaelTannerName,
-    emailSubject="Crest FP Data Test Single Well",
-    emailMessage="Single Well Economics test",
-    nameOfFile="crestFpTest",
-    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestFp.xlsx",
+    emailSubject="Crest FP Data Test PDP",
+    emailMessage="PDP Well Economics test",
+    nameOfFile="crestFpTestPDP",
+    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFpPDP.xlsx",
+)
+
+king.sendEmail(
+    emailRecipient="gpatterson@kingoperating.com",
+    emailRecipientName="Graham Patterson",
+    emailSubject="Crest FP Data Test PDP",
+    emailMessage="PDP Well Economics test",
+    nameOfFile="crestFpTestPDP",
+    attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\comboCurveDataCrestFpPDP.xlsx",
 )

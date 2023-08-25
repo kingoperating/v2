@@ -1,6 +1,8 @@
 # Import packages needed
 from datetime import datetime
 import pandas as pd
+from kingscripts.analytics import tech
+import os
 
 """
 
@@ -38,7 +40,7 @@ def dailyCost(workingDataDirectory, name):
     daysVsDepthFp = open(daysVsDepthFileName, "w")
     headerString = "Date, Account Number, Depth, Daily Cost Estimate, Description\n"
     dailyItemCostFp.write(headerString)
-    headerString = "Date, Days, Hours, Planned Depth, Planned Cost, Daily, Daily Cost Estimated, Actual Depth, Cumulative Cost,Daily Description\n"
+    headerString = "Date, Days, Hours, Planned Depth, Planned Cost, Daily, Daily Cost Estimated, Actual Depth, Cumulative Cost,Daily Description,Activity\n"
     daysVsDepthFp.write(headerString)
 
     masterAfe = masterAfe.fillna(0)  # fill all emptys with 0
@@ -146,6 +148,8 @@ def dailyCost(workingDataDirectory, name):
                     + str(cumulativeCost * -1)
                     + ","
                     + str(description)
+                    + ","
+                    + str(activity)
                     + "\n"
                 )
                 daysVsDepthFp.write(outputString)
@@ -176,6 +180,11 @@ def dailyCost(workingDataDirectory, name):
     else:
         description = ""
 
+    if "activity" in locals():
+        activity = activity
+    else:
+        activity = ""
+        
     outputString = (
         lastDateClean
         + ","
@@ -196,6 +205,8 @@ def dailyCost(workingDataDirectory, name):
         + str(cumulativeCost * -1)
         + ","
         + str(description)
+        + ","
+        + str(activity)
         + "\n"
     )
 
@@ -215,6 +226,8 @@ def dailyCost(workingDataDirectory, name):
             + str(row["PLAN COST"] * -1)
             + ","
             + str(row["DAILY"] * -1)
+            + ","
+            + ""
             + ","
             + ""
             + ","
@@ -496,6 +509,50 @@ def combineAfeFiles(listOfWells, workingDataDirectory):
     #daysVsDepthCombineData = daysVsDepthCombineData.fillna(0)
     afeOgCombineData = pd.concat(dataFrameStoreAfeOg)
     plannedCostCombineData = pd.concat(dataFrameStorePlanned)
+
+    # PUT all dataframes in SQL Server
+    tech.putData(
+        server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
+        database=str(os.getenv("SQL_AFE_DATABASE")),
+        tableName="prod_afe_variance",
+        data=afeVarianceCombineData,
+    )
+    tech.putData(
+        server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
+        database=str(os.getenv("SQL_AFE_DATABASE")),
+        tableName="prod_daily_item_cost",
+        data=dailyItemCostCombineData,
+    )
+    tech.putData(
+        server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
+        database=str(os.getenv("SQL_AFE_DATABASE")),
+        tableName="prod_spend",
+        data=spendCombineData,
+    )
+    tech.putData(
+        server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
+        database=str(os.getenv("SQL_AFE_DATABASE")),
+        tableName="prod_paid",
+        data=paidCombineData,
+    )
+    tech.putData(
+        server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
+        database=str(os.getenv("SQL_AFE_DATABASE")),
+        tableName="prod_days_vs_depth",
+        data=daysVsDepthCombineData,
+    )
+    tech.putData(
+        server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
+        database=str(os.getenv("SQL_AFE_DATABASE")),
+        tableName="prod_afe_master",
+        data=afeOgCombineData,
+    )
+    tech.putData(
+        server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
+        database=str(os.getenv("SQL_AFE_DATABASE")),
+        tableName="prod_planned_cost_depth",
+        data=plannedCostCombineData,
+    )
 
     afeVarianceCombineData.to_excel(
         pathofExport + r"\afeVarianceCombineData.xlsx", index=False)
