@@ -10,6 +10,7 @@ from email.mime.base import MIMEBase
 from email import encoders
 import os.path
 import pandas as pd
+from kingscripts.analytics import tech
 
 
 """
@@ -236,3 +237,16 @@ def createPumperMessage(badPumperData, badPumperTrimmedList, badPumperMessage):
         badPumperMessage = badPumperMessage + "\n"
 
     return badPumperMessage
+
+"""
+    
+Pull planning Ghantt Chart from data lake and imports to SQL server
+
+"""
+
+def updateKingPlanningChart(dataplan, serverName, databaseName, tableName):
+    
+    tech.putData(serverName, databaseName, dataplan, tableName)
+
+    return True
+    

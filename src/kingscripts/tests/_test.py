@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from analytics.king import sendEmail
+from kingscripts.analytics import king
 
 class TestSendEmail(unittest.TestCase):
     
@@ -13,7 +13,7 @@ class TestSendEmail(unittest.TestCase):
         nameOfFile = 'test.txt'
         attachment = b'Test attachment'
         
-        sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, nameOfFile, attachment)
+        king.sendEmail(emailRecipient, emailRecipientName, emailSubject, emailMessage, nameOfFile, attachment)
         
         mock_smtp.assert_called_once_with('smtp.gmail.com', 587)
         mock_smtp.return_value.starttls.assert_called_once()
