@@ -166,4 +166,38 @@ joyn.mergeBIntoA(
     B="INSERT DATAFRAME HERE",
 )
 
+data = combocurve.getLatestScenarioMonthly(
+    projectIdKey="INSERT PROJECT ID KEY HERE",
+    scenarioIdKey="INSERT SCENARIO ID KEY HERE",
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
+
+crestPdp = combocurve.ccScenarioToCrestFpPdp(
+    comboCurveScenarioData=data,
+    nglYield=1,
+    gasBtuFactor=1,
+    gasShrinkFactor=0,
+    oilPricePercent=1,
+    gasPricePercent=1,
+    nglPricePercent=1,
+)
+
+crest = combocurve.ccScenarioToCrestFpSingleWell(
+    comboCurveScenarioData=data,
+    nglYield=1,
+    gasBtuFactor=1.383,
+    gasShrinkFactor=0,
+    oilPricePercent=1,
+    gasPricePercent=1,
+    nglPricePercent=1,
+    oilVariableCost=2,
+    gasVariableCost=0.3,
+    nglVariableCost=0,
+    waterVariableCost=.3,
+    state="texas"
+)
+
+
+
 print("done")
