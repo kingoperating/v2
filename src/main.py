@@ -127,6 +127,35 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
+# data = combocurve.getLatestScenarioMonthly(
+#     projectIdKey=comboCurveProjectId,
+#     scenarioIdKey=comboCurveScenarioId,
+#     serviceAccount=serviceAccount,
+#     comboCurveApi=comboCurveApiKey
+# )
+
+# crestPdp = combocurve.ccScenarioToCrestFpPdp(
+#     comboCurveScenarioData=data,
+#     nglYield=1,
+#     gasBtuFactor=1,
+#     gasShrinkFactor=0,
+#     oilPricePercent=1,
+#     gasPricePercent=1,
+#     nglPricePercent=1,
+# )
+
+# crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdp.xlsx", index=False)
+
+# king.sendEmail(
+#     emailRecipient="gpatterson@kingoperating.com",
+#     emailRecipientName="Graham Patterson",
+#     emailSubject="Crest PDP  - CV",
+#     emailMessage="Crest PDP  - CV",
+#     attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdp.xlsx",
+#     nameOfFile="Crest PDP  - CV"
+# )
+
+
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,

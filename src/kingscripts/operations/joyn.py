@@ -247,6 +247,8 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
             # JOYN unquie ID for each asset
             uuidRaw = totalResults[i][j]["assetId"]
             apiNumber = getApiNumber(uuidRaw)
+            if apiNumber == "Unknown":
+                x = 5
             wellName = getName(apiNumber)
             # reading volume for current allocation row
             readingVolume = totalResults[i][j]["Volume"]
