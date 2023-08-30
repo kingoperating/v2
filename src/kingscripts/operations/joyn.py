@@ -295,6 +295,8 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
     # sort dataframe by date for loop to get daily production
     rawTotalAssetProductionSorted = rawJoynTotalAssetProduction.sort_values(by=[
         "Date"])
+    
+    rawTotalAssetProductionSorted.to_excel(workingDataDirectory + r"\production\rawTotalAssetProductionSorted.xlsx")
 
     # Setting some initial variables for loop
     dailyRawProduction = np.zeros([200, 4])
@@ -317,6 +319,8 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
         datePivot = row["Date"]
         # oilSalesPivot = row["Oil Sales Volume"]
         wellNamePivot = getName(apiNumberPivot)
+        if wellNamePivot == "Unknown":
+            x = 5
         stateName = getState(apiNumberPivot)
         clientName = getClient(apiNumberPivot)
         forecastVolumes = getForecast(
