@@ -399,7 +399,6 @@ Two of those columns must be "Date" and "API". The function will merge B into A
       
 """
 
-
 def mergeBIntoA(A, B):
     # convert date column to datetime format for sorting purposes
     A["Date"] = pd.to_datetime(A["Date"])
@@ -428,3 +427,4 @@ def mergeBIntoA(A, B):
     A["Date"] = A["Date"].dt.strftime("%m/%d/%Y")
 
     return A
+
