@@ -4,7 +4,7 @@
   <img src=".\src\images\logo.png" width="400" title="kingscripts">
 </p>
 
-This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 3.2.0
+This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 3.3.0
 
 Developed and Maintained by Michael Tanner and Gabe Tatman. Please email development@kingoperating.com with any questions.
 
@@ -20,9 +20,9 @@ Then, import the packages below:
 
 ```python
 from kingscripts.operations import greasebook, combocurve, joyn
-from kingscripts.analytics import enverus, king
+from kingscripts.analytics import enverus, king, tech
 from kingscripts.afe import afe
-from kingscripts.finance import tech, wenergy
+from kingscripts.finance import wenergy
 ```
 
 ## operations Module
@@ -109,9 +109,34 @@ Three (3) packages `greasebook`, `joyn` and `combocurve`
   - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
   - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
 
+11. `combocurve.ccScenarioToCrestFpSingleWell` - injests getLatestScenarioMonthly() pandas dataframe and converts it to crestFp Single Well Forecast
+    
+    - Arguments
+      - `comboCurveScenarioData`: pandas dataframe with specific rows and columns that have discounted net present values - `dataframe`
+      - `nglYield`: Natural Gas Liquids yield - 1 represents 100% yield
+      - `gasBtuFactor`: gas BTU factor - always 1 unless gas is paid off BTU factor `double`
+      - `gasShrinkFactor`: gas shrinkage factor (0-1) `double`
+      - `oilPricePercent`: 1 unless oil price differential is not 100% `double`
+      - `gasPricePercent`: 1 unless gas price differential is not 100% `double`
+      - `nglPricePercnet`: 1 unless ngl price differential is not 100% `double`
+      - `oilVariableCost`: $/bbl LOE cost `double`
+      - `gasVariableCost`: $/MCF LOE cost `double`
+      - `nglVariableCost`: $/bbl LOE cost `double`
+      - `waterVariableCost`: water dispoal cost ($/bbl) `double`
+      - `state`: state intials - only `tx` avaiable at the moment `str`
+
+12. `combocurve.ccScenarioToCrestFpPdp` - injests getLatestScenarioMonthly() pandas dataframe and converts it to crestFp PDP Forecast
+- Arguments
+      - `comboCurveScenarioData`: pandas dataframe with specific rows and columns that have discounted net present values - `dataframe`
+      - `nglYield`: Natural Gas Liquids yield - 1 represents 100% yield
+      - `gasBtuFactor`: gas BTU factor - always 1 unless gas is paid off BTU factor `double`
+      - `gasShrinkFactor`: gas shrinkage factor (0-1) `double`
+      - `oilPricePercent`: 1 unless oil price differential is not 100% `double`
+      - `gasPricePercent`: 1 unless gas price differential is not 100% `double`
+      - `nglPricePercnet`: 1 unless ngl price differential is not 100% `double`
 ### joyn
 
-11. `joyn.getDailyAllocatedProduction` - returns pandas dataframe of modified production data from JOYN during given data length
+12. `joyn.getDailyAllocatedProduction` - returns pandas dataframe of modified production data from JOYN during given data length
 
     - Arguments
       - `workingDataDirectory`: Data directory where all exports and imports come from `str`
@@ -119,7 +144,7 @@ Three (3) packages `greasebook`, `joyn` and `combocurve`
       - `joynPassword` - password for JOYN `str`
       - `daysToLookBack` - how many days to look back for modified production data? `int`
 
-12. `joyn.mergeBIntoA` - merges two dataframes together and updates A if B is different
+13. `joyn.mergeBIntoA` - merges two dataframes together and updates A if B is different
 
     - Arguments
       - `A`: pandas dataframe which will be updated `dataframe`
@@ -131,13 +156,13 @@ Two (2) packages `enverus` and `king` with 3 functions
 
 ### enverus
 
-13. `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
+14. `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
 
 - Arguments:
   - `apiKey`: Enverus API authentication `object`
   - `wellApi14`: Well API14 of interest `str`
 
-14. `enverus.checkWellStatus` - chekcs the status a specific operator in a specific basin
+15. `enverus.checkWellStatus` - chekcs the status a specific operator in a specific basin
 
     - Arguments:
       - `apiKey`: Enverus API authentication `object`
@@ -146,7 +171,7 @@ Two (2) packages `enverus` and `king` with 3 functions
 
 ### king
 
-15. `king.sendEmail`
+16. `king.sendEmail`
 
     - Arugments:
       - `emailRecipient` - email address of the person to email `str`
@@ -156,25 +181,33 @@ Two (2) packages `enverus` and `king` with 3 functions
       - `nameOfFile` (optional) name of the file - user created
       - `attachment` - (optional) attachment to be sent (Excel File only)
 
-16. `king.getAverageDailyVolumes`
+17. `king.getAverageDailyVolumes`
 
     - Arugments:
       - `masterKingProdData` - master allocated volumes excel sheet in KOC Datawarehouse `dataframe`
       - `startDate` - YYYY-MM-DD `datetime`
       - `endDate` - YYYY-MM-DD `datetime`
 
-17. `king.getNotReportedPumperList` - refactored pumper naughty list which creates and returns a list of pumpers who have not entered there data
+18. `king.getNotReportedPumperList` - refactored pumper naughty list which creates and returns a list of pumpers who have not entered there data
 
     - Arugments:
     - `masterKingProdData` - master allocated volumes excel sheet in KOC Datawarehouse `dataframe`
     - `checkDate` - date to check `datetime`
 
-18. `king.createPumperMessage` - takes a list of names and orders them by well to create the email message that goes out the operations team about missing pumper data on a given data
+19. `king.createPumperMessage` - takes a list of names and orders them by well to create the email message that goes out the operations team about missing pumper data on a given data
 
     - Arugments
       - `badPumperData` - dataframe of wells,names and pumper number for naughty list `dataframe`
       - `badPumperTrimmedList` - list of bad pumpers trimmed to only unquie pumper names `list`
       - `badPumperMessage` - any header information you want to begin the message with `str`
+
+20. `king.updateKingPlanningChart` - injests pandas dataframe for KOC master ghantt chart and loads into SQL database
+
+    - Arugments
+      - `dataplan`: pandas dataframe with KOC specific ghantt chart data `dataframe`
+      - `serverName` - name of server `str`
+      - `databaseName` - name of database `str`
+      - `tableName` - specific table to access `str`
 
 ## finance Module
 
@@ -182,14 +215,14 @@ Two packages `tech` and `wenergy`
 
 ### tech
 
-19. `tech.getData` - returns a dataframe given KOC Datawarehouse parameters
+21. `tech.getData` - returns a dataframe given KOC Datawarehouse parameters
 
     - Arguments:
       - `serverName` - name of server `str`
       - `databaseName` - name of database `str`
       - `tableName` - specific table to access `str`
 
-20. `tech.putData` - replaces entire table with dataframne given KOC Datawarehouse parameters
+22. `tech.putData` - replaces entire table with dataframne given KOC Datawarehouse parameters
 
     - Arguments:
       - `serverName` - name of server `str`
@@ -200,21 +233,21 @@ Two packages `tech` and `wenergy`
 
 One (1) package `afe.py` and three (3) functions
 
-21. `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
+23. `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
 
     - Note: see `afe.py` to set correct paths to data folder
     - Arguments
       - `workingDataDirectory`: Data directory where all exports and imports come from `str`
       - `name`: Name of the well, see masterWellList for details `str`
 
-22. `afe.variance`
+24. `afe.variance`
 
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments
         - `workingDataDirectory`: Data directory where all exports and imports come from `str`
         - `name`: Name of the well, see masterWellList for details
 
-23. `afe.combineAfeFiles`
+25. `afe.combineAfeFiles`
 
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments
