@@ -249,4 +249,16 @@ def updateKingPlanningChart(dataplan, serverName, databaseName, tableName):
     tech.putData(serverName, databaseName, dataplan, tableName)
 
     return True
+
+"""
     
+Reading Howard County Excel file and storing it in pandas dataframe
+
+"""  
+
+def getReadHowardProduction():
+    
+    
+    
+    x = 5
+    return True
