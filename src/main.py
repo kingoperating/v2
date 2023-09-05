@@ -1,16 +1,16 @@
 """
-Main Script for KOC Python Packages 3.2.0
+Main Script for KOC Python Packages 3.3.0
 
 Developer: Michael Tanner
 
 """
-# KOC v3.2.0 Python Packages
+# KOC v3.3.0 Python Packages
 from kingscripts.operations import greasebook, combocurve, joyn
 from kingscripts.analytics import enverus, king, tech
 from kingscripts.afe import afe
 from kingscripts.finance import wenergy
 
-# Python Packages
+#  Needed Python Packages
 from dotenv import load_dotenv
 from combocurve_api_v1 import ServiceAccount
 import os
