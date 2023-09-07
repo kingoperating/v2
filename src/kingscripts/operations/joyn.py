@@ -393,6 +393,68 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
 
 
 """
+    
+This script gets all current users in JOYN    
+
+"""
+
+def getJoynUsers(joynUsername, joynPassword):
+    
+    def getIdToken():
+
+        load_dotenv()
+
+        login = joynUsername
+        password = joynPassword
+
+        # User Token API
+        url = "https://api.joyn.ai/common/user/token"
+        # Payload for API - use JOYN crdentials
+        payload = {
+            "uname": str(login),
+            "pwd": str(password)
+        }
+        # Headers for API - make sure to use content type of json
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        # dump payload into json format for correct format
+        payloadJson = json.dumps(payload)
+        response = requests.request(
+            "POST", url, data=payloadJson, headers=headers)  # make request
+        if response.status_code == 200:  # 200 = success
+            print("Successful JOYN Authentication")
+        else:
+            print(response.status_code)
+
+        results = response.json()  # get response in json format
+        idToken = results["IdToken"]  # get idToken from response
+
+        return idToken
+    
+    
+    idToken = getIdToken()  # get idToken from authJoyn function
+    
+    url = "https://api-fdg.joyn.ai/admin/api/User?page=1&start=0&limit=25"
+    
+    response = requests.request(
+            "GET", url, headers={"Authorization": idToken})
+    # Dislay status code of response - 200 = GOOD
+    if response.status_code != 200:
+        print(response.status_code)
+
+    print("Length of Response: " + str(len(response.json())))
+
+    # get response in json format and append to totalResults list
+    resultsReadingType = response.json()
+    
+
+    return True
+
+
+
+"""
         
 For this script to work, A and B MUST have the same columns and column names.
 Two of those columns must be "Date" and "API". The function will merge B into A

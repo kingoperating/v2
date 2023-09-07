@@ -128,6 +128,11 @@ listOfWells = [
 WORKING ZONE
 '''
 
+# joyn.getJoynUsers(
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword
+# )
+
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
     apiKey=enverusApiKey,
@@ -136,7 +141,7 @@ browing518HProductionMonthtlyData = enverus.getWellProductionData(
 
 # Allocate Wells From Greasebook
 allocatedProductionData = greasebook.allocateWells(
-    days=30,
+    days=45,
     workingDataDirectory=kocDatawarehouse,
     greasebookApi=greasebookApi,
     pullProd=False,
