@@ -128,6 +128,13 @@ listOfWells = [
 WORKING ZONE
 '''
 
+# data = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
+
+# #convert date to datetime
+# data["Date"] = pd.to_datetime(data["Date"])
+
+# data.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionDataDateTime.xlsx", index=False)
+
 # joyn.getJoynUsers(
 #     joynUsername=joynUsername,
 #     joynPassword=joynPassword
@@ -141,7 +148,7 @@ browing518HProductionMonthtlyData = enverus.getWellProductionData(
 
 # Allocate Wells From Greasebook
 allocatedProductionData = greasebook.allocateWells(
-    days=45,
+    days=daysToPull,
     workingDataDirectory=kocDatawarehouse,
     greasebookApi=greasebookApi,
     pullProd=False,
@@ -162,7 +169,7 @@ joynData = joyn.getDailyAllocatedProduction(
     workingDataDirectory=kocDatawarehouse,
     joynUsername=joynUsername,
     joynPassword=joynPassword,
-    daysToLookBack=2
+    daysToLookBack=6
 )
 
 print("Begin Exporting Master Joyn Data to KOC Datawarehouse...")
@@ -170,67 +177,6 @@ joynData.to_excel(kocDatawarehouse +
                   r"\production\masterJoynData.xlsx", index=False)
 print("Finished Exporting Master Joyn Data to KOC Datawarehouse!")
 
-# Master Greasebook Data
-print("Reading Master Greasebook Data...")
-masterGreasebookData = pd.read_excel(os.getenv("MASTER_GREASEBOOK_DATA"))
-print("Finished Reading Master Greasebook Data!")
-
-# MERGE JOYN DATA WITH MASTER GREASEBOOK DATA
-masterData = joyn.mergeBIntoA(
-    A=masterGreasebookData,
-    B=joynData
-)
-
-# EXPORT MASTER DATA TO KOC DATAWAREHOUSE
-print("Begin Exporting Master Data to KOC Datawarehouse...")
-masterData.to_excel(
-    kocDatawarehouse + r"\production\masterAllocatedProductionData.xlsx", index=False)
-
-masterData.to_json(kocDatawarehouse +
-                   r"\production\masterAllocatedProductionData.json", orient="records")
-print("Finished Exporting Master Data to KOC Datawarehouse!")
-
-# Bad pumper Data email
-badPumperData = king.getNotReportedPumperList(
-    masterKingProdData=masterData,
-    checkDate=yesDateString
-)
-
-## Put bad pumper data to KOC Datawarehouse
-tech.putData(
-    server=kingLiveServer,
-    database=kingProductionDatabase,
-    data=badPumperData,
-    tableName=badPumperTable
-)
-
-
-subject = "Bad Pumper List for " + yesDateString
-badPumperMessage = "The following pumpers have not submitted their daily reports: \n\n"
-
-badPumpers = badPumperData["Pumper Name"].to_list()
-badPumpersUniqueList = [*set(badPumpers)]
-
-
-badPumperMessage = king.createPumperMessage(
-    badPumperData=badPumperData,
-    badPumperTrimmedList=badPumpersUniqueList,
-    badPumperMessage=badPumperMessage
-)
-
-king.sendEmail(
-    emailRecipient=michaelTanner,
-    emailRecipientName=michaelTannerName,
-    emailSubject=subject,
-    emailMessage=badPumperMessage
-)
-
-king.sendEmail(
-    emailRecipient=gabeTatman,
-    emailRecipientName=gabeTatmanName,
-    emailSubject=subject,
-    emailMessage=badPumperMessage
-)
 
 # ComboCurve PUT Statements
 combocurve.putGreasebookWellProductionData(
@@ -310,92 +256,6 @@ afe.variance(
 afe.combineAfeFiles(
     workingDataDirectory=kocDatawarehouse,
     listOfWells=listOfWells
-)
-
-# Weekly EOS Email - needs to be sent ONLY Tuesday
-if isTuseday == 1:
-
-    print("It's Tuesday! Send Weekly Email to Peter")
-    dateEightDaysAgo = dateEightDaysAgo.strftime("%Y-%m-%d")
-    dateLastSunday = dateLastSunday.strftime("%Y-%m-%d")
-
-    print("Begin Reading...")
-    masterAllocatedData = pd.read_excel(
-        r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
-    print("Finished Reading Master Allocated Production Data!")
-
-    weeklyAverageData = king.getAverageDailyVolumes(
-        masterKingProdData=masterAllocatedData,
-        startDate=dateEightDaysAgo,
-        endDate=dateLastSunday
-    )
-
-    weeklyAverageData.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\eosWeeklyNumbers\eosWeeklyNumbers_" +
-                               dateEightDaysAgo + "_to_" + dateLastSunday + ".xlsx", index=False)
-    # Send email to Michael Tanner
-    king.sendEmail(
-        emailRecipient=michaelTanner,
-        emailRecipientName=michaelTannerName,
-        emailMessage="Weekly EOS Numbers for " + dateEightDaysAgo +
-        " to " + dateLastSunday + " are attached.",
-        emailSubject="Weekly EOS Numbers for " +
-        dateEightDaysAgo + " to " + dateLastSunday,
-        attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\eosWeeklyNumbers\eosWeeklyNumbers_" +
-        dateEightDaysAgo + "_to_" + dateLastSunday + ".xlsx",
-        nameOfFile="Weekly EOS Numbers for " +
-        dateEightDaysAgo + " to " + dateLastSunday
-    )
-    # Send email to Gabe Tatman
-    king.sendEmail(
-        emailRecipient=gabeTatman,
-        emailRecipientName=gabeTatmanName,
-        emailMessage="Weekly EOS Numbers for " + dateEightDaysAgo +
-        " to " + dateLastSunday + " are attached.",
-        emailSubject="Weekly EOS Numbers for " +
-        dateEightDaysAgo + " to " + dateLastSunday,
-        attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\eosWeeklyNumbers\eosWeeklyNumbers_" +
-        dateEightDaysAgo + "_to_" + dateLastSunday + ".xlsx",
-        nameOfFile="Weekly EOS Numbers for " +
-        dateEightDaysAgo + " to " + dateLastSunday
-    )
-    # Send email to Nathan Myers
-    king.sendEmail(
-        emailRecipient=nathanMyers,
-        emailRecipientName=nathanMyersName,
-        emailMessage="Weekly EOS Numbers for " + dateEightDaysAgo +
-        " to " + dateLastSunday + " are attached.",
-        emailSubject="Weekly EOS Numbers for " +
-        dateEightDaysAgo + " to " + dateLastSunday,
-        attachment=r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\eosWeeklyNumbers\eosWeeklyNumbers_" +
-        dateEightDaysAgo + "_to_" + dateLastSunday + ".xlsx",
-        nameOfFile="Weekly EOS Numbers for " +
-        dateEightDaysAgo + " to " + dateLastSunday
-    )
-else:
-    print("It's not Tuesday. No Weekly EOS Email")
-
-
-# Send Daily Email to Michael Tanner and Gabe Tatman that scripts ran successfully
-subject = "KOC Daily Scripts - " + todayDateString
-message = "KOC Daily Scripts successfully ran for " + yesDateString
-
-message = message + "\n\n" + \
-    "Refresh any PowerBi Dashboards that are connected to the KOC Datawarehouse."
-
-# Send Email - attacment is optional
-king.sendEmail(
-    emailRecipient=michaelTanner,
-    emailRecipientName=michaelTannerName,
-    emailSubject=subject,
-    emailMessage=message,
-
-)
-
-king.sendEmail(
-    emailRecipient=gabeTatman,
-    emailRecipientName=gabeTatmanName,
-    emailSubject=subject,
-    emailMessage=message,
 )
 
 print("Finished Running KOC Daily Scripts! You rock man")
