@@ -128,6 +128,16 @@ listOfWells = [
 WORKING ZONE
 '''
 
+# AFE Stack Miller Ranch B501MH
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerrancha501mh
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerrancha501mh
+)
+
 # data = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
 
 # #convert date to datetime
@@ -148,7 +158,7 @@ browing518HProductionMonthtlyData = enverus.getWellProductionData(
 
 # Allocate Wells From Greasebook
 allocatedProductionData = greasebook.allocateWells(
-    days=daysToPull,
+    days=50,
     workingDataDirectory=kocDatawarehouse,
     greasebookApi=greasebookApi,
     pullProd=False,
@@ -158,9 +168,9 @@ allocatedProductionData = greasebook.allocateWells(
 # KOC Datawarehouse LIVE DUMP
 print("Begin Exporting Greasebook Allocated Production Data to KOC Datawarehouse...")
 allocatedProductionData.to_excel(
-    kocDatawarehouse + r"\production\comboCurveAllocatedProduction.xlsx", index=False)
+    kocDatawarehouse + r"\production\comboCurveAllocatedProductionJoynUpload09102023.xlsx", index=False)
 allocatedProductionData.to_json(
-    kocDatawarehouse + r"\production\comboCurveAllocatedProduction.json", orient="records")
+    kocDatawarehouse + r"\production\comboCurveAllocatedProductionJoynUpload09102023.json", orient="records")
 print("Finished Exporting Greasebook Allocated Production Data to KOC Datawarehouse!")
 
 # JOYN STACK
@@ -169,7 +179,7 @@ joynData = joyn.getDailyAllocatedProduction(
     workingDataDirectory=kocDatawarehouse,
     joynUsername=joynUsername,
     joynPassword=joynPassword,
-    daysToLookBack=6
+    daysToLookBack=2
 )
 
 print("Begin Exporting Master Joyn Data to KOC Datawarehouse...")
