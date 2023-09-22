@@ -128,15 +128,43 @@ listOfWells = [
 WORKING ZONE
 '''
 
-# AFE Stack Miller Ranch B501MH
-afe.dailyCost(
-    workingDataDirectory=kocDatawarehouse,
-    name=millerrancha501mh
+data = combocurve.getLatestScenarioMonthly(
+    projectIdKey="650c602cf2393c7df4d127f7",
+    scenarioIdKey="650c602df2393c7df4d12a07",
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
 )
-afe.variance(
-    workingDataDirectory=kocDatawarehouse,
-    name=millerrancha501mh
+
+crestPdp = combocurve.ccScenarioToCrestFpPdp(
+    comboCurveScenarioData=data,
+    nglYield=0,
+    gasBtuFactor=1,
+    gasShrinkFactor=0,
+    oilPricePercent=1,
+    gasPricePercent=1,
+    nglPricePercent=.3,
 )
+
+# king.sendEmail(
+#     emailRecipient="gpatterson@kingoperating.com",
+#     emailRecipientName="Graham Patterson",
+#     emailSubject="Crest PDP Data For Perigeine - Detring View",
+#     attachment=crestPdp,
+#     emailMessage="Attached is the PDP Data for Perigeine - Detring View.",
+#     nameOfFile="crestPdpPerigeinePetroluem.xlsx"
+# )
+
+crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpPerigeinePetroluemPdpOnly.xlsx", index=False)
+
+# # AFE Stack Miller Ranch B501MH
+# afe.dailyCost(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=millerrancha501mh
+# )
+# afe.variance(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=millerrancha501mh
+# )
 
 # data = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionData.xlsx")
 
@@ -179,7 +207,7 @@ joynData = joyn.getDailyAllocatedProduction(
     workingDataDirectory=kocDatawarehouse,
     joynUsername=joynUsername,
     joynPassword=joynPassword,
-    daysToLookBack=2
+    daysToLookBack=7
 )
 
 print("Begin Exporting Master Joyn Data to KOC Datawarehouse...")
