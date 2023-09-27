@@ -398,7 +398,7 @@ This script gets all current users in JOYN
 
 """
 
-def getJoynUsers(joynUsername, joynPassword):
+def getJoynUsers(joynUsername, joynPassword, nameToFind):
     
     def getIdToken():
 
@@ -449,8 +449,16 @@ def getJoynUsers(joynUsername, joynPassword):
     # get response in json format and append to totalResults list
     resultsReadingType = response.json()
     
+    
+    ## gets correct user id
+    for name in resultsReadingType["Result"]: 
+        nameFind = name.get("xid") # Use get method; returns None if 'xid' key is not found
+        if nameFind: # This condition will be False if email is None
+            if nameToFind in name["xid"]:
+                id = name["id"]
+                break
 
-    return True
+    return id
 
 
 
