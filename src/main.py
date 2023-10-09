@@ -127,34 +127,134 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
+# AFE Stack Miller Ranch A501MH
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerrancha501mh
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerrancha501mh
+)
+
+# AFE Stack Miller Ranch B501MH
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerranchb501mh
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerranchb501mh
+)
+
+# AFE Stack Miller Ranch C301
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerranchc301
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerranchc301
+)
+
+# AFE Stack Miller Ranch C302MH
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerranchc302mh
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=millerranchc302mh
+)
+
+# AFE Stack Miller Ranch C302MH
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=wu105
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=wu105
+)
+
+# AFE Stack Miller Ranch C302MH
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=wu108
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=wu108
+)
+
+# AFE Stack Miller Ranch C302MH
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=kinga199cv1h
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=kinga199cv1h
+)
+
+# AFE Stack Miller Ranch C302MH
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=kinga199cv2h
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=kinga199cv2h
+)
+
+
+# Combine AFE files and place in data warehouse
+afe.combineAfeFiles(
+    workingDataDirectory=kocDatawarehouse,
+    listOfWells=listOfWells
+)
+
+# joynUsers = joyn.getJoynUsers(
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword,
+#     nameToFind="mtanner"
+# )
+
 
 data = combocurve.getLatestScenarioMonthly(
-    projectIdKey="650c602cf2393c7df4d127f7",
-    scenarioIdKey="650c602df2393c7df4d12a07",
+    projectIdKey="64ea70b54b1ab6c4a5b3a456",
+    scenarioIdKey="64ea85d4f546b704800e5e56",
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
 
-crestPdp = combocurve.ccScenarioToCrestFpPdp(
+crest = combocurve.ccScenarioToCrestFpSingleWell(
     comboCurveScenarioData=data,
-    nglYield=0,
+    nglYield=1,
     gasBtuFactor=1,
     gasShrinkFactor=0,
     oilPricePercent=1,
     gasPricePercent=1,
     nglPricePercent=.3,
+    oilVariableCost=1.7,
+    gasVariableCost=0.53,
+    nglVariableCost=0,
+    waterVariableCost=1,
+    state="texas"
 )
 
-# king.sendEmail(
-#     emailRecipient="gpatterson@kingoperating.com",
-#     emailRecipientName="Graham Patterson",
-#     emailSubject="Crest PDP Data For Perigeine - Detring View",
-#     attachment=crestPdp,
-#     emailMessage="Attached is the PDP Data for Perigeine - Detring View.",
-#     nameOfFile="crestPdpPerigeinePetroluem.xlsx"
+# crestPdp = combocurve.ccScenarioToCrestFpPdp(
+#     comboCurveScenarioData=data,
+#     nglYield=0,
+#     gasBtuFactor=1,
+#     gasShrinkFactor=0,
+#     oilPricePercent=1,
+#     gasPricePercent=1,
+#     nglPricePercent=1,
 # )
 
-crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpPerigeinePetroluemPdpOnly.xlsx", index=False)
+
+crest.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestSingleWellRockerRanchWolfcampA.xlsx", index=False)
 
 # # AFE Stack Miller Ranch B501MH
 # afe.dailyCost(
@@ -184,22 +284,22 @@ browing518HProductionMonthtlyData = enverus.getWellProductionData(
     wellApi14=browning5181H
 )
 
-# Allocate Wells From Greasebook
-allocatedProductionData = greasebook.allocateWells(
-    days=50,
-    workingDataDirectory=kocDatawarehouse,
-    greasebookApi=greasebookApi,
-    pullProd=False,
-    edgeCaseRollingAverage=7
-)
+# # Allocate Wells From Greasebook
+# allocatedProductionData = greasebook.allocateWells(
+#     days=50,
+#     workingDataDirectory=kocDatawarehouse,
+#     greasebookApi=greasebookApi,
+#     pullProd=False,
+#     edgeCaseRollingAverage=7
+# )
 
-# KOC Datawarehouse LIVE DUMP
-print("Begin Exporting Greasebook Allocated Production Data to KOC Datawarehouse...")
-allocatedProductionData.to_excel(
-    kocDatawarehouse + r"\production\comboCurveAllocatedProductionJoynUpload09102023.xlsx", index=False)
-allocatedProductionData.to_json(
-    kocDatawarehouse + r"\production\comboCurveAllocatedProductionJoynUpload09102023.json", orient="records")
-print("Finished Exporting Greasebook Allocated Production Data to KOC Datawarehouse!")
+# # KOC Datawarehouse LIVE DUMP
+# print("Begin Exporting Greasebook Allocated Production Data to KOC Datawarehouse...")
+# allocatedProductionData.to_excel(
+#     kocDatawarehouse + r"\production\comboCurveAllocatedProductionJoynUpload09102023.xlsx", index=False)
+# allocatedProductionData.to_json(
+#     kocDatawarehouse + r"\production\comboCurveAllocatedProductionJoynUpload09102023.json", orient="records")
+# print("Finished Exporting Greasebook Allocated Production Data to KOC Datawarehouse!")
 
 # JOYN STACK
 # DAILY ALLOCATED PRODUCTION
@@ -207,7 +307,7 @@ joynData = joyn.getDailyAllocatedProduction(
     workingDataDirectory=kocDatawarehouse,
     joynUsername=joynUsername,
     joynPassword=joynPassword,
-    daysToLookBack=7
+    daysToLookBack=2
 )
 
 print("Begin Exporting Master Joyn Data to KOC Datawarehouse...")

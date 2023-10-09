@@ -462,6 +462,17 @@ def getJoynUsers(joynUsername, joynPassword, nameToFind):
 
 
 
+class CreateJoynReading:
+    
+    def __init__(self, data):
+        self.data = data
+    
+    
+    x = 5
+
+
+
+
 """
         
 For this script to work, A and B MUST have the same columns and column names.
