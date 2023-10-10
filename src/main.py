@@ -127,92 +127,92 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
-# AFE Stack Miller Ranch A501MH
-afe.dailyCost(
-    workingDataDirectory=kocDatawarehouse,
-    name=millerrancha501mh
-)
-afe.variance(
-    workingDataDirectory=kocDatawarehouse,
-    name=millerrancha501mh
-)
+# # AFE Stack Miller Ranch A501MH
+# afe.dailyCost(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=millerrancha501mh
+# )
+# afe.variance(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=millerrancha501mh
+# )
 
-# AFE Stack Miller Ranch B501MH
-afe.dailyCost(
-    workingDataDirectory=kocDatawarehouse,
-    name=millerranchb501mh
-)
-afe.variance(
-    workingDataDirectory=kocDatawarehouse,
-    name=millerranchb501mh
-)
+# # AFE Stack Miller Ranch B501MH
+# afe.dailyCost(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=millerranchb501mh
+# )
+# afe.variance(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=millerranchb501mh
+# )
 
-# AFE Stack Miller Ranch C301
-afe.dailyCost(
-    workingDataDirectory=kocDatawarehouse,
-    name=millerranchc301
-)
-afe.variance(
-    workingDataDirectory=kocDatawarehouse,
-    name=millerranchc301
-)
+# # AFE Stack Miller Ranch C301
+# afe.dailyCost(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=millerranchc301
+# )
+# afe.variance(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=millerranchc301
+# )
 
-# AFE Stack Miller Ranch C302MH
-afe.dailyCost(
-    workingDataDirectory=kocDatawarehouse,
-    name=millerranchc302mh
-)
-afe.variance(
-    workingDataDirectory=kocDatawarehouse,
-    name=millerranchc302mh
-)
+# # AFE Stack Miller Ranch C302MH
+# afe.dailyCost(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=millerranchc302mh
+# )
+# afe.variance(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=millerranchc302mh
+# )
 
-# AFE Stack Miller Ranch C302MH
-afe.dailyCost(
-    workingDataDirectory=kocDatawarehouse,
-    name=wu105
-)
-afe.variance(
-    workingDataDirectory=kocDatawarehouse,
-    name=wu105
-)
+# # AFE Stack Miller Ranch C302MH
+# afe.dailyCost(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=wu105
+# )
+# afe.variance(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=wu105
+# )
 
-# AFE Stack Miller Ranch C302MH
-afe.dailyCost(
-    workingDataDirectory=kocDatawarehouse,
-    name=wu108
-)
-afe.variance(
-    workingDataDirectory=kocDatawarehouse,
-    name=wu108
-)
+# # AFE Stack Miller Ranch C302MH
+# afe.dailyCost(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=wu108
+# )
+# afe.variance(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=wu108
+# )
 
-# AFE Stack Miller Ranch C302MH
-afe.dailyCost(
-    workingDataDirectory=kocDatawarehouse,
-    name=kinga199cv1h
-)
-afe.variance(
-    workingDataDirectory=kocDatawarehouse,
-    name=kinga199cv1h
-)
+# # AFE Stack Miller Ranch C302MH
+# afe.dailyCost(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=kinga199cv1h
+# )
+# afe.variance(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=kinga199cv1h
+# )
 
-# AFE Stack Miller Ranch C302MH
-afe.dailyCost(
-    workingDataDirectory=kocDatawarehouse,
-    name=kinga199cv2h
-)
-afe.variance(
-    workingDataDirectory=kocDatawarehouse,
-    name=kinga199cv2h
-)
+# # AFE Stack Miller Ranch C302MH
+# afe.dailyCost(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=kinga199cv2h
+# )
+# afe.variance(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=kinga199cv2h
+# )
 
 
-# Combine AFE files and place in data warehouse
-afe.combineAfeFiles(
-    workingDataDirectory=kocDatawarehouse,
-    listOfWells=listOfWells
-)
+# # Combine AFE files and place in data warehouse
+# afe.combineAfeFiles(
+#     workingDataDirectory=kocDatawarehouse,
+#     listOfWells=listOfWells
+# )
 
 # joynUsers = joyn.getJoynUsers(
 #     joynUsername=joynUsername,
@@ -222,39 +222,39 @@ afe.combineAfeFiles(
 
 
 data = combocurve.getLatestScenarioMonthly(
-    projectIdKey="64ea70b54b1ab6c4a5b3a456",
-    scenarioIdKey="64ea85d4f546b704800e5e56",
+    projectIdKey="6523f03d01ae98697d8a3eb1",
+    scenarioIdKey="6523f220817865908b14bb79",
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
 
-crest = combocurve.ccScenarioToCrestFpSingleWell(
+# crest = combocurve.ccScenarioToCrestFpSingleWell(
+#     comboCurveScenarioData=data,
+#     nglYield=1,
+#     gasBtuFactor=1,
+#     gasShrinkFactor=0,
+#     oilPricePercent=.98,
+#     gasPricePercent=1,
+#     nglPricePercent=.3,
+#     oilVariableCost=0,
+#     gasVariableCost=0,
+#     nglVariableCost=0,
+#     waterVariableCost=0,
+#     state="texas"
+# )
+
+crestPdp = combocurve.ccScenarioToCrestFpPdp(
     comboCurveScenarioData=data,
     nglYield=1,
     gasBtuFactor=1,
     gasShrinkFactor=0,
-    oilPricePercent=1,
+    oilPricePercent=.98,
     gasPricePercent=1,
-    nglPricePercent=.3,
-    oilVariableCost=1.7,
-    gasVariableCost=0.53,
-    nglVariableCost=0,
-    waterVariableCost=1,
-    state="texas"
+    nglPricePercent=1,
 )
 
-# crestPdp = combocurve.ccScenarioToCrestFpPdp(
-#     comboCurveScenarioData=data,
-#     nglYield=0,
-#     gasBtuFactor=1,
-#     gasShrinkFactor=0,
-#     oilPricePercent=1,
-#     gasPricePercent=1,
-#     nglPricePercent=1,
-# )
 
-
-crest.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestSingleWellRockerRanchWolfcampA.xlsx", index=False)
+crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestSingleWellBuffalo681h.xlsx", index=False)
 
 # # AFE Stack Miller Ranch B501MH
 # afe.dailyCost(
