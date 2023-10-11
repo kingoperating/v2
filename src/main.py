@@ -249,12 +249,12 @@ crestPdp = combocurve.ccScenarioToCrestFpPdp(
     gasBtuFactor=1,
     gasShrinkFactor=0,
     oilPricePercent=.98,
-    gasPricePercent=1,
+    gasPricePercent=.65,
     nglPricePercent=1,
 )
 
 
-crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestSingleWellBuffalo681h.xlsx", index=False)
+crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestSingleWellBuffalo681hSingleWell.xlsx", index=False)
 
 # # AFE Stack Miller Ranch B501MH
 # afe.dailyCost(
