@@ -222,8 +222,8 @@ WORKING ZONE
 
 
 data = combocurve.getLatestScenarioMonthly(
-    projectIdKey="6523f03d01ae98697d8a3eb1",
-    scenarioIdKey="6523f220817865908b14bb79",
+    projectIdKey="612fc3d36880c20013a885df",
+    scenarioIdKey="64aca0abaa25aa001201b299",
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
@@ -248,13 +248,13 @@ crestPdp = combocurve.ccScenarioToCrestFpPdp(
     nglYield=1,
     gasBtuFactor=1,
     gasShrinkFactor=0,
-    oilPricePercent=.98,
-    gasPricePercent=.65,
-    nglPricePercent=1,
+    oilPricePercent=1,
+    gasPricePercent=1,
+    nglPricePercent=.3,
 )
 
 
-crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestSingleWellBuffalo681hSingleWell.xlsx", index=False)
+crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpMillerRanchB501mhP90.xlsx", index=False)
 
 # # AFE Stack Miller Ranch B501MH
 # afe.dailyCost(
