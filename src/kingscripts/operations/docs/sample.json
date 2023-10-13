@@ -1,0 +1,159 @@
+{
+    "LCustomEntity": {
+        "Readings": [{
+                "ID": 16196228,
+                "FinalizedBy": 1,
+                "IsFinalized": "false",
+                "ObjectTypeID": 3,
+                "CalculationTypeID": 637566,
+                "DataInputMethodID": 637533,
+                "ReadingEntityID": 13364,
+                "ObjectID": 464465,
+                "ModifiedBy": 27353,
+                "CreatedBy": 27353,
+                "ModifiedOn": "2022-09-13 23:14:58",
+                "CreatedOn": "2022-09-13 23:14:58",
+                "ReadingNumber": 85,
+                "ReadingID": 16196228,
+                "ReadingTime": "00:00:00",
+                "ReadingDate": "2022-09-01",
+                "Comments": null,
+                "AuthorityLevelID": 636795,
+                "IsDeleted": "False",
+                "CreatedTimestamp": "2022-09-13 23:36:45",
+                "ModifiedTimestamp": "2022-09-13 23:36:45"
+            }, {
+                "ID": 16196229,
+                "FinalizedBy": 1,
+                "IsFinalized": "false",
+                "ObjectTypeID": 3,
+                "CalculationTypeID": 637566,
+                "DataInputMethodID": 637533,
+                "ReadingEntityID": 13364,
+                "ObjectID": 464468,
+                "ModifiedBy": 27353,
+                "CreatedBy": 27353,
+                "ModifiedOn": "2022-09-13 23:20:52",
+                "CreatedOn": "2022-09-13 23:20:52",
+                "ReadingNumber": 28,
+                "ReadingID": 16196229,
+                "ReadingTime": "00:00:00",
+                "ReadingDate": "2022-09-01",
+                "Comments": null,
+                "AuthorityLevelID": 636795,
+                "IsDeleted": "False",
+                "CreatedTimestamp": "2022-09-13 23:36:45",
+                "ModifiedTimestamp": "2022-09-13 23:36:45"
+            }
+        ],
+        "custo": {
+            "dts": [{
+                    "ID": 1,
+                    "attId": 230864,
+                    "ReadingID": 16196228,
+                    "v": "9/1/2022 12:00:00 AM"
+                }, {
+                    "ID": 5,
+                    "attId": 230861,
+                    "ReadingID": 16196228,
+                    "v": "9/1/2022 12:00:00 AM"
+                }, {
+                    "ID": 9,
+                    "attId": 230864,
+                    "ReadingID": 16196229,
+                    "v": "9/1/2022 12:00:00 AM"
+                }, {
+                    "ID": 13,
+                    "attId": 230861,
+                    "ReadingID": 16196229,
+                    "v": "9/1/2022 12:00:00 AM"
+                }
+            ],
+            "strs": [{
+                    "ID": 2,
+                    "attId": 230862,
+                    "ReadingID": 16196228,
+                    "v": "1531313"
+                }, {
+                    "ID": 8,
+                    "attId": 230857,
+                    "ReadingID": 16196228,
+                    "v": null
+                }, {
+                    "ID": 10,
+                    "attId": 230862,
+                    "ReadingID": 16196229,
+                    "v": "1339213"
+                }, {
+                    "ID": 16,
+                    "attId": 230857,
+                    "ReadingID": 16196229,
+                    "v": null
+                }
+            ],
+            "decs": [],
+            "ints": [{
+                    "ID": 3,
+                    "attId": 230939,
+                    "ReadingID": 16196228,
+                    "v": null
+                }, {
+                    "ID": 4,
+                    "attId": 230863,
+                    "ReadingID": 16196228,
+                    "v": "637753"
+                }, {
+                    "ID": 6,
+                    "attId": 230860,
+                    "ReadingID": 16196228,
+                    "v": "637753"
+                }, {
+                    "ID": 7,
+                    "attId": 230858,
+                    "ReadingID": 16196228,
+                    "v": "637761"
+                }, {
+                    "ID": 11,
+                    "attId": 230939,
+                    "ReadingID": 16196229,
+                    "v": null
+                }, {
+                    "ID": 12,
+                    "attId": 230863,
+                    "ReadingID": 16196229,
+                    "v": "637753"
+                }, {
+                    "ID": 14,
+                    "attId": 230860,
+                    "ReadingID": 16196229,
+                    "v": "637753"
+                }, {
+                    "ID": 15,
+                    "attId": 230858,
+                    "ReadingID": 16196229,
+                    "v": "637761"
+                }
+            ],
+            "txts": [],
+            "bits": []
+        }
+    },
+    "LLACTMeterReading": null,
+    "LWellReading": null,
+    "LDualPhaseOilWaterTankReading": null,
+    "LSinglePhaseWaterTankReading": null,
+    "LTankRunTicket": null,
+    "LMeterLACTTicket": null,
+    "LEquipmentReading": null,
+    "LDigitalMeterGASReading": null,
+    "LDigitalMeterOilWaterReading": null,
+    "LSinglePhaseOilTankReading": null,
+    "LWellTestReading": null,
+    "LOdometerMeterReading": null,
+    "LOrficeHRCoefficientMeterReading": null,
+    "LOrficeMeterReading": null,
+    "LWaterTicket": null,
+    "UseXID": false,
+    "ColumnsToUpdate": null,
+    "ValidationFormula": null
+}
