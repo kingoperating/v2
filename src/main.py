@@ -127,6 +127,12 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
+
+king.getReadHowardProduction()
+
+x = 5
+
+
 # # AFE Stack Miller Ranch A501MH
 # afe.dailyCost(
 #     workingDataDirectory=kocDatawarehouse,
@@ -221,12 +227,12 @@ WORKING ZONE
 # )
 
 
-data = combocurve.getLatestScenarioMonthly(
-    projectIdKey="612fc3d36880c20013a885df",
-    scenarioIdKey="64aca0abaa25aa001201b299",
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey
-)
+# data = combocurve.getLatestScenarioMonthly(
+#     projectIdKey="612fc3d36880c20013a885df",
+#     scenarioIdKey="64aca0abaa25aa001201b299",
+#     serviceAccount=serviceAccount,
+#     comboCurveApi=comboCurveApiKey
+# )
 
 # crest = combocurve.ccScenarioToCrestFpSingleWell(
 #     comboCurveScenarioData=data,
@@ -243,18 +249,18 @@ data = combocurve.getLatestScenarioMonthly(
 #     state="texas"
 # )
 
-crestPdp = combocurve.ccScenarioToCrestFpPdp(
-    comboCurveScenarioData=data,
-    nglYield=1,
-    gasBtuFactor=1,
-    gasShrinkFactor=0,
-    oilPricePercent=1,
-    gasPricePercent=1,
-    nglPricePercent=.3,
-)
+# crestPdp = combocurve.ccScenarioToCrestFpPdp(
+#     comboCurveScenarioData=data,
+#     nglYield=1,
+#     gasBtuFactor=1,
+#     gasShrinkFactor=0,
+#     oilPricePercent=1,
+#     gasPricePercent=1,
+#     nglPricePercent=.3,
+# )
 
 
-crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpMillerRanchB501mhP90.xlsx", index=False)
+# crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpMillerRanchB501mhP90.xlsx", index=False)
 
 # # AFE Stack Miller Ranch B501MH
 # afe.dailyCost(
