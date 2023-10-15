@@ -258,7 +258,7 @@ Reading Howard County Excel file and storing it in pandas dataframe
 
 def getReadHowardProduction():
     
+    readData = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\hcef\readTest.xlsx")
     
-    
-    x = 5
+
     return True
