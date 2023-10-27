@@ -6,6 +6,7 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 import numpy as np
+import copy
 from kingscripts.operations.combocurve import *
 
 """
@@ -462,15 +463,52 @@ def getJoynUsers(joynUsername, joynPassword, nameToFind):
 
 
 
-class CreateJoynReading:
-    
-    def __init__(self, data):
-        self.data = data
-    
-    
-    x = 5
+"""
+        
+PUT Function - loads data from Read
+      
+"""
 
+def putReadData(rawProductionData):
+    
+    file = open(r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\v2\src\kingscripts\operations\docs\Read342H_SampleUpload.json")
 
+    dataTemplate = json.load(file)
+    
+    numberOfRows = len(rawProductionData)
+    readings = dataTemplate["LCustomEntity"]["Readings"]
+    
+    for i in range(0, numberOfRows):
+        
+        data = copy.deepcopy(dataTemplate)
+        temp = copy.deepcopy(data["LCustomEntity"])
+        readingsCopy = copy.deepcopy(temp["Readings"])
+        readingsCopy[0]["ReadingDate"] = rawProductionData["Day"][i]
+        custo = temp["custo"]
+        decs = custo["decs"]
+        firstDecs = decs[0]
+        firstDecs["v"] = rawProductionData[" Total Oil Produced"][i]
+        first = readingsCopy[0]
+        first["ID"] = 1234567
+    
+        readings.append(readingsCopy.copy())
+        readingsCopy = []
+    
+    print(type(data))
+    
+    
+    newData = data
+    
+    newData["LCustomEntity"]["Readings"].append(first)
+    newData["LCustomEntity"]["custo"]["decs"].append(firstDecs)
+    
+    first["CreatedOn"] = dt.datetime.today().strftime("%Y-%m-%dT%H:%M:%S")
+    first["ModifiedOn"] = dt.datetime.today().strftime("%Y-%m-%dT%H:%M:%S")
+    
+    
+    # data["LCustomEntity"]["Readings"].append(readings)
+    
+    return data
 
 
 """
