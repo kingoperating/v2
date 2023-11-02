@@ -258,7 +258,12 @@ Reading Howard County Excel file and storing it in pandas dataframe
 
 def getReadHowardProduction():
     
-    readData = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\hcef\readTest.xlsx")
+    readData = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\hcef\readTest.xlsx", header=2)
+    readData = readData.drop(readData.columns[3], axis=1)
+    readData = readData.drop(readData.columns[3], axis=1)
+    readData = readData.drop(readData.columns[4], axis=1)
+    readData = readData.drop(readData.columns[5], axis=1)
+    readData = readData.drop(readData.columns[5:], axis=1)
+    readData = readData.iloc[:7]
     
-
-    return True
+    return readData
