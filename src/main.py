@@ -7,8 +7,7 @@ Developer: Michael Tanner
 # KOC v3.3.0 Python Packages
 from kingscripts.operations import greasebook, combocurve, joyn
 from kingscripts.analytics import enverus, king, tech
-from kingscripts.afe import afe
-from kingscripts.finance import wenergy
+from kingscripts.finance import wenergy, afe
 
 #  Needed Python Packages
 from dotenv import load_dotenv
@@ -128,9 +127,13 @@ listOfWells = [
 WORKING ZONE
 '''
 
-king.getReadHowardProduction()
+# readData = king.getReadHowardProduction()
 
-x = 5
+# data = joyn.putReadData(rawProductionData=readData)
+
+
+
+# x = 5
 
 
 # # AFE Stack Miller Ranch A501MH
@@ -227,12 +230,12 @@ x = 5
 # )
 
 
-# data = combocurve.getLatestScenarioMonthly(
-#     projectIdKey="612fc3d36880c20013a885df",
-#     scenarioIdKey="64aca0abaa25aa001201b299",
-#     serviceAccount=serviceAccount,
-#     comboCurveApi=comboCurveApiKey
-# )
+data = combocurve.getLatestScenarioMonthly(
+    projectIdKey="6523f03d01ae98697d8a3eb1",
+    scenarioIdKey="6523f220817865908b14bb79",
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
 
 # crest = combocurve.ccScenarioToCrestFpSingleWell(
 #     comboCurveScenarioData=data,
@@ -249,18 +252,18 @@ x = 5
 #     state="texas"
 # )
 
-# crestPdp = combocurve.ccScenarioToCrestFpPdp(
-#     comboCurveScenarioData=data,
-#     nglYield=1,
-#     gasBtuFactor=1,
-#     gasShrinkFactor=0,
-#     oilPricePercent=1,
-#     gasPricePercent=1,
-#     nglPricePercent=.3,
-# )
+crestPdp = combocurve.ccScenarioToCrestFpPdp(
+    comboCurveScenarioData=data,
+    nglYield=1,
+    gasBtuFactor=1,
+    gasShrinkFactor=0,
+    oilPricePercent=1,
+    gasPricePercent=1,
+    nglPricePercent=.3,
+)
 
 
-# crestPdp.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpMillerRanchB501mhP90.xlsx", index=False)
+crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpBuffalo68.csv", index=False)
 
 # # AFE Stack Miller Ranch B501MH
 # afe.dailyCost(
@@ -290,22 +293,22 @@ browing518HProductionMonthtlyData = enverus.getWellProductionData(
     wellApi14=browning5181H
 )
 
-# # Allocate Wells From Greasebook
-# allocatedProductionData = greasebook.allocateWells(
-#     days=50,
-#     workingDataDirectory=kocDatawarehouse,
-#     greasebookApi=greasebookApi,
-#     pullProd=False,
-#     edgeCaseRollingAverage=7
-# )
+# Allocate Wells From Greasebook
+allocatedProductionData = greasebook.allocateWells(
+    days=300,
+    workingDataDirectory=kocDatawarehouse,
+    greasebookApi=greasebookApi,
+    pullProd=False,
+    edgeCaseRollingAverage=7
+)
 
-# # KOC Datawarehouse LIVE DUMP
-# print("Begin Exporting Greasebook Allocated Production Data to KOC Datawarehouse...")
-# allocatedProductionData.to_excel(
-#     kocDatawarehouse + r"\production\comboCurveAllocatedProductionJoynUpload09102023.xlsx", index=False)
-# allocatedProductionData.to_json(
-#     kocDatawarehouse + r"\production\comboCurveAllocatedProductionJoynUpload09102023.json", orient="records")
-# print("Finished Exporting Greasebook Allocated Production Data to KOC Datawarehouse!")
+# KOC Datawarehouse LIVE DUMP
+print("Begin Exporting Greasebook Allocated Production Data to KOC Datawarehouse...")
+allocatedProductionData.to_excel(
+    kocDatawarehouse + r"\production\comboCurveAllocatedProductionJan12023.xlsx", index=False)
+allocatedProductionData.to_json(
+    kocDatawarehouse + r"\production\comboCurveAllocatedProductionJan12023.json", orient="records")
+print("Finished Exporting Greasebook Allocated Production Data to KOC Datawarehouse!")
 
 # JOYN STACK
 # DAILY ALLOCATED PRODUCTION
