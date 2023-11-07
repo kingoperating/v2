@@ -1084,7 +1084,14 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
         gasSevPercentPrint = .075
         nglSevPercentPrint = .045
         adValoremPercentPrint = .025
-
+    
+    if state == "wyoming":
+        oilSevPercentPrint = .0606
+        gasSevPercentPrint = .0606
+        nglSevPercentPrint = .0606
+        adValoremPercentPrint = .07
+        
+        
     # Set variables lists needed for crestFP
     grossOilSalesVolumeList = comboCurveScenarioData["Gross Oil Sales Volume"].tolist()
     grossGasSalesVolumeList = comboCurveScenarioData["Gross Gas Sales Volume"].tolist()
