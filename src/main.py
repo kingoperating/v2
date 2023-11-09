@@ -77,6 +77,10 @@ todayDateString = dateToday.strftime("%Y-%m-%d")
 eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
 
 # Important Variables for scripts
+nglStream = 0
+noNglStream = 1
+texas = "texas"
+wyoming = "wyoming"
 browning5181H = "42033325890000"
 browningOperatorName = "BROWNING OIL"
 basin = "MIDLAND"
@@ -126,6 +130,29 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
+
+dateRange = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\dateRanges.xlsx")
+
+masterGaugeDataList = []
+masterGaugeData = pd.DataFrame()
+
+for i in range(len(dateRange)):
+    startDate = dateRange["Start Date"][i]
+    endDate = dateRange["End Date"][i]
+    gaugeData = greasebook.getTankGauges(
+        greasebookApi=greasebookApi,
+        startDate=startDate,
+        endDate=endDate
+    )
+    masterGaugeDataList.append(gaugeData)
+
+masterGaugeData = pd.concat([masterGaugeData] + masterGaugeDataList, ignore_index=True)
+masterGaugeData["Date"] = pd.to_datetime(masterGaugeData["Date"])
+masterGaugeDataSorted = masterGaugeData.sort_values(by=["Tank ID", "Date"], ascending=[True, False])
+masterGaugeData.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\masterGaugeData.xlsx", index=False)
+
+
+x= 5
 
 # readData = king.getReadHowardProduction()
 
@@ -231,25 +258,25 @@ WORKING ZONE
 
 
 data = combocurve.getLatestScenarioMonthly(
-    projectIdKey="6523f03d01ae98697d8a3eb1",
-    scenarioIdKey="6523f220817865908b14bb79",
+    projectIdKey="653fcf9ec230f38554b3f1c1",
+    scenarioIdKey="654aa33f0e5d106682c07438",
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
 
 # crest = combocurve.ccScenarioToCrestFpSingleWell(
 #     comboCurveScenarioData=data,
-#     nglYield=1,
+#     nglYield=nglStream,
 #     gasBtuFactor=1,
-#     gasShrinkFactor=0,
-#     oilPricePercent=.98,
+#     gasShrinkFactor=.372,
+#     oilPricePercent=.80,
 #     gasPricePercent=1,
 #     nglPricePercent=.3,
-#     oilVariableCost=0,
+#     oilVariableCost=2,
 #     gasVariableCost=0,
 #     nglVariableCost=0,
-#     waterVariableCost=0,
-#     state="texas"
+#     waterVariableCost=2,
+#     state=wyoming
 # )
 
 crestPdp = combocurve.ccScenarioToCrestFpPdp(
@@ -263,7 +290,7 @@ crestPdp = combocurve.ccScenarioToCrestFpPdp(
 )
 
 
-crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpBuffalo68.csv", index=False)
+crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpAugust2024Update.csv", index=False)
 
 # # AFE Stack Miller Ranch B501MH
 # afe.dailyCost(
