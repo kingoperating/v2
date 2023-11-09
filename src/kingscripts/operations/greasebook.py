@@ -1316,3 +1316,82 @@ def sendPumperEmail(pumperNotReportedList, workingDataDirectory):
 
     print("Completed Sending Pumper Not Reported List to " +
           str(counter[1]) + " people")
+
+
+def getTankGauges(greasebookApi):
+    
+    dateToday = dt.datetime.today()
+    dateSeptember1st = dt.datetime(2023, 9, 1)
+    dateSixtyAgo = dateSeptember1st - timedelta(days=34)
+    sepFirstYear = dateSeptember1st.strftime("%Y")
+    sepFirstMonth = dateSeptember1st.strftime("%m")
+    sepFirstDay = dateSeptember1st.strftime("%d")
+    sixtyAgoYear = dateSixtyAgo.strftime("%Y")
+    sixtyAgoMonth = dateSixtyAgo.strftime("%m")
+    sixtyAgoDay = dateSixtyAgo.strftime("%d")
+    
+    
+    url = ("https://integration.greasebook.com/api/v1/tanks/gauges?apiKey=" + greasebookApi + "&start=" + sixtyAgoYear + "-" + sixtyAgoMonth + "-" + sixtyAgoDay + "&end=" + sepFirstYear + "-" + sepFirstMonth + "-" + sepFirstDay)
+    
+    # url = (
+    #     "https://integration.greasebook.com/api/v1/batteries/daily-production?apiKey="
+    #     + greasebookApi
+    #     + productionInterval
+    #     + todayYear
+    #     + "-"
+    #     + todayMonth
+    #     + "-"
+    #     + todayDay
+    # )
+
+    # make the API call
+    response = requests.request(
+        "GET",
+        url,
+    )
+
+    responseCode = response.status_code  # sets response code to the current state
+
+    # parse as json string
+    results = response.json()
+    # setting to length of results
+    numEntries = len(results)
+
+    if responseCode == 200:
+        print("Sucessful Greasebook API Call")
+        print(str(numEntries) + " total number of rows")
+    else:
+        print("The Status Code: " + str(response.status_code))
+    
+    print("boobs")
+    
+    masterTankGauge = pd.DataFrame(columns=["Date", "Tank ID", "Tank Name", "Closing Gauge"])
+
+    for currentRow in range(0,numEntries):
+        
+        row = results[currentRow]  # get row i in results
+        keys = list(row.items())  # pull out the headers
+        
+        for idx, key in enumerate(keys):
+            if key[0] == "tankId":
+                tankId = row["tankId"]
+            elif key[0] == "tankName":
+                tankName = row["tankName"]
+            elif key[0] == "closingGauge":
+                closingGauge = row["closingGauge"]
+            elif key[0] == "dateTime":
+                dateTank = row["dateTime"]
+
+        # spliting date correctly
+        splitDate = re.split("T", dateTank)
+        splitDate2 = re.split("-", splitDate[0])
+        year = int(splitDate2[0])
+        month = int(splitDate2[1])
+        day = int(splitDate2[2])
+        datePretty = str(month) + "/" + str(day) + "/" + str(year)
+        
+        rowPrint = [datePretty, tankId, tankName, closingGauge]
+        masterTankGauge.loc[len(masterTankGauge)] = rowPrint
+    
+    
+    return masterTankGauge
