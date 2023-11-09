@@ -1318,7 +1318,7 @@ def sendPumperEmail(pumperNotReportedList, workingDataDirectory):
           str(counter[1]) + " people")
 
 
-def getTankGauges(greasebookApi):
+def getTankGauges(greasebookApi, startDate, endDate):
     
     dateToday = dt.datetime.today()
     dateSeptember1st = dt.datetime(2023, 9, 1)
@@ -1330,19 +1330,20 @@ def getTankGauges(greasebookApi):
     sixtyAgoMonth = dateSixtyAgo.strftime("%m")
     sixtyAgoDay = dateSixtyAgo.strftime("%d")
     
+    startDateString = startDate.strftime("%Y-%m-%d")
+    endDateString = endDate.strftime("%Y-%m-%d")
     
-    url = ("https://integration.greasebook.com/api/v1/tanks/gauges?apiKey=" + greasebookApi + "&start=" + sixtyAgoYear + "-" + sixtyAgoMonth + "-" + sixtyAgoDay + "&end=" + sepFirstYear + "-" + sepFirstMonth + "-" + sepFirstDay)
+    url = (
+        
+        "https://integration.greasebook.com/api/v1/tanks/gauges?apiKey=" 
+        + greasebookApi 
+        + "&start=" 
+        + startDateString 
+        + "&end="
+        + endDateString
+    )
     
-    # url = (
-    #     "https://integration.greasebook.com/api/v1/batteries/daily-production?apiKey="
-    #     + greasebookApi
-    #     + productionInterval
-    #     + todayYear
-    #     + "-"
-    #     + todayMonth
-    #     + "-"
-    #     + todayDay
-    # )
+
 
     # make the API call
     response = requests.request(
@@ -1362,8 +1363,6 @@ def getTankGauges(greasebookApi):
         print(str(numEntries) + " total number of rows")
     else:
         print("The Status Code: " + str(response.status_code))
-    
-    print("boobs")
     
     masterTankGauge = pd.DataFrame(columns=["Date", "Tank ID", "Tank Name", "Closing Gauge"])
 
@@ -1395,3 +1394,10 @@ def getTankGauges(greasebookApi):
     
     
     return masterTankGauge
+
+
+
+
+
+def getTicketInfo(greasebookApi):
+    x = 5
