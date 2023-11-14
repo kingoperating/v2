@@ -131,6 +131,17 @@ listOfWells = [
 WORKING ZONE
 '''
 
+# AFE Stack WU-105
+afe.dailyCost(
+    workingDataDirectory=kocDatawarehouse,
+    name=kinga199cv2h
+)
+afe.variance(
+    workingDataDirectory=kocDatawarehouse,
+    name=kinga199cv2h
+)
+
+
 dateRange = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\dateRanges.xlsx")
 
 masterGaugeDataList = []
@@ -203,7 +214,7 @@ x= 5
 #     name=millerranchc302mh
 # )
 
-# # AFE Stack Miller Ranch C302MH
+# # AFE Stack WU-105
 # afe.dailyCost(
 #     workingDataDirectory=kocDatawarehouse,
 #     name=wu105
