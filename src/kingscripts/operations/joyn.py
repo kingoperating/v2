@@ -387,8 +387,7 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
         currentRunTotalAssetProductionJoyn.loc[lastIndex + j] = row
 
     # merge currentRunTotalAssetProductionJoyn into masterJoynData
-    masterJoynData = mergeBIntoA(
-        masterJoynData, currentRunTotalAssetProductionJoyn)
+    masterJoynData = mergeBIntoA(masterJoynData, currentRunTotalAssetProductionJoyn)
 
     return masterJoynData
 
@@ -469,42 +468,194 @@ PUT Function - loads data from Read
       
 """
 
-def putReadData(rawProductionData):
+def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword):
+    
+    userId = int(userId)
+    
+    def getIdToken():
+
+        load_dotenv()
+
+        login = joynUsername
+        password = joynPassword
+
+        # User Token API
+        url = "https://api.joyn.ai/common/user/token"
+        # Payload for API - use JOYN crdentials
+        payload = {
+            "uname": str(login),
+            "pwd": str(password)
+        }
+        # Headers for API - make sure to use content type of json
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        # dump payload into json format for correct format
+        payloadJson = json.dumps(payload)
+        response = requests.request(
+            "POST", url, data=payloadJson, headers=headers)  # make request
+        if response.status_code == 200:  # 200 = success
+            print("Successful JOYN Authentication")
+        else:
+            print(response.status_code)
+
+        results = response.json()  # get response in json format
+        idToken = results["IdToken"]  # get idToken from response
+
+        return idToken
     
     file = open(r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\v2\src\kingscripts\operations\docs\Read342H_SampleUpload.json")
 
-    dataTemplate = json.load(file)
+    data = json.load(file)
     
     numberOfRows = len(rawProductionData)
-    readings = dataTemplate["LCustomEntity"]["Readings"]
-    
+    j = 0
+    r = 1
+ 
     for i in range(0, numberOfRows):
+        day = rawProductionData["Day"][i]
+        readingDate = dt.datetime.strptime(day, "%m/%d/%Y")
+        readingDateClean = readingDate.strftime("%Y-%m-%d")
+        id = 1000 + i ## creates unique id for each row that ties everything together
+        j = j + 1
+        ## Readings
+        readings = copy.deepcopy(data["LCustomEntity"]["Readings"][0])
+        readings["ID"] = id
+        readings["ReadingID"] = id
+        readings["ReadingDate"] = readingDateClean
+        readings["ModifiedBy"] = userId
+        readings["CreatedBy"] = userId
+        readings["ObjectID"] = objectId
+        readings["ReadingNumber"] = r
+        readings["CreatedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["ModifiedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        j = j + 1
+        r = r + 1 ## updates reading number
         
-        data = copy.deepcopy(dataTemplate)
-        temp = copy.deepcopy(data["LCustomEntity"])
-        readingsCopy = copy.deepcopy(temp["Readings"])
-        readingsCopy[0]["ReadingDate"] = rawProductionData["Day"][i]
-        custo = temp["custo"]
-        decs = custo["decs"]
-        firstDecs = decs[0]
-        firstDecs["v"] = rawProductionData[" Total Oil Produced"][i]
-        first = readingsCopy[0]
-        first["ID"] = 1234567
-    
-        readings.append(readingsCopy.copy())
-        readingsCopy = []
+        ##WRITE STATEMENT - ADD TO JSON
+        if j < 3:
+            data["LCustomEntity"]["Readings"][0].update(readings)
+        else:
+            data["LCustomEntity"]["Readings"].append(readings)
+        
+        ## Decs - Oil volume
+        newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
+        newDecs["attId"] = 263005
+        newDecs["v"] = str(rawProductionData[" Total Oil Produced"][i])
+        newDecs["ID"] = j
+        newDecs["ReadingID"] = id
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        if j < 4:
+            data["LCustomEntity"]["custo"]["decs"][0].update(newDecs)
+        else:
+            data["LCustomEntity"]["custo"]["decs"].append(newDecs)
+        
+        ## INTS - Product and Disposition
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263002
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760011)
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        if j < 5:
+            data["LCustomEntity"]["custo"]["ints"][0].update(newInts)
+        else:
+            data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        ## Decs - MCF volume
+        newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
+        newDecs["attId"] = 263005
+        newDecs["v"] = str(rawProductionData[" Total MCF"][i])
+        newDecs["ID"] = j
+        newDecs["ReadingID"] = id
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["decs"].append(newDecs)
+        
+        ## INTS - Product and Disposition
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263002
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760010) ## gas
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        ## Decs = Oil Sold Volume
+        newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
+        newDecs["attId"] = 263005
+        newDecs["v"] = str(rawProductionData[" Total Oil Sold"][i])
+        newDecs["ID"] = j
+        newDecs["ReadingID"] = id
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["decs"].append(newDecs)
+        
+        ## INTS - Product and Disposition
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263003
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760098) ## oil sold
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        ## Decs = Water Volume
+        newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
+        newDecs["attId"] = 263005
+        newDecs["v"] = str(rawProductionData[" Total Water"][i])
+        newDecs["ID"] = j
+        newDecs["ReadingID"] = id
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["decs"].append(newDecs)
+        
+        ## INTS - Product and Disposition
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263002
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760012) ## water production
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
     
     print(type(data))
     
+    dataPayload = json.dumps(data)
+    print(type(dataPayload))
     
-    newData = data
+    idToken = getIdToken()  # get idToken from authJoyn function
     
-    newData["LCustomEntity"]["Readings"].append(first)
-    newData["LCustomEntity"]["custo"]["decs"].append(firstDecs)
+    ## POST request to JOYN API
+    url = "https://api-fdg.joyn.ai/mobile/api/rpc/ReadingDataUpload/bulkuploadv2"
     
-    first["CreatedOn"] = dt.datetime.today().strftime("%Y-%m-%dT%H:%M:%S")
-    first["ModifiedOn"] = dt.datetime.today().strftime("%Y-%m-%dT%H:%M:%S")
+    request = requests.request(
+        "POST",
+        url,
+        json=data,
+        headers={"Authorization": idToken, "Content-Type": "application/json"}
+    )
     
+    response = request.json()
+    responseCode = request.status_code
+    print(response["message"])
+    
+    with open(r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\v2\src\kingscripts\operations\docs\Read342H_SampleUploadModifed" + str(objectId) + ".json", "w") as outfile:
+        json.dump(data, outfile)
     
     # data["LCustomEntity"]["Readings"].append(readings)
     
