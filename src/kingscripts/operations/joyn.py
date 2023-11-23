@@ -461,6 +461,77 @@ def getJoynUsers(joynUsername, joynPassword, nameToFind):
     return id
 
 
+"""
+
+GET Well ObjectId in order to upload production data
+
+
+"""
+
+def getWellObjectId(joynUsername, joynPassword, nameOfWell):
+    
+    objectId = 0
+    
+    def getIdToken():
+            
+            load_dotenv()
+    
+            login = joynUsername
+            password = joynPassword
+    
+            # User Token API
+            url = "https://api.joyn.ai/common/user/token"
+            # Payload for API - use JOYN crdentials
+            payload = {
+                "uname": str(login),
+                "pwd": str(password)
+            }
+            # Headers for API - make sure to use content type of json
+            headers = {
+                "Content-Type": "application/json"
+            }
+    
+            # dump payload into json format for correct format
+            payloadJson = json.dumps(payload)
+            response = requests.request(
+                "POST", url, data=payloadJson, headers=headers)
+            
+            if response.status_code == 200:  # 200 = success
+                print("Successful JOYN Authentication")
+            else:
+                print(response.status_code)
+            
+            results = response.json()  # get response in json format
+            idToken = results["IdToken"]
+            
+            return idToken
+    
+    idToken = getIdToken()  # get idToken from authJoyn function
+    
+    url = "https://api-fdg.joyn.ai/admin/api/Well?page=1&start=0&limit=1000"
+    
+    request = requests.request(
+        "GET",
+        url,
+        headers={"Authorization": idToken}
+    )
+    
+    response = request.json()
+    responseCode = request.status_code
+    print(responseCode)
+    
+    ## find specific "n" well - given nameOfWell
+    
+    for i in range(0, len(response["Result"])):
+        wellName = response["Result"][i]["n"]
+        if nameOfWell in wellName:
+            objectId = response["Result"][i]["id"]
+            break
+    
+    print(objectId)
+    
+    return objectId
+
 
 """
         
