@@ -29,6 +29,9 @@ SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER. CURREN
 # Working Directories
 workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
 kocDatawarehouse = os.getenv("KOC_DATAWAREHOUSE")
+masterWellAllocation = kocDatawarehouse + r"\master\masterWellAllocation.xlsx"
+masterWellAllocationData = pd.read_excel(masterWellAllocation)
+
 
 # getting API keys
 enverusApiKey = os.getenv('ENVERUS_API')
@@ -131,47 +134,60 @@ listOfWells = [
 WORKING ZONE
 '''
 
-# AFE Stack WU-105
-afe.dailyCost(
-    workingDataDirectory=kocDatawarehouse,
-    name=kinga199cv2h
+# # AFE Stack WU-105
+# afe.dailyCost(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=millerranchb501mh
+# )
+# afe.variance(
+#     workingDataDirectory=kocDatawarehouse,
+#     name=millerranchb501mh
+# )
+
+
+# dateRange = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\dateRanges.xlsx")
+
+# masterGaugeDataList = []
+# masterGaugeData = pd.DataFrame()
+
+# for i in range(len(dateRange)):
+#     startDate = dateRange["Start Date"][i]
+#     endDate = dateRange["End Date"][i]
+#     gaugeData = greasebook.getTankGauges(
+#         greasebookApi=greasebookApi,
+#         startDate=startDate,
+#         endDate=endDate
+#     )
+#     masterGaugeDataList.append(gaugeData)
+
+# masterGaugeData = pd.concat([masterGaugeData] + masterGaugeDataList, ignore_index=True)
+# masterGaugeData["Date"] = pd.to_datetime(masterGaugeData["Date"])
+# masterGaugeDataSorted = masterGaugeData.sort_values(by=["Tank ID", "Date"], ascending=[True, False])
+# masterGaugeData.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\masterGaugeData.xlsx", index=False)
+
+read332hid = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="test_well"
 )
-afe.variance(
-    workingDataDirectory=kocDatawarehouse,
-    name=kinga199cv2h
+
+id = joyn.getJoynUsers(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameToFind="mtanner"
 )
 
+readData = king.getReadHowardProduction()
 
-dateRange = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\dateRanges.xlsx")
+data = joyn.putReadData(
+        userId=id,
+        rawProductionData=readData,
+        objectId=read332hid,
+        joynUsername=joynUsername,
+        joynPassword=joynPassword
+)
 
-masterGaugeDataList = []
-masterGaugeData = pd.DataFrame()
-
-for i in range(len(dateRange)):
-    startDate = dateRange["Start Date"][i]
-    endDate = dateRange["End Date"][i]
-    gaugeData = greasebook.getTankGauges(
-        greasebookApi=greasebookApi,
-        startDate=startDate,
-        endDate=endDate
-    )
-    masterGaugeDataList.append(gaugeData)
-
-masterGaugeData = pd.concat([masterGaugeData] + masterGaugeDataList, ignore_index=True)
-masterGaugeData["Date"] = pd.to_datetime(masterGaugeData["Date"])
-masterGaugeDataSorted = masterGaugeData.sort_values(by=["Tank ID", "Date"], ascending=[True, False])
-masterGaugeData.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\masterGaugeData.xlsx", index=False)
-
-
-x= 5
-
-# readData = king.getReadHowardProduction()
-
-# data = joyn.putReadData(rawProductionData=readData)
-
-
-
-# x = 5
+x = 5
 
 
 # # AFE Stack Miller Ranch A501MH
@@ -269,8 +285,8 @@ x= 5
 
 
 data = combocurve.getLatestScenarioMonthly(
-    projectIdKey="653fcf9ec230f38554b3f1c1",
-    scenarioIdKey="654aa33f0e5d106682c07438",
+    projectIdKey="6523f03d01ae98697d8a3eb1",
+    scenarioIdKey="6523f220817865908b14bb79",
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
@@ -301,7 +317,7 @@ crestPdp = combocurve.ccScenarioToCrestFpPdp(
 )
 
 
-crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpAugust2024Update.csv", index=False)
+crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpBuffalo68.csv", index=False)
 
 # # AFE Stack Miller Ranch B501MH
 # afe.dailyCost(
@@ -320,10 +336,10 @@ crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\p
 
 # data.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionDataDateTime.xlsx", index=False)
 
-# joyn.getJoynUsers(
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword
-# )
+joyn.getJoynUsers(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
 
 # Gets Browning 518H Production Data
 browing518HProductionMonthtlyData = enverus.getWellProductionData(
