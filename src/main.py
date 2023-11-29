@@ -286,38 +286,38 @@ x = 5
 
 data = combocurve.getLatestScenarioMonthly(
     projectIdKey="6523f03d01ae98697d8a3eb1",
-    scenarioIdKey="6523f220817865908b14bb79",
+    scenarioIdKey="65367294805fcdadf04401e3",
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
 
-# crest = combocurve.ccScenarioToCrestFpSingleWell(
+crest = combocurve.ccScenarioToCrestFpSingleWell(
+    comboCurveScenarioData=data,
+    nglYield=nglStream,
+    gasBtuFactor=1,
+    gasShrinkFactor=.372,
+    oilPricePercent=.98,
+    gasPricePercent=.65,
+    nglPricePercent=.35,
+    oilVariableCost=0,
+    gasVariableCost=0,
+    nglVariableCost=0,
+    waterVariableCost=.1,
+    state=texas
+)
+
+# crestPdp = combocurve.ccScenarioToCrestFpPdp(
 #     comboCurveScenarioData=data,
 #     nglYield=nglStream,
 #     gasBtuFactor=1,
-#     gasShrinkFactor=.372,
-#     oilPricePercent=.80,
+#     gasShrinkFactor=0,
+#     oilPricePercent=1,
 #     gasPricePercent=1,
 #     nglPricePercent=.3,
-#     oilVariableCost=2,
-#     gasVariableCost=0,
-#     nglVariableCost=0,
-#     waterVariableCost=2,
-#     state=wyoming
 # )
 
-crestPdp = combocurve.ccScenarioToCrestFpPdp(
-    comboCurveScenarioData=data,
-    nglYield=1,
-    gasBtuFactor=1,
-    gasShrinkFactor=0,
-    oilPricePercent=1,
-    gasPricePercent=1,
-    nglPricePercent=.3,
-)
 
-
-crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpBuffalo68.csv", index=False)
+crest.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestGeonSingleWellP50UpdatedLoeNoCutOff.csv", index=False)
 
 # # AFE Stack Miller Ranch B501MH
 # afe.dailyCost(
