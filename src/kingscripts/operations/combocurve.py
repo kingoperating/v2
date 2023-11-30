@@ -1612,4 +1612,8 @@ def ccScenarioToCrestFpPdp(
     # insert month list into dataframe
     crestFpOutput.insert(0, "Month", monthList)
 
-    return crestFpOutput  # return dataframe
+    crestFpOutputShifted = crestFpOutput.shift(2, axis=0)
+    crestFpOutputShifted = crestFpOutputShifted.shift(1, axis=1)
+    crestFpOutputShifted = crestFpOutputShifted.fillna("0")
+    
+    return crestFpOutputShifted  # return dataframe
