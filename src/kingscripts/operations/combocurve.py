@@ -32,25 +32,43 @@ def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
 
     masterJoynData["Date"] = pd.to_datetime(masterJoynData["Date"])
 
-    masterJoynData = masterJoynData.astype({
-        "Date": "string", "API": "string"})
+    masterJoynData = masterJoynData.astype({"Date": "string", "API": "string"})
 
     # helps when uploading to ComboCurve to check for length of data (can only send 20,000 data points at a time)
-    print("Length of Total Asset Production: " +
-          str(len(masterJoynData)))
+    print("Length of Total Asset Production: " + str(len(masterJoynData)))
 
     # drops columns that are not needed
     masterJoynData = masterJoynData.drop(
-        ["Well Accounting Name", "Client", "Oil Forecast", "Gas Forecast", "Water Forecast", "State"], axis=1)
+        [
+            "Well Accounting Name",
+            "Client",
+            "Oil Forecast",
+            "Gas Forecast",
+            "Water Forecast",
+            "State",
+        ],
+        axis=1,
+    )
 
     masterJoynDataLastRows = masterJoynData.tail(5000)
 
     # renames columns to match ComboCurve
     masterJoynDataLastRows.rename(
-        columns={"Oil Volume": "oil", "Date": "date", "Gas Volume": "gas", "Water Volume": "water", "API": "chosenID", "Data Source": "dataSource", "Oil Sold Volume": "customNumber0"}, inplace=True)
+        columns={
+            "Oil Volume": "oil",
+            "Date": "date",
+            "Gas Volume": "gas",
+            "Water Volume": "water",
+            "API": "chosenID",
+            "Data Source": "dataSource",
+            "Oil Sold Volume": "customNumber0",
+        },
+        inplace=True,
+    )
 
     totalAssetProductionJson = masterJoynDataLastRows.to_json(
-        orient="records")  # converts to internal json format
+        orient="records"
+    )  # converts to internal json format
     # loads json into format that can be sent to ComboCurve
     cleanTotalAssetProduction = json.loads(totalAssetProductionJson)
 
@@ -62,23 +80,27 @@ def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
     auth_headers = combocurve_auth.get_auth_headers()  # authenticates ComboCurve
 
     # put request to ComboCurve
-    response = requests.put(url, headers=auth_headers,
-                            json=cleanTotalAssetProduction)
+    response = requests.put(url, headers=auth_headers, json=cleanTotalAssetProduction)
 
     responseCode = response.status_code  # sets response code to the current state
     responseText = response.text  # sets response text to the current state
 
     print("Response Code: " + str(responseCode))  # prints response code
 
-    if "successCount" in responseText:  # checks if the response text contains successCount
+    if (
+        "successCount" in responseText
+    ):  # checks if the response text contains successCount
         # finds the index of successCount
         # prints the successCount and the number of data points sent
         indexOfSuccessFail = responseText.index("successCount")
         text = responseText[indexOfSuccessFail:]
         print(text)
 
-    print("Finished PUT " + str(len(cleanTotalAssetProduction)) +
-          " Rows of New Production Data to ComboCurve from JOYN")
+    print(
+        "Finished PUT "
+        + str(len(cleanTotalAssetProduction))
+        + " Rows of New Production Data to ComboCurve from JOYN"
+    )
 
     return text
 
@@ -90,13 +112,23 @@ def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
 """
 
 
-def putGreasebookWellProductionData(workingDataDirectory, pullFromAllocation, serviceAccount, comboCurveApi, greasebookApi, daysToPull):
+def putGreasebookWellProductionData(
+    workingDataDirectory,
+    pullFromAllocation,
+    serviceAccount,
+    comboCurveApi,
+    greasebookApi,
+    daysToPull,
+):
     load_dotenv()  # load enviroment variables
 
     pullFromAllocation = pullFromAllocation
 
-    print("Start upsert of daily well production data for the last " +
-          str(daysToPull) + " days")
+    print(
+        "Start upsert of daily well production data for the last "
+        + str(daysToPull)
+        + " days"
+    )
 
     # connect to service account
     service_account = serviceAccount
@@ -109,8 +141,7 @@ def putGreasebookWellProductionData(workingDataDirectory, pullFromAllocation, se
 
     # adding the Master Allocation List for Analysis
     workingDir = workingDataDirectory
-    masterAllocationListFileName = workingDir + \
-        r"\master\masterWellAllocation.xlsx"
+    masterAllocationListFileName = workingDir + r"\master\masterWellAllocation.xlsx"
 
     masterAllocationList = pd.read_excel(masterAllocationListFileName)
 
@@ -181,11 +212,10 @@ def putGreasebookWellProductionData(workingDataDirectory, pullFromAllocation, se
             "Gas Volume",
             "Water Volume",
             "Oil Sold Volume",
-            "Data Source"
+            "Data Source",
         ]
 
-        totalComboCurveAllocatedProduction = pd.DataFrame(
-            columns=headerCombocurve)
+        totalComboCurveAllocatedProduction = pd.DataFrame(columns=headerCombocurve)
 
         # set some intial variables for core logic
         welopOilVolume = 0
@@ -201,14 +231,11 @@ def putGreasebookWellProductionData(workingDataDirectory, pullFromAllocation, se
 
         # Gets list of Battery id's that are clean for printing
         listOfBatteryIds = masterAllocationList["Id in Greasebooks"].tolist()
-        wellNameAccountingList = masterAllocationList["Name in Accounting"].tolist(
-        )
+        wellNameAccountingList = masterAllocationList["Name in Accounting"].tolist()
         accountingIdList = masterAllocationList["Subaccount"].tolist()
         apiList = masterAllocationList["API"].tolist()
-        allocationOilList = masterAllocationList["Allocation Ratio Oil"].tolist(
-        )
-        allocationGasList = masterAllocationList["Allocation Ratio Gas"].tolist(
-        )
+        allocationOilList = masterAllocationList["Allocation Ratio Oil"].tolist()
+        allocationGasList = masterAllocationList["Allocation Ratio Gas"].tolist()
 
         apiHelpList = []
 
@@ -293,8 +320,9 @@ def putGreasebookWellProductionData(workingDataDirectory, pullFromAllocation, se
             wellAccountingName = []
 
             # gets all the indexs that match the battery id (sometimes 1, sometimes more)
-            batteryIndexId = [m for m, x in enumerate(
-                listOfBatteryIds) if x == batteryId]
+            batteryIndexId = [
+                m for m, x in enumerate(listOfBatteryIds) if x == batteryId
+            ]
             if batteryIndexId == []:
                 continue
             # if only 1 index - then just get the subaccount id and allocation ratio
@@ -307,12 +335,9 @@ def putGreasebookWellProductionData(workingDataDirectory, pullFromAllocation, se
                 # gets allocation for each subaccount
                 for t in range(len(batteryIndexId)):
                     subAccountId.append(accountingIdList[batteryIndexId[t]])
-                    allocationRatioOil.append(
-                        allocationOilList[batteryIndexId[t]])
-                    allocationRatioGas.append(
-                        allocationGasList[batteryIndexId[t]])
-                    wellAccountingName.append(
-                        wellNameAccountingList[batteryIndexId[t]])
+                    allocationRatioOil.append(allocationOilList[batteryIndexId[t]])
+                    allocationRatioGas.append(allocationGasList[batteryIndexId[t]])
+                    wellAccountingName.append(wellNameAccountingList[batteryIndexId[t]])
             # setting the proper date format
             dateString = str(month) + "/" + str(day) + "/" + str(year)
             dateStringComboCurve = datetime.strptime(dateString, "%m/%d/%Y")
@@ -355,40 +380,69 @@ def putGreasebookWellProductionData(workingDataDirectory, pullFromAllocation, se
             # CORE LOGIC FOR WELLOP
             if len(batteryIndexId) == 1:
                 if batteryId != 23012:
-                    newRowComboCurve = [dateStringComboCurve, clientName, apiHelpList[batteryIndexId[0]], wellAccountingName, oilVolumeClean,
-                                        gasVolumeClean, waterVolumeClean, oilSalesDataClean, "di"]
+                    newRowComboCurve = [
+                        dateStringComboCurve,
+                        clientName,
+                        apiHelpList[batteryIndexId[0]],
+                        wellAccountingName,
+                        oilVolumeClean,
+                        gasVolumeClean,
+                        waterVolumeClean,
+                        oilSalesDataClean,
+                        "di",
+                    ]
 
-                    totalComboCurveAllocatedProduction.loc[startingIndex +
-                                                           kComboCurve] = newRowComboCurve  # sets new row to combo curve
+                    totalComboCurveAllocatedProduction.loc[
+                        startingIndex + kComboCurve
+                    ] = newRowComboCurve  # sets new row to combo curve
                     kComboCurve = kComboCurve + 1  # counter for combo curve
 
                 if batteryId == 23012:
                     adamsRanchOilVolume = adamsRanchOilVolume + oilVolumeClean
                     adamsRanchGasVolume = adamsRanchGasVolume + gasVolumeClean
                     adamsRanchWaterVolume = adamsRanchWaterVolume + waterVolumeClean
-                    adamsRanchOilSalesVolume = adamsRanchOilSalesVolume + oilSalesDataClean
+                    adamsRanchOilSalesVolume = (
+                        adamsRanchOilSalesVolume + oilSalesDataClean
+                    )
                     adamsRanchCounter = adamsRanchCounter + 1
 
             elif len(batteryIndexId) > 1:
                 for j in range(len(batteryIndexId)):
-                    wellOilVolume = oilVolumeClean * allocationRatioOil[j]/100
-                    wellGasVolume = gasVolumeClean * allocationRatioGas[j]/100
-                    wellWaterVolume = waterVolumeClean * \
-                        allocationRatioOil[j]/100
-                    wellOilSalesVolume = oilSalesDataClean * \
-                        allocationRatioOil[j]/100
+                    wellOilVolume = oilVolumeClean * allocationRatioOil[j] / 100
+                    wellGasVolume = gasVolumeClean * allocationRatioGas[j] / 100
+                    wellWaterVolume = waterVolumeClean * allocationRatioOil[j] / 100
+                    wellOilSalesVolume = oilSalesDataClean * allocationRatioOil[j] / 100
 
                     if batteryId != 25381 and batteryId != 25382:
-                        newRow = [dateStringComboCurve, clientName, apiHelpList[batteryIndexId[j]], wellAccountingName[j], wellOilVolume,
-                                  wellGasVolume, wellWaterVolume, wellOilSalesVolume, "di"]
+                        newRow = [
+                            dateStringComboCurve,
+                            clientName,
+                            apiHelpList[batteryIndexId[j]],
+                            wellAccountingName[j],
+                            wellOilVolume,
+                            wellGasVolume,
+                            wellWaterVolume,
+                            wellOilSalesVolume,
+                            "di",
+                        ]
                         junk = 0
 
                     else:
-                        newRow = [dateStringComboCurve, clientName, "0" + apiHelpList[batteryIndexId[j]], wellAccountingName[j], wellOilVolume,
-                                  wellGasVolume, wellWaterVolume, wellOilSalesVolume, "di"]
+                        newRow = [
+                            dateStringComboCurve,
+                            clientName,
+                            "0" + apiHelpList[batteryIndexId[j]],
+                            wellAccountingName[j],
+                            wellOilVolume,
+                            wellGasVolume,
+                            wellWaterVolume,
+                            wellOilSalesVolume,
+                            "di",
+                        ]
 
-                    totalComboCurveAllocatedProduction.loc[startingIndex +
-                                                           kComboCurve] = newRow
+                    totalComboCurveAllocatedProduction.loc[
+                        startingIndex + kComboCurve
+                    ] = newRow
                     kComboCurve = kComboCurve + 1
 
                 if batteryId == 25381 or batteryId == 25382:
@@ -401,34 +455,54 @@ def putGreasebookWellProductionData(workingDataDirectory, pullFromAllocation, se
             lastDate = dateString
     else:
         totalComboCurveAllocatedProduction = pd.read_csv(
-            r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\comboCurveAllocatedProduction.csv")
-        totalComboCurveAllocatedProduction = totalComboCurveAllocatedProduction.astype({
-            "API": "string"})
+            r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\data\comboCurveAllocatedProduction.csv"
+        )
+        totalComboCurveAllocatedProduction = totalComboCurveAllocatedProduction.astype(
+            {"API": "string"}
+        )
 
     # converts API to int (removing decimals) and then back to string for JSON
-    totalComboCurveAllocatedProduction = totalComboCurveAllocatedProduction.astype({
-        "Date": "string"})
+    totalComboCurveAllocatedProduction = totalComboCurveAllocatedProduction.astype(
+        {"Date": "string"}
+    )
 
     # helps when uploading to ComboCurve to check for length of data (can only send 20,000 data points at a time)
-    print("Length of Total Asset Production: " +
-          str(len(totalComboCurveAllocatedProduction)))
+    print(
+        "Length of Total Asset Production: "
+        + str(len(totalComboCurveAllocatedProduction))
+    )
 
     # drops columns that are not needed
     totalComboCurveAllocatedProduction = totalComboCurveAllocatedProduction.drop(
-        ["Well Accounting Name", "Client"], axis=1)
+        ["Well Accounting Name", "Client"], axis=1
+    )
 
-    totalComboCurveAllocatedProduction = totalComboCurveAllocatedProduction.iloc[0:19999]
+    totalComboCurveAllocatedProduction = totalComboCurveAllocatedProduction.iloc[
+        0:19999
+    ]
 
     # renames columns to match ComboCurve
     totalComboCurveAllocatedProduction.rename(
-        columns={"Oil Volume": "oil", "Date": "date", "Gas Volume": "gas", "Water Volume": "water", "API": "chosenID", "Data Source": "dataSource", "Oil Sold Volume": "customNumber0"}, inplace=True)
+        columns={
+            "Oil Volume": "oil",
+            "Date": "date",
+            "Gas Volume": "gas",
+            "Water Volume": "water",
+            "API": "chosenID",
+            "Data Source": "dataSource",
+            "Oil Sold Volume": "customNumber0",
+        },
+        inplace=True,
+    )
 
     # exports to json for storage
     totalComboCurveAllocatedProduction.to_json(
-        r".\kingoperating\data\totalAssetsProduction.json", orient="records")
+        r".\kingoperating\data\totalAssetsProduction.json", orient="records"
+    )
 
     totalAssetProductionJson = totalComboCurveAllocatedProduction.to_json(
-        orient="records")  # converts to internal json format
+        orient="records"
+    )  # converts to internal json format
     # loads json into format that can be sent to ComboCurve
     cleanTotalAssetProduction = json.loads(totalAssetProductionJson)
 
@@ -440,15 +514,16 @@ def putGreasebookWellProductionData(workingDataDirectory, pullFromAllocation, se
     auth_headers = combocurve_auth.get_auth_headers()  # authenticates ComboCurve
 
     # put request to ComboCurve
-    response = requests.put(url, headers=auth_headers,
-                            json=cleanTotalAssetProduction)
+    response = requests.put(url, headers=auth_headers, json=cleanTotalAssetProduction)
 
     responseCode = response.status_code  # sets response code to the current state
     responseText = response.text  # sets response text to the current state
 
     print("Response Code: " + str(responseCode))  # prints response code
 
-    if "successCount" in responseText:  # checks if the response text contains successCount
+    if (
+        "successCount" in responseText
+    ):  # checks if the response text contains successCount
         # finds the index of successCount
         # prints the successCount and the number of data points sent
         indexOfSuccessFail = responseText.index("successCount")
@@ -463,24 +538,25 @@ Get the latest scenerio from a given ComboCurve project and return a pandas data
 """
 
 
-def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
+def getLatestScenarioOneLiner(
+    workingDataDirectory, projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi
+):
     # FUNCTIONS
     # GET request to get Well ID to API14
     def getWellApi(wellIdComboCurve):
         authComboCurveHeaders = combocurve_auth.get_auth_headers()
         url = "https://api.combocurve.com/v1/wells/" + wellIdComboCurve
-        responseApi = requests.request(
-            "GET", url, headers=authComboCurveHeaders)
+        responseApi = requests.request("GET", url, headers=authComboCurveHeaders)
         jsonStr = responseApi.text
         dataObjBetter = json.loads(jsonStr)
         return dataObjBetter["chosenID"]
 
-      # Get the next page URL from the response headers for pagination
+    # Get the next page URL from the response headers for pagination
     def getNextPageUrlComboCurve(response_headers: dict) -> str:
-        urlHeader = response_headers.get('Link', "")
-        matchComboCurve = re.findall("<([^<>]+)>;rel=\"([^\"]+)\"", urlHeader)
+        urlHeader = response_headers.get("Link", "")
+        matchComboCurve = re.findall('<([^<>]+)>;rel="([^"]+)"', urlHeader)
         for linkComboCurve, rel in matchComboCurve:
-            if rel == 'next':
+            if rel == "next":
                 return linkComboCurve
         return None
 
@@ -496,8 +572,7 @@ def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey,
     load_dotenv()
 
     workingDir = workingDataDirectory
-    masterAllocationListFileName = workingDir + \
-        r"\master\masterWellAllocation.xlsx"
+    masterAllocationListFileName = workingDir + r"\master\masterWellAllocation.xlsx"
 
     masterAllocationList = pd.read_excel(masterAllocationListFileName)
 
@@ -555,8 +630,7 @@ def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey,
     hasNextLink = True
 
     while hasNextLink:
-        response = requests.request(
-            "GET", urltwo, headers=authComboCurveHeaders)
+        response = requests.request("GET", urltwo, headers=authComboCurveHeaders)
         urltwo = getNextPageUrlComboCurve(response.headers)
         processNextPageUrlComboCurve(response.json())
         hasNextLink = urltwo is not None
@@ -576,7 +650,7 @@ def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey,
         "API",
         "Abandonment Date",
         "Gross Oil Well Head Volume",
-        "Gross Gas Well Head Volume"
+        "Gross Gas Well Head Volume",
     ]
 
     comboCurveHeaders = [
@@ -586,7 +660,7 @@ def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey,
         "Depreciation",
         "Drip Condensate Differentials - 1",
         "Drip Condensate Differentials - 2",
-        "Drip Condensate Gathering Expense"
+        "Drip Condensate Gathering Expense",
     ]
 
     eurData = pd.DataFrame(columns=headers)
@@ -596,8 +670,13 @@ def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey,
         wellId = wellIdList[i]
 
         if wellId not in wellIdScenariosList:
-            printRow = {"API": "0", "Well Name": "0", "Abandonment Date": "0",
-                        "Gross Oil Well Head Volume": "0", "Gross Gas Well Head Volume": "0"}
+            printRow = {
+                "API": "0",
+                "Well Name": "0",
+                "Abandonment Date": "0",
+                "Gross Oil Well Head Volume": "0",
+                "Gross Gas Well Head Volume": "0",
+            }
         else:
             wellIdIndex = wellIdScenariosList.index(wellId)
             apiNumber = apiList[wellIdIndex]
@@ -605,10 +684,14 @@ def getLatestScenarioOneLiner(workingDataDirectory, projectIdKey, scenarioIdKey,
             grossOilWellHeadVolume = row["grossOilWellHeadVolume"]
             grossGasWellHeadVolume = row["grossGasWellHeadVolume"]
 
-            printRow = {"API": apiNumber, "Abandonment Date": abandonmentDate,
-                        "Gross Oil Well Head Volume": grossOilWellHeadVolume, "Gross Gas Well Head Volume": grossGasWellHeadVolume}
+            printRow = {
+                "API": apiNumber,
+                "Abandonment Date": abandonmentDate,
+                "Gross Oil Well Head Volume": grossOilWellHeadVolume,
+                "Gross Gas Well Head Volume": grossGasWellHeadVolume,
+            }
 
-        eurData.loc[len(eurData)+1] = printRow
+        eurData.loc[len(eurData) + 1] = printRow
 
     return eurData
 
@@ -633,15 +716,16 @@ def putGreasebookWellComments(cleanJson, serviceAccount, comboCurveApi):
     auth_headers = combocurve_auth.get_auth_headers()  # authenticates ComboCurve
 
     # put request to ComboCurve
-    response = requests.put(url, headers=auth_headers,
-                            json=cleanJson)
+    response = requests.put(url, headers=auth_headers, json=cleanJson)
 
     responseCode = response.status_code  # sets response code to the current state
     responseText = response.text  # sets response text to the current state
 
     print("Response Code: " + str(responseCode))  # prints response code
 
-    if "successCount" in responseText:  # checks if the response text contains successCount
+    if (
+        "successCount" in responseText
+    ):  # checks if the response text contains successCount
         # finds the index of successCount
         # prints the successCount and the number of data points sent
         indexOfSuccessFail = responseText.index("successCount")
@@ -658,7 +742,6 @@ This function gest the daily forecast volumes from a given ComboCurve project an
 
 
 def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCurveApi):
-
     # FUNCTIONS
 
     # get daily date list
@@ -684,10 +767,10 @@ def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCur
 
     # Get the next page URL from the response headers for pagination
     def getNextPageUrlComboCurve(response_headers: dict) -> str:
-        urlHeader = response_headers.get('Link', "")
-        matchComboCurve = re.findall("<([^<>]+)>;rel=\"([^\"]+)\"", urlHeader)
+        urlHeader = response_headers.get("Link", "")
+        matchComboCurve = re.findall('<([^<>]+)>;rel="([^"]+)"', urlHeader)
         for linkComboCurve, rel in matchComboCurve:
-            if rel == 'next':
+            if rel == "next":
                 return linkComboCurve
         return None
 
@@ -704,8 +787,7 @@ def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCur
     def getWellApi(wellIdComboCurve):
         authComboCurveHeaders = combocurve_auth.get_auth_headers()
         url = "https://api.combocurve.com/v1/wells/" + wellIdComboCurve
-        responseApi = requests.request(
-            "GET", url, headers=authComboCurveHeaders)
+        responseApi = requests.request("GET", url, headers=authComboCurveHeaders)
         jsonStr = responseApi.text
         dataObjBetter = json.loads(jsonStr)
         return dataObjBetter["chosenID"]
@@ -748,8 +830,7 @@ def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCur
 
     # loops through all the pages of the API call
     while hasNextLink:
-        response = requests.request(
-            "GET", url, headers=authComboCurveHeaders)
+        response = requests.request("GET", url, headers=authComboCurveHeaders)
         url = getNextPageUrlComboCurve(response.headers)
         processNextPageUrlComboCurve(response.json())
         hasNextLink = url is not None
@@ -779,10 +860,17 @@ def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCur
                 seriesStartDateClean = splitDateFunction(seriesStartDate)
                 seriesEndDateClean = splitDateFunction(seriesEndDate)
                 dailyDateList = getDailyDateList(
-                    seriesStartDateClean, seriesEndDateClean)
+                    seriesStartDateClean, seriesEndDateClean
+                )
                 # creating dataframe to temp hold phase data
                 df = pd.DataFrame(
-                    {"Date": dailyDateList, "API": apiListBest[i], "Volume": seriesVolumes, "Phase": phaseName})
+                    {
+                        "Date": dailyDateList,
+                        "API": apiListBest[i],
+                        "Volume": seriesVolumes,
+                        "Phase": phaseName,
+                    }
+                )
 
                 # add to master dataframe
                 masterForecastData = pd.concat([masterForecastData, df])
@@ -791,31 +879,33 @@ def getDailyForecastVolume(projectIdKey, forecastIdKey, serviceAccount, comboCur
 
     return masterForecastData
 
+
 """
 
 This function gets the rolled up scenerio data for a given project and scenerio id
 
 """
 
-def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi):
-    
+
+def getLatestScenarioMonthly(
+    projectIdKey, scenarioIdKey, serviceAccount, comboCurveApi
+):
     # FUNCTIONS
     # GET request to get Well ID to API14
     def getWellApi(wellIdComboCurve):
         authComboCurveHeaders = combocurve_auth.get_auth_headers()
         url = "https://api.combocurve.com/v1/wells/" + wellIdComboCurve
-        responseApi = requests.request(
-            "GET", url, headers=authComboCurveHeaders)
+        responseApi = requests.request("GET", url, headers=authComboCurveHeaders)
         jsonStr = responseApi.text
         dataObjBetter = json.loads(jsonStr)
         return dataObjBetter["chosenID"]
 
-      # Get the next page URL from the response headers for pagination
+    # Get the next page URL from the response headers for pagination
     def getNextPageUrlComboCurve(response_headers: dict) -> str:
-        urlHeader = response_headers.get('Link', "")
-        matchComboCurve = re.findall("<([^<>]+)>;rel=\"([^\"]+)\"", urlHeader)
+        urlHeader = response_headers.get("Link", "")
+        matchComboCurve = re.findall('<([^<>]+)>;rel="([^"]+)"', urlHeader)
         for linkComboCurve, rel in matchComboCurve:
-            if rel == 'next':
+            if rel == "next":
                 return linkComboCurve
         return None
 
@@ -826,7 +916,7 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
             output = results["output"]
             wellIdList.append(wellId)
             resultsList.append(output)
-    
+
     def processNextPageUrlComboCurveResults(response_json):
         results = response_json["results"]
         resultsList.extend(results)
@@ -860,7 +950,7 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
     response = requests.request(
         "GET", url, headers=authComboCurveHeaders
     )  # GET request to pull economic ID for next query
-    
+
     jsonStr = response.text  # convert to JSON string
     dataObjBetter = json.loads(jsonStr)  # pass to data object - allows for parsing
     row = dataObjBetter[0]  # sets row equal to first string set (aka ID)
@@ -882,7 +972,8 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
     )
 
     response = requests.request(
-        "POST", urlone, headers=auth_headers)  # runs POST request
+        "POST", urlone, headers=auth_headers
+    )  # runs POST request
 
     # same as above chunk, parses JSON string and pull outs econRunID to be passed in next GET request
     jsonStr = response.text
@@ -906,23 +997,22 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
         + econRunId
         + "?take=200"
     )
-    
+
     resultsList = []
     wellIdList = []
-    
+
     # boolean to check if there is a next page for pagination
     hasNextLink = True
-    
+
     while hasNextLink:
-        response = requests.request(
-            "GET", urltwo, headers=authComboCurveHeaders)
+        response = requests.request("GET", urltwo, headers=authComboCurveHeaders)
         urltwo = getNextPageUrlComboCurve(response.headers)
         processNextPageUrlComboCurveResults(response.json())
         hasNextLink = urltwo is not None
 
     numEntries = len(resultsList)
     print(numEntries)
-    
+
     # lists for each of the columns I need rolled up
     grossOilSalesVolume = []
     grossGasSalesVolume = []
@@ -1007,14 +1097,30 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
                 totalGrossWaterWellHeadVolume = totalGrossWaterWellHeadVolume + float(
                     output["grossWaterWellHeadVolume"]
                 )
-                totalGrossFixedExpense = totalGrossFixedExpense + float(output["totalFixedExpense"])
-                totalNetOilSalesVolume = totalNetOilSalesVolume + float(output["netOilSalesVolume"])
-                totalNetGasSalesVolume = totalNetGasSalesVolume + float(output["netGasSalesVolume"])
-                totalNetNglSalesVolume = totalNetNglSalesVolume + float(output["netNglSalesVolume"])
-                totalGrossVariableExpense = totalGrossVariableExpense + float(output["totalVariableExpense"])
-                totalOilVariableExpense = totalOilVariableExpense + float(output["totalOilVariableExpense"])
-                totalGasVariableExpense = totalGasVariableExpense + float(output["totalGasVariableExpense"])
-                totalNglVariableExpense = totalNglVariableExpense + float(output["totalNglVariableExpense"])
+                totalGrossFixedExpense = totalGrossFixedExpense + float(
+                    output["totalFixedExpense"]
+                )
+                totalNetOilSalesVolume = totalNetOilSalesVolume + float(
+                    output["netOilSalesVolume"]
+                )
+                totalNetGasSalesVolume = totalNetGasSalesVolume + float(
+                    output["netGasSalesVolume"]
+                )
+                totalNetNglSalesVolume = totalNetNglSalesVolume + float(
+                    output["netNglSalesVolume"]
+                )
+                totalGrossVariableExpense = totalGrossVariableExpense + float(
+                    output["totalVariableExpense"]
+                )
+                totalOilVariableExpense = totalOilVariableExpense + float(
+                    output["totalOilVariableExpense"]
+                )
+                totalGasVariableExpense = totalGasVariableExpense + float(
+                    output["totalGasVariableExpense"]
+                )
+                totalNglVariableExpense = totalNglVariableExpense + float(
+                    output["totalNglVariableExpense"]
+                )
                 adValoremTax = adValoremTax + float(output["adValoremTax"])
                 oilSeveranceTax = oilSeveranceTax + float(output["oilSeveranceTax"])
                 gasSeveranceTax = gasSeveranceTax + float(output["gasSeveranceTax"])
@@ -1022,7 +1128,9 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
                 oilRev = oilRev + float(output["oilRevenue"])
                 gasRev = gasRev + float(output["gasRevenue"])
                 nglRev = nglRev + float(output["nglRevenue"])
-                totalWaterDisposalExpense = totalWaterDisposalExpense + float(output["waterDisposal"])
+                totalWaterDisposalExpense = totalWaterDisposalExpense + float(
+                    output["waterDisposal"]
+                )
                 totalNetRevenue = totalNetRevenue + float(output["totalRevenue"])
                 netIncome = netIncome + float(output["netIncome"])
                 totalTaxSum = (
@@ -1041,7 +1149,7 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
             grossNglSalesVolume.append(totalGrossNglSalesVolume)
             grossWaterWellHeadVolume.append(totalGrossWaterWellHeadVolume)
             totalGrossFixedExpenseTable.append(totalGrossFixedExpense)
-            totalNetRevenueTable.append(totalNetRevenue)            
+            totalNetRevenueTable.append(totalNetRevenue)
             oilRevenueTable.append(oilRev)
             gasRevenueTable.append(gasRev)
             nglRevenueTable.append(nglRev)
@@ -1059,16 +1167,71 @@ def getLatestScenarioMonthly(projectIdKey, scenarioIdKey, serviceAccount, comboC
             gasSeveranceTaxTable.append(gasSeveranceTax)
             nglSeveranceTaxTable.append(nglSeveranceTax)
             waterDisposalExpenseTable.append(totalWaterDisposalExpense)
-            
-        
-    combinedLists = list(zip(dateTable, grossOilSalesVolume, grossGasSalesVolume, grossNglSalesVolume, grossWaterWellHeadVolume, totalGrossFixedExpenseTable, netOilSalesVolume, netGasSalesVolume, netNglSalesVolume, oilRevenueTable, gasRevenueTable, nglRevenueTable, totalNetRevenueTable, netIncomeTable, totalTaxTable, totalGrossVariableExpenseTable, totalOilVariableExpenseTable, totalGasVariableExpenseTable, totalNglVariableExpenseTable, adValoremTaxTable, oilSeveranceTaxTable, gasSeveranceTaxTable, nglSeveranceTaxTable, waterDisposalExpenseTable))
-    
-    scenerioDataTable = pd.DataFrame(combinedLists, columns=["Date", "Gross Oil Sales Volume", "Gross Gas Sales Volume", "Gross NGL Sales Volume", "Gross Water Well Head Volume", "Total Gross Fixed Expense", "Net Oil Sales Volume", "Net Gas Sales Volume", "Net NGL Sales Volume", "Oil Revenue", "Gas Revenue", "NGL Revenue", "Total Net Revenue", "Net Income", "Total Tax", "Total Gross Variable Expense", "Total Oil Variable Expense", "Total Gas Variable Expense", "Total NGL Variable Expense", "Ad Valorem Tax", "Oil Severance Tax", "Gas Severance Tax", "NGL Severance Tax", "Water Disposal Expense"])
-    
+
+    combinedLists = list(
+        zip(
+            dateTable,
+            grossOilSalesVolume,
+            grossGasSalesVolume,
+            grossNglSalesVolume,
+            grossWaterWellHeadVolume,
+            totalGrossFixedExpenseTable,
+            netOilSalesVolume,
+            netGasSalesVolume,
+            netNglSalesVolume,
+            oilRevenueTable,
+            gasRevenueTable,
+            nglRevenueTable,
+            totalNetRevenueTable,
+            netIncomeTable,
+            totalTaxTable,
+            totalGrossVariableExpenseTable,
+            totalOilVariableExpenseTable,
+            totalGasVariableExpenseTable,
+            totalNglVariableExpenseTable,
+            adValoremTaxTable,
+            oilSeveranceTaxTable,
+            gasSeveranceTaxTable,
+            nglSeveranceTaxTable,
+            waterDisposalExpenseTable,
+        )
+    )
+
+    scenerioDataTable = pd.DataFrame(
+        combinedLists,
+        columns=[
+            "Date",
+            "Gross Oil Sales Volume",
+            "Gross Gas Sales Volume",
+            "Gross NGL Sales Volume",
+            "Gross Water Well Head Volume",
+            "Total Gross Fixed Expense",
+            "Net Oil Sales Volume",
+            "Net Gas Sales Volume",
+            "Net NGL Sales Volume",
+            "Oil Revenue",
+            "Gas Revenue",
+            "NGL Revenue",
+            "Total Net Revenue",
+            "Net Income",
+            "Total Tax",
+            "Total Gross Variable Expense",
+            "Total Oil Variable Expense",
+            "Total Gas Variable Expense",
+            "Total NGL Variable Expense",
+            "Ad Valorem Tax",
+            "Oil Severance Tax",
+            "Gas Severance Tax",
+            "NGL Severance Tax",
+            "Water Disposal Expense",
+        ],
+    )
+
     scenerioDataTable["Date"] = pd.to_datetime(scenerioDataTable["Date"])
     scenerioDataTable = scenerioDataTable.sort_values(by="Date")
 
     return scenerioDataTable
+
 
 """
 
@@ -1076,30 +1239,47 @@ This function converts a ComboCurve getLatestScenarioMonthly single well economi
 
 """
 
-def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor, gasShrinkFactor, oilPricePercent, gasPricePercent, nglPricePercent, oilVariableCost, gasVariableCost, nglVariableCost, waterVariableCost, state):
-    
+
+def ccScenarioToCrestFpSingleWell(
+    comboCurveScenarioData,
+    nglYield,
+    gasBtuFactor,
+    gasShrinkFactor,
+    oilPricePercent,
+    gasPricePercent,
+    nglPricePercent,
+    oilVariableCost,
+    gasVariableCost,
+    nglVariableCost,
+    waterVariableCost,
+    state,
+    capex,
+):
     ## SET STATE SPECIFIC VARIABLES
     if state == "texas":
-        oilSevPercentPrint = .046
-        gasSevPercentPrint = .075
-        nglSevPercentPrint = .045
-        adValoremPercentPrint = .025
-    
+        oilSevPercentPrint = 0.046
+        gasSevPercentPrint = 0.075
+        nglSevPercentPrint = 0.045
+        adValoremPercentPrint = 0.025
+
     if state == "wyoming":
-        oilSevPercentPrint = .0606
-        gasSevPercentPrint = .0606
-        nglSevPercentPrint = .0606
-        adValoremPercentPrint = .07
-        
-        
+        oilSevPercentPrint = 0.0606
+        gasSevPercentPrint = 0.0606
+        nglSevPercentPrint = 0.0606
+        adValoremPercentPrint = 0.07
+
     # Set variables lists needed for crestFP
     grossOilSalesVolumeList = comboCurveScenarioData["Gross Oil Sales Volume"].tolist()
     grossGasSalesVolumeList = comboCurveScenarioData["Gross Gas Sales Volume"].tolist()
     grossNglSalesVolumeList = comboCurveScenarioData["Gross NGL Sales Volume"].tolist()
-    grossWaterWellHeadVolumeList = comboCurveScenarioData["Gross Water Well Head Volume"].tolist()
-    totalGrossFixedExpenseTableList = comboCurveScenarioData["Total Gross Fixed Expense"].tolist()
-    
-    #setting correct columns needed for crestFP
+    grossWaterWellHeadVolumeList = comboCurveScenarioData[
+        "Gross Water Well Head Volume"
+    ].tolist()
+    totalGrossFixedExpenseTableList = comboCurveScenarioData[
+        "Total Gross Fixed Expense"
+    ].tolist()
+
+    # setting correct columns needed for crestFP
     columns = [
         "Gross DC&E",
         "Gross Oil (MBO)",
@@ -1126,13 +1306,20 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
         "NGL Variable LOE",
         "Water Variable LOE",
     ]
-    
+
     # setting correct datarframe size for crestFP
-    crestFpOutput = pd.DataFrame(index=range(0, len(comboCurveScenarioData)), columns=columns)
-    
+    crestFpOutput = pd.DataFrame(
+        index=range(0, len(comboCurveScenarioData)), columns=columns
+    )
+
     ## LOOP THROUGH EACH ROW AND SET VARIABLES
-    for i in range(0,len(comboCurveScenarioData)):
-        capex = 0
+    for i in range(0, len(comboCurveScenarioData)):
+        ## sets CAPEX correctly
+        if i == 0:
+            capex = capex
+        else:
+            capex = 0
+
         grossOilSalesVolume = grossOilSalesVolumeList[i]
         grossGasSalesVolume = grossGasSalesVolumeList[i]
         grossNglSalesVolume = grossNglSalesVolumeList[i]
@@ -1152,29 +1339,89 @@ def ccScenarioToCrestFpSingleWell(comboCurveScenarioData, nglYield, gasBtuFactor
         gasVariableLoe = gasVariableCost
         nglVariableLoe = nglVariableCost
         waterVariableLoe = waterVariableCost
-        
+
         # skips rows that have no production
-        if grossOilSalesVolume == 0 and grossGasSalesVolume == 0 and grossNglSalesVolume == 0:
+        if (
+            grossOilSalesVolume == 0
+            and grossGasSalesVolume == 0
+            and grossNglSalesVolume == 0
+        ):
             continue
-        else: # print the row
-            row = [capex, grossOilSalesVolume, grossGasSalesVolume, grossNglSalesVolume, nglYieldPrint, gasShrinkPrint, gasBtuFactorPrint, grossWaterWellHeadVolume, oilPricePercentPrint, oilDeduct, oilSevPercentPrint, gasPricePercentPrint, gasDeduct, gasSevPercentPrint, nglPricePercentPrint, nglDeduct, nglSevPercentPrint, adValoremPercentPrint, grossFixedCost, grossOtherCapital, oilVariableLoe, gasVariableLoe, nglVariableLoe, waterVariableLoe]
-            
+        else:  # print the row
+            row = [
+                capex,
+                grossOilSalesVolume,
+                grossGasSalesVolume,
+                grossNglSalesVolume,
+                nglYieldPrint,
+                gasShrinkPrint,
+                gasBtuFactorPrint,
+                grossWaterWellHeadVolume,
+                oilPricePercentPrint,
+                oilDeduct,
+                oilSevPercentPrint,
+                gasPricePercentPrint,
+                gasDeduct,
+                gasSevPercentPrint,
+                nglPricePercentPrint,
+                nglDeduct,
+                nglSevPercentPrint,
+                adValoremPercentPrint,
+                grossFixedCost,
+                grossOtherCapital,
+                oilVariableLoe,
+                gasVariableLoe,
+                nglVariableLoe,
+                waterVariableLoe,
+            ]
+
             crestFpOutput.loc[i] = row
-    
+
     # drop all rows that are empty
-    crestFpOutput.dropna(
-        axis=0, how="all", inplace=True
-    )
-    
-    #set empty list for storing month list
+    crestFpOutput.dropna(axis=0, how="all", inplace=True)
+
+    # set empty list for storing month list
     monthList = []
     # create month list for printing
     for i in range(0, len(crestFpOutput)):
-        monthList.append("Month " + str(i+1))
+        monthList.append("Month " + str(i + 1))
     # insert month list into dataframe
     crestFpOutput.insert(0, "Month", monthList)
+
+    newHeaders = [
+        "Name",
+        "CapexIn",
+        "GrossOilIn",
+        "GrossGasIn",
+        "GrossNGLIn",
+        "NGLYieldIn",
+        "GasShrinkIn",
+        "GasBTUIn",
+        "GrossWaterIn",
+        "OilPricePercentIn",
+        "OilDeductIn",
+        "OilSeveranceIn",
+        "GasPricePercentIn",
+        "GasPriceDeductIn",
+        "GasSeveranceIn",
+        "NGLPricePercentIn",
+        "NGLDeductIn",
+        "NGLSeveranceIn",
+        "AdValoremIn",
+        "GrossFixedCostsIn",
+        "GrossOtherCapitalIn",
+        "OilVariableIn",
+        "GasVariableIn",
+        "NGLVariableIn",
+        "WaterVariableIn",
+    ]
+
+    crestFpOutputShifted = crestFpOutput.shift(2, axis=0)
+    crestFpOutputShifted = crestFpOutputShifted.shift(1, axis=1)
+    crestFpOutputShifted = crestFpOutputShifted.fillna("0")
     
-    return crestFpOutput # return dataframe
+    return crestFpOutputShifted  # return dataframe
+
 
 """
 
@@ -1182,27 +1429,47 @@ This function converts a ComboCurve getLatestScenarioMonthly PDP dataframe into 
 
 """
 
-def ccScenarioToCrestFpPdp(comboCurveScenarioData, nglYield, gasBtuFactor, gasShrinkFactor, oilPricePercent, gasPricePercent, nglPricePercent):
-    
-     # Set variables lists needed for crestFP
+
+def ccScenarioToCrestFpPdp(
+    comboCurveScenarioData,
+    nglYield,
+    gasBtuFactor,
+    gasShrinkFactor,
+    oilPricePercent,
+    gasPricePercent,
+    nglPricePercent,
+):
+    # Set variables lists needed for crestFP
     netOilSalesVolumeList = comboCurveScenarioData["Net Oil Sales Volume"].tolist()
     netGasSalesVolumeList = comboCurveScenarioData["Net Gas Sales Volume"].tolist()
     netNglSalesVolumeList = comboCurveScenarioData["Net NGL Sales Volume"].tolist()
-    grossWaterWellHeadVolumeList = comboCurveScenarioData["Gross Water Well Head Volume"].tolist()
+    grossWaterWellHeadVolumeList = comboCurveScenarioData[
+        "Gross Water Well Head Volume"
+    ].tolist()
     oilRevenueTableList = comboCurveScenarioData["Oil Revenue"].tolist()
     gasRevenueTableList = comboCurveScenarioData["Gas Revenue"].tolist()
     nglRevenueTableList = comboCurveScenarioData["NGL Revenue"].tolist()
-    totalGrossFixedExpenseTableList = comboCurveScenarioData["Total Gross Fixed Expense"].tolist()
-    totalOilVariableExpenseTableList = comboCurveScenarioData["Total Oil Variable Expense"].tolist()
-    totalGasVariableExpenseTableList = comboCurveScenarioData["Total Gas Variable Expense"].tolist()
-    totalNglVariableExpenseTableList = comboCurveScenarioData["Total NGL Variable Expense"].tolist()
+    totalGrossFixedExpenseTableList = comboCurveScenarioData[
+        "Total Gross Fixed Expense"
+    ].tolist()
+    totalOilVariableExpenseTableList = comboCurveScenarioData[
+        "Total Oil Variable Expense"
+    ].tolist()
+    totalGasVariableExpenseTableList = comboCurveScenarioData[
+        "Total Gas Variable Expense"
+    ].tolist()
+    totalNglVariableExpenseTableList = comboCurveScenarioData[
+        "Total NGL Variable Expense"
+    ].tolist()
     totalAdValoremTaxTableList = comboCurveScenarioData["Ad Valorem Tax"].tolist()
     totalOilSeveranceTaxTableList = comboCurveScenarioData["Oil Severance Tax"].tolist()
     totalGasSeveranceTaxTableList = comboCurveScenarioData["Gas Severance Tax"].tolist()
     totalNglSeveranceTaxTableList = comboCurveScenarioData["NGL Severance Tax"].tolist()
-    totalWaterDisposalExpenseTableList = comboCurveScenarioData["Water Disposal Expense"].tolist()
-    
-    #setting correct columns needed for crestFP
+    totalWaterDisposalExpenseTableList = comboCurveScenarioData[
+        "Water Disposal Expense"
+    ].tolist()
+
+    # setting correct columns needed for crestFP
     columns = [
         "Net Abandon",
         "Net Oil (MBO)",
@@ -1229,12 +1496,14 @@ def ccScenarioToCrestFpPdp(comboCurveScenarioData, nglYield, gasBtuFactor, gasSh
         "NGL Variable LOE",
         "Water Variable LOE",
     ]
-    
+
     # setting correct datarframe size for crestFP
-    crestFpOutput = pd.DataFrame(index=range(0, len(comboCurveScenarioData)), columns=columns)
-    
+    crestFpOutput = pd.DataFrame(
+        index=range(0, len(comboCurveScenarioData)), columns=columns
+    )
+
     ## LOOP THROUGH EACH ROW AND SET VARIABLES
-    for i in range(0,len(comboCurveScenarioData)):
+    for i in range(0, len(comboCurveScenarioData)):
         netAband = 0
         netOilSalesVolume = netOilSalesVolumeList[i]
         netGasSalesVolume = netGasSalesVolumeList[i]
@@ -1251,71 +1520,96 @@ def ccScenarioToCrestFpPdp(comboCurveScenarioData, nglYield, gasBtuFactor, gasSh
         nglDeduct = 0
         grossFixedCost = totalGrossFixedExpenseTableList[i]
         grossOtherCapital = 0
-        
+
         ## CALCULATE AVERAGE SEVERANCE TAX PERCENTAGES / AD VALOREM
-        
+
         if oilRevenueTableList[i] == 0:
             oilSevPercentAvg = 0
         else:
             oilSevPercentAvg = totalOilSeveranceTaxTableList[i] / oilRevenueTableList[i]
-        
+
         if gasRevenueTableList[i] == 0:
             gasSevPercentAvg = 0
         else:
             gasSevPercentAvg = totalGasSeveranceTaxTableList[i] / gasRevenueTableList[i]
-        
+
         if nglRevenueTableList[i] == 0:
             nglSevPercentAvg = 0
         else:
             nglSevPercentAvg = totalNglSeveranceTaxTableList[i] / nglRevenueTableList[i]
-        
+
         leftoverOilRev = oilRevenueTableList[i] - totalOilSeveranceTaxTableList[i]
         leftoverGasRev = gasRevenueTableList[i] - totalGasSeveranceTaxTableList[i]
         leftoverNglRev = nglRevenueTableList[i] - totalNglSeveranceTaxTableList[i]
         sumOfLeftoverRev = leftoverOilRev + leftoverGasRev + leftoverNglRev
-        
+
         if sumOfLeftoverRev == 0:
             adValoremPercentAvg = 0
         else:
             adValoremPercentAvg = totalAdValoremTaxTableList[i] / sumOfLeftoverRev
-        
+
         ## CALCULATE VARIABLE OIL GAS WATER LOE
-        
+
         if netOilSalesVolume == 0:
             oilVariableLoe = 0
         else:
             oilVariableLoe = totalOilVariableExpenseTableList[i] / netOilSalesVolume
-            
+
         if netGasSalesVolume == 0:
             gasVariableLoe = 0
         else:
             gasVariableLoe = totalGasVariableExpenseTableList[i] / netGasSalesVolume
-            
+
         if netNglSalesVolume == 0:
             nglVariableLoe = 0
         else:
             nglVariableLoe = totalNglVariableExpenseTableList[i] / netNglSalesVolume
-        
+
         if grossWaterWellHeadVolume == 0:
             waterVariableLoe = 0
         else:
-            waterVariableLoe = totalWaterDisposalExpenseTableList[i] / grossWaterWellHeadVolume
-        
-        row = [netAband, netOilSalesVolume, netGasSalesVolume, netNglSalesVolume, nglYieldPrint, gasShrinkPrint, gasBtuFactorPrint, grossWaterWellHeadVolume, oilPricePercentPrint, oilDeduct, oilSevPercentAvg, gasPricePercentPrint, gasDeduct, gasSevPercentAvg, nglPricePercentPrint, nglDeduct, nglSevPercentAvg, adValoremPercentAvg, grossFixedCost, grossOtherCapital, oilVariableLoe, gasVariableLoe, nglVariableLoe, waterVariableLoe]
-        
+            waterVariableLoe = (
+                totalWaterDisposalExpenseTableList[i] / grossWaterWellHeadVolume
+            )
+
+        row = [
+            netAband,
+            netOilSalesVolume,
+            netGasSalesVolume,
+            netNglSalesVolume,
+            nglYieldPrint,
+            gasShrinkPrint,
+            gasBtuFactorPrint,
+            grossWaterWellHeadVolume,
+            oilPricePercentPrint,
+            oilDeduct,
+            oilSevPercentAvg,
+            gasPricePercentPrint,
+            gasDeduct,
+            gasSevPercentAvg,
+            nglPricePercentPrint,
+            nglDeduct,
+            nglSevPercentAvg,
+            adValoremPercentAvg,
+            grossFixedCost,
+            grossOtherCapital,
+            oilVariableLoe,
+            gasVariableLoe,
+            nglVariableLoe,
+            waterVariableLoe,
+        ]
+
         crestFpOutput.loc[i] = row
-    
+
     # drop all rows that are empty
-    crestFpOutput.dropna(
-        axis=0, how="all", inplace=True
-    )
-    
-    #set empty list for storing month list
+    crestFpOutput.dropna(axis=0, how="all", inplace=True)
+
+    # set empty list for storing month list
     monthList = []
     # create month list for printing
     for i in range(0, len(crestFpOutput)):
-        monthList.append("Month " + str(i+1))
+        monthList.append("Month " + str(i + 1))
     # insert month list into dataframe
     crestFpOutput.insert(0, "Month", monthList)
 
-    return crestFpOutput # return dataframe
+    return crestFpOutput  # return dataframe
