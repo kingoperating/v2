@@ -539,6 +539,367 @@ PUT Function - loads data from Read
       
 """
 
+def putReadDataUpdate(userId, rawProductionData, objectId, joynUsername, joynPassword):
+    
+    userId = int(userId)
+    
+    def getIdToken():
+
+        load_dotenv()
+
+        login = joynUsername
+        password = joynPassword
+
+        # User Token API
+        url = "https://api.joyn.ai/common/user/token"
+        # Payload for API - use JOYN crdentials
+        payload = {
+            "uname": str(login),
+            "pwd": str(password)
+        }
+        # Headers for API - make sure to use content type of json
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        # dump payload into json format for correct format
+        payloadJson = json.dumps(payload)
+        response = requests.request(
+            "POST", url, data=payloadJson, headers=headers)  # make request
+        if response.status_code == 200:  # 200 = success
+            print("Successful JOYN Authentication")
+        else:
+            print(response.status_code)
+
+        results = response.json()  # get response in json format
+        idToken = results["IdToken"]  # get idToken from response
+
+        return idToken
+    
+    file = open(r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\v2\src\kingscripts\operations\docs\Read342H_SampleUpload.json")
+
+    dataTemplate = json.load(file)
+    
+    numberOfRows = len(rawProductionData)
+    j = 0
+    r = 1
+ 
+    for i in range(0, numberOfRows):
+        data = copy.deepcopy(dataTemplate)
+        ##test zone
+        day = rawProductionData["Day"][i]
+        readingDate = dt.datetime.strptime(day, "%m/%d/%Y")
+        readingDateClean = readingDate.strftime("%Y-%m-%d")
+        id = 1000 + i ## creates unique id for each row that ties everything together
+        j = j + 1
+        ## Readings
+        readings = copy.deepcopy(data["LCustomEntity"]["Readings"][0])
+        readings["ID"] = id
+        readings["ReadingID"] = id
+        readings["ReadingDate"] = readingDateClean
+        readings["ModifiedBy"] = userId
+        readings["CreatedBy"] = userId
+        readings["ObjectID"] = objectId
+        readings["ReadingNumber"] = r
+        readings["CreatedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["ModifiedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["ModifiedTimestamp"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["CreatedTimestamp"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        j = j + 1
+        r = r + 1 ## updates reading number
+        
+        ##WRITE STATEMENT - ADD TO JSON
+        if j < 3:
+            data["LCustomEntity"]["Readings"][0].update(readings)
+        else:
+            data["LCustomEntity"]["Readings"].append(readings)
+        
+        ## Decs - Oil volume
+        newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
+        newDecs["attId"] = 263005
+        newDecs["v"] = str(rawProductionData[" Total Oil Produced"][i])
+        newDecs["ID"] = j
+        newDecs["ReadingID"] = id
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        if j < 4:
+            data["LCustomEntity"]["custo"]["decs"][0].update(newDecs)
+        else:
+            data["LCustomEntity"]["custo"]["decs"].append(newDecs)
+        
+        ## INTS - Product Oil
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263002 ## product code
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760011) ## 760011 = oil
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        if j < 5:
+            data["LCustomEntity"]["custo"]["ints"][0].update(newInts)
+        else:
+            data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        ## INTS - Disposition Production
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263003 ## dispostion code
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760096) ## 760096 = poduction
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        idToken = getIdToken()  # get idToken from authJoyn function
+    
+        ## POST request to JOYN API
+        url = "https://api-fdg.joyn.ai/mobile/api/rpc/ReadingDataUpload/bulkuploadv2"
+        
+        request = requests.request(
+            "POST",
+            url,
+            json=data,
+            headers={"Authorization": idToken, "Content-Type": "application/json"}
+        )
+    
+        response = request.json()
+        responseCode = request.status_code
+        print(response["message"])
+            
+        ## STARTING MCF VOLUME
+        
+        data = copy.deepcopy(dataTemplate)
+            
+        ## Readings
+        readings = copy.deepcopy(data["LCustomEntity"]["Readings"][0])
+        readings["ID"] = id
+        readings["ReadingID"] = id
+        readings["ReadingDate"] = readingDateClean
+        readings["ModifiedBy"] = userId
+        readings["CreatedBy"] = userId
+        readings["ObjectID"] = objectId
+        readings["ReadingNumber"] = r
+        readings["CreatedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["ModifiedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["ModifiedTimestamp"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["CreatedTimestamp"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        j = j + 1
+        r = r + 1 ## updates reading number
+        
+        ##WRITE STATEMENT - ADD TO JSON
+        if j < 3:
+            data["LCustomEntity"]["Readings"][0].update(readings)
+        else:
+            data["LCustomEntity"]["Readings"].append(readings)
+            
+            
+              
+        ## Decs - MCF volume
+        newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
+        newDecs["attId"] = 263005
+        newDecs["v"] = str(rawProductionData[" Total MCF"][i])
+        newDecs["ID"] = j
+        newDecs["ReadingID"] = id
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["decs"].append(newDecs)
+        
+        ## INTS - Product Gas
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263002 ## product code
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760010) ## gas
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        ## INTS - Disposition Production
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263003 ## disposition code
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760096) ## 760096 = production
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        
+        idToken = getIdToken()  # get idToken from authJoyn function
+    
+        ## POST request to JOYN API
+        url = "https://api-fdg.joyn.ai/mobile/api/rpc/ReadingDataUpload/bulkuploadv2"
+        
+        request = requests.request(
+            "POST",
+            url,
+            json=data,
+            headers={"Authorization": idToken, "Content-Type": "application/json"}
+        )
+    
+        response = request.json()
+        responseCode = request.status_code
+        print(response["message"])
+        
+        ## NEW READING OIL SALES VOLUME
+        data = copy.deepcopy(dataTemplate)
+        
+        ## Readings
+        readings = copy.deepcopy(data["LCustomEntity"]["Readings"][0])
+        readings["ID"] = id
+        readings["ReadingID"] = id
+        readings["ReadingDate"] = readingDateClean
+        readings["ModifiedBy"] = userId
+        readings["CreatedBy"] = userId
+        readings["ObjectID"] = objectId
+        readings["ReadingNumber"] = r
+        readings["CreatedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["ModifiedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["ModifiedTimestamp"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["CreatedTimestamp"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        j = j + 1
+        r = r + 1 ## updates reading number
+        
+        ##WRITE STATEMENT - ADD TO JSON
+        if j < 3:
+            data["LCustomEntity"]["Readings"][0].update(readings)
+        else:
+            data["LCustomEntity"]["Readings"].append(readings)
+        
+        
+        ## Decs = Oil Sold Volume
+        newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
+        newDecs["attId"] = 263005
+        newDecs["v"] = str(rawProductionData[" Total Oil Sold"][i])
+        newDecs["ID"] = j
+        newDecs["ReadingID"] = id
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["decs"].append(newDecs)
+        
+        ## INTS - Product
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263002 ## product
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760011) ## oil sold
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263003 ## disposition
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760098) ## oil sold
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        idToken = getIdToken()  # get idToken from authJoyn function
+    
+        ## POST request to JOYN API
+        url = "https://api-fdg.joyn.ai/mobile/api/rpc/ReadingDataUpload/bulkuploadv2"
+        
+        request = requests.request(
+            "POST",
+            url,
+            json=data,
+            headers={"Authorization": idToken, "Content-Type": "application/json"}
+        )
+    
+        response = request.json()
+        responseCode = request.status_code
+        print(response["message"])
+        
+        ### STARTING WATER VOLUME
+        
+        data = copy.deepcopy(dataTemplate)
+        
+        ## Readings
+        readings = copy.deepcopy(data["LCustomEntity"]["Readings"][0])
+        readings["ID"] = id
+        readings["ReadingID"] = id
+        readings["ReadingDate"] = readingDateClean
+        readings["ModifiedBy"] = userId
+        readings["CreatedBy"] = userId
+        readings["ObjectID"] = objectId
+        readings["ReadingNumber"] = r
+        readings["CreatedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["ModifiedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["ModifiedTimestamp"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["CreatedTimestamp"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        j = j + 1
+        r = r + 1 ## updates reading number
+        
+        ##WRITE STATEMENT - ADD TO JSON
+        if j < 3:
+            data["LCustomEntity"]["Readings"][0].update(readings)
+        else:
+            data["LCustomEntity"]["Readings"].append(readings)
+        
+        ## Decs = Water Volume
+        newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
+        newDecs["attId"] = 263005
+        newDecs["v"] = str(rawProductionData[" Total Water"][i])
+        newDecs["ID"] = j
+        newDecs["ReadingID"] = id
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["decs"].append(newDecs)
+        
+        ## INTS - Product
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263002
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760012) ## water production
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        ## INTS - Disposition
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263003 # disposition
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760096) ## water production
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        idToken = getIdToken()  # get idToken from authJoyn function
+    
+        ## POST request to JOYN API
+        url = "https://api-fdg.joyn.ai/mobile/api/rpc/ReadingDataUpload/bulkuploadv2"
+        
+        request = requests.request(
+            "POST",
+            url,
+            json=data,
+            headers={"Authorization": idToken, "Content-Type": "application/json"}
+        )
+    
+        response = request.json()
+        responseCode = request.status_code
+        print(response["message"])
+    
+
+    return data
+
+
 def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword):
     
     userId = int(userId)
@@ -601,6 +962,8 @@ def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword)
         readings["ReadingNumber"] = r
         readings["CreatedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         readings["ModifiedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["ModifiedTimestamp"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        readings["CreatedTimestamp"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         j = j + 1
         r = r + 1 ## updates reading number
         
@@ -624,12 +987,12 @@ def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword)
         else:
             data["LCustomEntity"]["custo"]["decs"].append(newDecs)
         
-        ## INTS - Product and Disposition
+        ## INTS - Product Oil
         newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
-        newInts["attId"] = 263002
+        newInts["attId"] = 263002 ## product code
         newInts["ID"] = j
         newInts["ReadingID"] = id
-        newInts["v"] = str(760011)
+        newInts["v"] = str(760011) ## 760011 = oil
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
@@ -637,6 +1000,17 @@ def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword)
             data["LCustomEntity"]["custo"]["ints"][0].update(newInts)
         else:
             data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        ## INTS - Disposition Production
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263003 ## dispostion code
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760096) ## 760096 = production
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
         
         ## Decs - MCF volume
         newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
@@ -649,12 +1023,23 @@ def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword)
         ## WRITE STATEMENT - ADD TO JSON
         data["LCustomEntity"]["custo"]["decs"].append(newDecs)
         
-        ## INTS - Product and Disposition
+        ## INTS - Product Gas
         newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
-        newInts["attId"] = 263002
+        newInts["attId"] = 263002 ## product code
         newInts["ID"] = j
         newInts["ReadingID"] = id
         newInts["v"] = str(760010) ## gas
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        ## INTS - Disposition Production
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263003 ## disposition code
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760096) ## 760096 = production
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
@@ -671,9 +1056,19 @@ def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword)
         ## WRITE STATEMENT - ADD TO JSON
         data["LCustomEntity"]["custo"]["decs"].append(newDecs)
         
-        ## INTS - Product and Disposition
+        ## INTS - Product
         newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
-        newInts["attId"] = 263003
+        newInts["attId"] = 263002 ## product
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760011) ## oil sold
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263003 ## disposition
         newInts["ID"] = j
         newInts["ReadingID"] = id
         newInts["v"] = str(760098) ## oil sold
@@ -693,12 +1088,23 @@ def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword)
         ## WRITE STATEMENT - ADD TO JSON
         data["LCustomEntity"]["custo"]["decs"].append(newDecs)
         
-        ## INTS - Product and Disposition
+        ## INTS - Product
         newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
         newInts["attId"] = 263002
         newInts["ID"] = j
         newInts["ReadingID"] = id
         newInts["v"] = str(760012) ## water production
+        j = j + 1
+        
+        ## WRITE STATEMENT - ADD TO JSON
+        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        
+        ## INTS - Disposition
+        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts["attId"] = 263003 # disposition
+        newInts["ID"] = j
+        newInts["ReadingID"] = id
+        newInts["v"] = str(760096) ## water production
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
