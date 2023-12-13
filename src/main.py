@@ -134,14 +134,34 @@ listOfWells = [
 WORKING ZONE
 '''
 
+# wellData = joyn.getWellHeaderData(
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword
+# )
+
+# read332hid = joyn.getWellObjectId(
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword,
+#    nameOfWell="test_well"
+#  )
+
+# dataJoyn = joyn.getDailyAllocatedProductionUpdate(
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword,
+#     wellHeaderData=wellData,
+#     daysToLookBack=6
+# )
+
+x = 5
+
 # # AFE Stack WU-105
 # afe.dailyCost(
 #     workingDataDirectory=kocDatawarehouse,
-#     name=millerranchb501mh
+#     name=millerranchc302mh
 # )
 # afe.variance(
 #     workingDataDirectory=kocDatawarehouse,
-#     name=millerranchb501mh
+#     name=millerranchc302mh
 # )
 
 
@@ -165,30 +185,33 @@ WORKING ZONE
 # masterGaugeDataSorted = masterGaugeData.sort_values(by=["Tank ID", "Date"], ascending=[True, False])
 # masterGaugeData.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\masterGaugeData.xlsx", index=False)
 
-read332hid = joyn.getWellObjectId(
-    joynUsername=joynUsername,
-    joynPassword=joynPassword,
-    nameOfWell="test_well"
-)
+# wu108ProdData = king.getworlandUnit108Production(
+#     numberOfDays=5
+# )
 
-id = joyn.getJoynUsers(
-    joynUsername=joynUsername,
-    joynPassword=joynPassword,
-    nameToFind="mtanner"
-)
 
-readData = king.getReadHowardProduction()
 
-data = joyn.putReadData(
-        userId=id,
-        rawProductionData=readData,
-        objectId=read332hid,
-        joynUsername=joynUsername,
-        joynPassword=joynPassword
-)
+# read332hid = joyn.getWellObjectId(
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword,
+#     nameOfWell="test_well"
+# )
 
-x = 5
+# id = joyn.getJoynUsers(
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword,
+#     nameToFind="mtanner"
+# )
 
+# readData = king.getReadHowardProduction()
+
+# data = joyn.putReadData(
+#         userId=id,
+#         rawProductionData=readData,
+#         objectId=read332hid,
+#         joynUsername=joynUsername,
+#         joynPassword=joynPassword
+# )
 
 # # AFE Stack Miller Ranch A501MH
 # afe.dailyCost(
@@ -284,31 +307,32 @@ x = 5
 # )
 
 
-data = combocurve.getLatestScenarioMonthly(
-    projectIdKey="6523f03d01ae98697d8a3eb1",
-    scenarioIdKey="65367294805fcdadf04401e3",
-    serviceAccount=serviceAccount,
-    comboCurveApi=comboCurveApiKey
-)
+# data = combocurve.getLatestScenarioMonthly(
+#     projectIdKey="612fc3d36880c20013a885df",
+#     scenarioIdKey="64aca0abaa25aa001201b299",
+#     serviceAccount=serviceAccount,
+#     comboCurveApi=comboCurveApiKey
+# )
 
-crest = combocurve.ccScenarioToCrestFpSingleWell(
-    comboCurveScenarioData=data,
-    nglYield=nglStream,
-    gasBtuFactor=1,
-    gasShrinkFactor=.372,
-    oilPricePercent=.98,
-    gasPricePercent=.65,
-    nglPricePercent=.35,
-    oilVariableCost=0,
-    gasVariableCost=0,
-    nglVariableCost=0,
-    waterVariableCost=.1,
-    state=texas
-)
+# crest = combocurve.ccScenarioToCrestFpSingleWell(
+#     comboCurveScenarioData=data,
+#     nglYield=noNglStream,
+#     gasBtuFactor=1,
+#     gasShrinkFactor=0,
+#     oilPricePercent=1,
+#     gasPricePercent=1,
+#     nglPricePercent=.35,
+#     oilVariableCost=0,
+#     gasVariableCost=.5,
+#     nglVariableCost=0,
+#     waterVariableCost=.6,
+#     state=texas,
+#     capex=6600000,
+# )
 
 # crestPdp = combocurve.ccScenarioToCrestFpPdp(
 #     comboCurveScenarioData=data,
-#     nglYield=nglStream,
+#     nglYield=noNglStream,
 #     gasBtuFactor=1,
 #     gasShrinkFactor=0,
 #     oilPricePercent=1,
@@ -317,7 +341,7 @@ crest = combocurve.ccScenarioToCrestFpSingleWell(
 # )
 
 
-crest.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestGeonSingleWellP50UpdatedLoeNoCutOff.csv", index=False)
+# crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpReadWells25WI.csv", index=False)
 
 # # AFE Stack Miller Ranch B501MH
 # afe.dailyCost(
@@ -338,7 +362,8 @@ crest.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\prod
 
 joyn.getJoynUsers(
     joynUsername=joynUsername,
-    joynPassword=joynPassword
+    joynPassword=joynPassword,
+    nameToFind="mtanner"
 )
 
 # Gets Browning 518H Production Data

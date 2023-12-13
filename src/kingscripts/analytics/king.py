@@ -258,6 +258,17 @@ Reading Howard County Excel file and storing it in pandas dataframe
 
 def getReadHowardProduction():
     
+    headers = [
+        "Date",
+        "Oil",
+        "Oil Sold",
+        "Water",
+        "Gas",
+        "Comments"
+        
+    ]
+    
+    
     readData = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\hcef\readTest.xlsx", header=2)
     readData = readData.drop(readData.columns[3], axis=1)
     readData = readData.drop(readData.columns[3], axis=1)
@@ -265,5 +276,52 @@ def getReadHowardProduction():
     readData = readData.drop(readData.columns[5], axis=1)
     readData = readData.drop(readData.columns[5:], axis=1)
     readData = readData.iloc[:7]
+    ##insert new column
+    readData.insert(5, "Comments", "None")
+    # replace headers
+    readData.columns = headers
     
     return readData
+
+def getworlandUnit108Production(numberOfDays):
+    
+    headers = [
+        "Date",
+        "Oil",
+        "Oil Sold",
+        "Water",
+        "Gas",
+        "Comments"
+    
+    ]
+    
+    
+    wu108Data = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\wyoming\wu108Prod.xlsx", header=3)
+    # replace NaN values with 0
+    wu108Data = wu108Data.fillna(0)
+    wu108DataLastTwoRows = wu108Data.tail(numberOfDays)
+    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Cum oil prod bo"])
+    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Cum gas prod mcf"])
+    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Cum water prod bbls"])
+    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Load left to recover bbls"])
+    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["% load recovery"])
+    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Total Load to Recover bbls"])
+    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Load added bbls"])
+    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["King Completions Comments"]) 
+    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Report date"])
+    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Gauge date"])
+    
+    ## convert the dates to datetime
+    wu108DataLastTwoRows["Prod date"] = pd.to_datetime(wu108DataLastTwoRows["Prod date"])
+    
+    ## insert oil sold column at end
+    wu108DataLastTwoRows.insert(5, "Oil Sold", 0)
+
+    # order columns for header
+    wu108DataLastTwoRows = wu108DataLastTwoRows[["Prod date", "Prod oil bo", "Oil Sold", "Prod water bwp", "Prod gas mcf", "Kentex Production Comments"]]
+   
+    # replace headers
+    wu108DataLastTwoRows.columns = headers
+    
+    
+    return wu108DataLastTwoRows
