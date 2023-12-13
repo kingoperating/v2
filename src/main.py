@@ -152,8 +152,6 @@ WORKING ZONE
 #     daysToLookBack=6
 # )
 
-x = 5
-
 # # AFE Stack WU-105
 # afe.dailyCost(
 #     workingDataDirectory=kocDatawarehouse,
@@ -189,8 +187,6 @@ x = 5
 #     numberOfDays=5
 # )
 
-
-
 # read332hid = joyn.getWellObjectId(
 #     joynUsername=joynUsername,
 #     joynPassword=joynPassword,
@@ -211,99 +207,6 @@ x = 5
 #         objectId=read332hid,
 #         joynUsername=joynUsername,
 #         joynPassword=joynPassword
-# )
-
-# # AFE Stack Miller Ranch A501MH
-# afe.dailyCost(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=millerrancha501mh
-# )
-# afe.variance(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=millerrancha501mh
-# )
-
-# # AFE Stack Miller Ranch B501MH
-# afe.dailyCost(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=millerranchb501mh
-# )
-# afe.variance(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=millerranchb501mh
-# )
-
-# # AFE Stack Miller Ranch C301
-# afe.dailyCost(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=millerranchc301
-# )
-# afe.variance(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=millerranchc301
-# )
-
-# # AFE Stack Miller Ranch C302MH
-# afe.dailyCost(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=millerranchc302mh
-# )
-# afe.variance(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=millerranchc302mh
-# )
-
-# # AFE Stack WU-105
-# afe.dailyCost(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=wu105
-# )
-# afe.variance(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=wu105
-# )
-
-# # AFE Stack Miller Ranch C302MH
-# afe.dailyCost(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=wu108
-# )
-# afe.variance(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=wu108
-# )
-
-# # AFE Stack Miller Ranch C302MH
-# afe.dailyCost(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=kinga199cv1h
-# )
-# afe.variance(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=kinga199cv1h
-# )
-
-# # AFE Stack Miller Ranch C302MH
-# afe.dailyCost(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=kinga199cv2h
-# )
-# afe.variance(
-#     workingDataDirectory=kocDatawarehouse,
-#     name=kinga199cv2h
-# )
-
-
-# # Combine AFE files and place in data warehouse
-# afe.combineAfeFiles(
-#     workingDataDirectory=kocDatawarehouse,
-#     listOfWells=listOfWells
-# )
-
-# joynUsers = joyn.getJoynUsers(
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword,
-#     nameToFind="mtanner"
 # )
 
 
