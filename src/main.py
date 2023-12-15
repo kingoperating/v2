@@ -210,12 +210,12 @@ WORKING ZONE
 # )
 
 
-# data = combocurve.getLatestScenarioMonthly(
-#     projectIdKey="612fc3d36880c20013a885df",
-#     scenarioIdKey="64aca0abaa25aa001201b299",
-#     serviceAccount=serviceAccount,
-#     comboCurveApi=comboCurveApiKey
-# )
+data = combocurve.getLatestScenarioMonthly(
+    projectIdKey="653fcf9ec230f38554b3f1c1",
+    scenarioIdKey="653fd02e16729ef21ebd8f08",
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
 
 # crest = combocurve.ccScenarioToCrestFpSingleWell(
 #     comboCurveScenarioData=data,
@@ -233,18 +233,18 @@ WORKING ZONE
 #     capex=6600000,
 # )
 
-# crestPdp = combocurve.ccScenarioToCrestFpPdp(
-#     comboCurveScenarioData=data,
-#     nglYield=noNglStream,
-#     gasBtuFactor=1,
-#     gasShrinkFactor=0,
-#     oilPricePercent=1,
-#     gasPricePercent=1,
-#     nglPricePercent=.3,
-# )
+crestPdp = combocurve.ccScenarioToCrestFpPdp(
+    comboCurveScenarioData=data,
+    nglYield=noNglStream,
+    gasBtuFactor=1,
+    gasShrinkFactor=0,
+    oilPricePercent=1,
+    gasPricePercent=1,
+    nglPricePercent=.3,
+)
 
 
-# crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpReadWells25WI.csv", index=False)
+crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpJan2024Forecast.csv", index=False)
 
 # # AFE Stack Miller Ranch B501MH
 # afe.dailyCost(
