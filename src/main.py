@@ -134,23 +134,32 @@ listOfWells = [
 WORKING ZONE
 '''
 
-# wellData = joyn.getWellHeaderData(
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword
-# )
+wellData = joyn.getWellHeaderData(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
 
-# read332hid = joyn.getWellObjectId(
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword,
-#    nameOfWell="test_well"
-#  )
+read332hid = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+   nameOfWell="test_well"
+ )
 
-# dataJoyn = joyn.getDailyAllocatedProductionUpdate(
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword,
-#     wellHeaderData=wellData,
-#     daysToLookBack=6
-# )
+dataJoyn = joyn.getDailyAllocatedProductionRaw(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    wellHeaderData=wellData,
+    daysToLookBack=2
+)
+
+tech.putData(
+    server=kingLiveServer,
+    database=kingProductionDatabase,
+    data=dataJoyn,
+    tableName="prod_joyn_data"
+)
+
+x = 5
 
 # # AFE Stack WU-105
 # afe.dailyCost(
