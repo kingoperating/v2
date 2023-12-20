@@ -161,7 +161,7 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
     dataSource = "di"
 
     # create empty dataframe to store results with correct headers for JOYN API
-    headersJoynRaw = ["AssetId", "Name", "ReadingVolume",
+    headersJoynRaw = ["AssetId", "ID", "Name", "ReadingVolume",
                       "NetworkName", "Date", "Product", "Disposition"]
 
     headersFinal = [
@@ -188,9 +188,16 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
             apiNumber = getApiNumber(uuidRaw)
             # reading volume for current allocation row
             readingVolume = totalResults[i][j]["Volume"]
+            ## ID
+            id = totalResults[i][j]["ID"]
+            if id == 259662876447645699:
+                x = 5
+                testvolume = readingVolume
+                x=5
             isDeleted = totalResults[i][j]["IsDeleted"]
             # network name for current allocation row
             networkName = totalResults[i][j]["NetworkName"]
+            niceName = getName(uuidRaw)
             # reading date for current allocation row
             date = totalResults[i][j]["ReadingDate"]
             # runs splitdate() into correct format
@@ -205,21 +212,12 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
             if isDeleted == True:
                 continue
         
-            # checking to confirm that the record is not deleted or if its oil sold volume
-            if disposition == 760098 or disposition == 760101 or disposition == 760094 or disposition == 760095 or disposition == 760097:
-                if isDeleted != True:
-                    newProduct = "Oil Sales Volume"
-                else:
-                    continue
-
-            if disposition == 760096 or newProduct == "Oil Sales Volume":
-                row = [apiNumber, networkName, readingVolume, networkName,
-                       dateBetter, newProduct, disposition]
+            row = [apiNumber, id, niceName, readingVolume, networkName,
+                       dateBetter, productName, disposition]
                 # append row to dataframe
-                rawJoynTotalAssetProduction.loc[len(
+            rawJoynTotalAssetProduction.loc[len(
                     rawJoynTotalAssetProduction)] = row
-            else:
-                continue
+            
 
     # convert date column to datetime format for sorting purposes
     rawJoynTotalAssetProduction["Date"] = pd.to_datetime(
