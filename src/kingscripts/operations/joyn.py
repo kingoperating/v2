@@ -9,6 +9,226 @@ import numpy as np
 import copy
 from kingscripts.operations.combocurve import *
 
+
+"""
+    
+This script gets all the modifed daily allocated production over to the master JOYN dataframe in prep to merge    
+
+"""
+def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHeaderData, daysToLookBack):
+
+    load_dotenv()
+
+    if daysToLookBack == 0 or type(daysToLookBack) != int:
+        print("Error: daysToLookBack must be an integer greater than 0")
+        return
+
+    # Date values
+    dateToday = dt.datetime.today()
+    dateTomorrow = dateToday + dt.timedelta(days=1)
+    dateToLookBack = dateToday - timedelta(days=daysToLookBack)
+    dateTomorrowString = dateTomorrow.strftime("%Y-%m-%d")
+    dateToLookBackString = dateToLookBack.strftime("%Y-%m-%d")
+
+   
+
+    # Functions
+    
+    # Function to split date from JOYN API into correct format - returns date in format of 5/17/2023 from format of 2023-05-17T00:00:00
+
+    def splitDateFunction(badDate):
+        splitDate = re.split("T", badDate)
+        splitDate2 = re.split("-", splitDate[0])
+        year = int(splitDate2[0])
+        month = int(splitDate2[1])
+        day = int(splitDate2[2])
+        dateString = str(month) + "/" + str(day) + "/" + str(year)
+
+        return dateString
+
+    # Function to authenticate JOYN API - returns idToke used as header for authorization in other API calls
+
+    def getIdToken():
+
+        load_dotenv()
+
+        login = joynUsername
+        password = joynPassword
+
+        # User Token API
+        url = "https://api.joyn.ai/common/user/token"
+        # Payload for API - use JOYN crdentials
+        payload = {
+            "uname": str(login),
+            "pwd": str(password)
+        }
+        # Headers for API - make sure to use content type of json
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        # dump payload into json format for correct format
+        payloadJson = json.dumps(payload)
+        response = requests.request(
+            "POST", url, data=payloadJson, headers=headers)  # make request
+        if response.status_code == 200:  # 200 = success
+            print("Successful JOYN Authentication")
+        else:
+            print(response.status_code)
+
+        results = response.json()  # get response in json format
+        idToken = results["IdToken"]  # get idToken from response
+
+        return idToken
+
+    # Function to change product type to Oil, Gas, or Water
+
+    def switchProductType(product):
+        if product == 760010:
+            product = "Gas"
+        elif product == 760011:
+            product = "Oil"
+        elif product == 760012:
+            product = "Water"
+        else:
+            product = "Unknown"
+
+        return product
+
+    # Function to get API number from wellHeaderData "xid" using uuid from JOYN API
+    def getApiNumber(uuid):
+        if uuid in wellHeaderData["UUID"].tolist():
+            index = wellHeaderData["UUID"].tolist().index(uuid)
+            apiNumberYay = wellHeaderData["xid"][index]
+        else:
+            apiNumberYay = "Unknown"
+
+        return apiNumberYay
+    
+    ## Function to get well name "n" from wellHeaderData using "uuid" from JOYN API
+    def getName(uuid):
+        if uuid in wellHeaderData["UUID"].tolist():
+            index = wellHeaderData["UUID"].tolist().index(uuid)
+            name = wellHeaderData["n"][index]
+        else:
+            name = "Unknown"
+
+        return name
+    
+
+    #### BEGIN SCRIPT #####
+
+    idToken = getIdToken()  # get idToken from authJoyn function
+
+    # set correct URL for Reading Data API JOYN - use idToken as header for authorization. Note the isCustom=true is required for custom entities and todate and fromdate are based on modified timestamp and rolling 7 days lookback
+    urlRolling = (
+        "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15408&fromdate="
+        + dateToLookBackString
+        + "&todate="
+        + dateTomorrowString
+        + "&pagesize=1000&pagenumber="
+
+    )
+
+    pageNumber = 1  # set page number to 1
+    nextPage = False  # set nextPage to True to start while loop
+    totalResults = []  # create empty list to store results
+
+    while not nextPage:  # loop through all pages of data
+        url = urlRolling + str(pageNumber)
+        # makes the request to the API
+        response = requests.request(
+            "GET", url, headers={"Authorization": idToken})
+        # Dislay status code of response - 200 = GOOD
+        if response.status_code != 200:
+            print(response.status_code)
+
+        print("Length of Response: " + str(len(response.json())))
+
+        # get response in json format and append to totalResults list
+        resultsReadingType = response.json()
+
+        # if length of response is 0, then there is no more data to return
+        if len(resultsReadingType) == 0:
+            break
+            # triggers while loop to end when no more data is returned and length of response is 0
+
+        totalResults.append(resultsReadingType)
+
+        pageNumber = pageNumber + 1  # increment page number by 1 for pagination
+
+    # set initial variables
+    readingVolume = 0
+    dataSource = "di"
+
+    # create empty dataframe to store results with correct headers for JOYN API
+    headersJoynRaw = ["AssetId", "ID", "Name", "ReadingVolume",
+                      "NetworkName", "Date", "Product", "Disposition","isDeleted"]
+
+    headersFinal = [
+        "Date",
+        "API14",
+        "Well Accounting Name",
+        "Oil Volume",
+        "Gas Volume",
+        "Water Volume",
+        "Oil Sold Volume",
+        "Data Source",
+    ]
+
+    counter = 0
+    # create empty dataframe to store results with correct headers for JOYN API for both raw and final data pivot
+    rawJoynTotalAssetProduction = pd.DataFrame(columns=headersJoynRaw)
+    currentRunTotalAssetProductionJoyn = pd.DataFrame(columns=headersFinal)
+
+    ## Master loop through all results from JOYN API ##
+    for i in range(0, len(totalResults)):
+        for j in range(0, len(totalResults[i])):
+            # JOYN unquie ID for each asset
+            uuidRaw = totalResults[i][j]["assetId"]
+            apiNumber = getApiNumber(uuidRaw)
+            # reading volume for current allocation row
+            readingVolume = totalResults[i][j]["Volume"]
+            ## ID
+            id = totalResults[i][j]["ID"]
+            if id == 259662876447645699:
+                x = 5
+                testvolume = readingVolume
+                x=5
+            isDeleted = totalResults[i][j]["IsDeleted"]
+            # network name for current allocation row
+            networkName = totalResults[i][j]["NetworkName"]
+            niceName = getName(uuidRaw)
+            # reading date for current allocation row
+            date = totalResults[i][j]["ReadingDate"]
+            # runs splitdate() into correct format
+            dateBetter = splitDateFunction(date)
+            # product type for current allocation row
+            productName = totalResults[i][j]["Product"]
+            # runs switchProductType() to get correct product type
+            newProduct = switchProductType(productName)
+            # disposition for current allocation row
+            disposition = totalResults[i][j]["Disposition"]
+
+            # if isDeleted == True:
+            #     continue
+        
+            row = [apiNumber, id, niceName, readingVolume, networkName,
+                       dateBetter, productName, disposition, isDeleted]
+                # append row to dataframe
+            rawJoynTotalAssetProduction.loc[len(
+                    rawJoynTotalAssetProduction)] = row
+            
+
+    # convert date column to datetime format for sorting purposes
+    rawJoynTotalAssetProduction["Date"] = pd.to_datetime(
+        rawJoynTotalAssetProduction["Date"])
+    # sort dataframe by date for loop to get daily production
+    rawTotalAssetProductionSorted = rawJoynTotalAssetProduction.sort_values(by=[
+        "Date"])
+    
+    return rawTotalAssetProductionSorted
+
 """
     
 This script gets all the modifed daily allocated production over to the master JOYN dataframe in prep to merge    
