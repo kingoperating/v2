@@ -2,7 +2,15 @@
 
 # Performing  GIT PUSH
 
-# git checkout -b testgsql
+# git checkout -b NameOfBRanch
+# PS C:\GT_code\v2> git add .  
+# PS C:\GT_code\v2> git commit -m "put comments here"
+# git push origin NameOfBRanch
+# Branch gets approved by admin after comments added to github
+
+# git checkout main
+# git stash (only if unsaved changes on existing branch)
+# git pull origin main (to refresh after branch merged)
 
 import os
 from kingscripts.analytics import tech
