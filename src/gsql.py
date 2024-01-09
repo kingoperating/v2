@@ -1,5 +1,9 @@
 ## Gabe's Test Environment for pulling SQL Data from Server ##
 
+# Performing  GIT PUSH
+
+# git checkout -b testgsql
+
 import os
 from kingscripts.analytics import tech
 from kingscripts.operations import joyn
