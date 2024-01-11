@@ -34,9 +34,6 @@ kingProductionDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
 #     tableName="prod_bad_pumper_data"
 # )
 
-data = np.random.rand(10, 10)
-data = pd.DataFrame(data)
-
 # How to write 
 
 # king_gabe_table = str(os.getenv('SQL_GABE_DATABASE'))
@@ -48,14 +45,39 @@ data = pd.DataFrame(data)
 # )
 # print("Hooray")
 
+# ** WORKING SPACE **
+
+## Get JOYN Username and password
 joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
+
+## Get the well header data that we want to pull from JOYN from main.py
 
 wellHeaderData = joyn.getWellHeaderData(
     joynUsername=joynUsername,
     joynPassword=joynPassword
 )
 
-dataframe = joyn.getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHeaderData, 5)
+## Connect to the SQL server and pull the latest master production table
 
-dataframe.to_csv(r"C:\Users\gtatman\Downloads\Python\testproduction.csv")
+# master_sql_prod_data = tech.getData(
+#     serverName=kingLiveServer,
+#     databaseName= "gabe",
+#     tableName="test_table"
+# )
+
+## Pull latest X Days of modified production data from JOYN
+
+dataframe = joyn.getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHeaderData,365)
+
+
+
+# dataframe.to_csv(r"C:\Users\gtatman\Downloads\Python\testproduction.csv")
+tech.putData(
+    server=kingLiveServer,
+    database = "gabe",
+    data = dataframe,
+    tableName= "test_table"
+)
+
+
