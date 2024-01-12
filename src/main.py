@@ -152,14 +152,10 @@ lastTwoDaysJoynData = joyn.getDailyAllocatedProductionRawWithDeleted(
     daysToLookBack=2
 )
 
-lastTwoDaysJoynData["ID"] = lastTwoDaysJoynData["ID"].astype(str)
-
 duplicatedIdList = joyn.compareJoynSqlDuplicates(
     joynData=lastTwoDaysJoynData,
     sqlData=masterSqlAllocatedProduction
 )
-
-duplicatedIdList["ID"] = duplicatedIdList["ID"].astype(str)
 
 tech.putDataReplace(
     server=kingLiveServer,
@@ -167,8 +163,6 @@ tech.putDataReplace(
     data=duplicatedIdList,
     tableName="duplicates_table"
 )
-
-x = 5
 
 listOfIds = duplicatedIdList["ID"].tolist()
 
@@ -185,7 +179,7 @@ lengthOfWorkingTable = tech.getData(
     tableName="test_table"
 )
 
-print("All Historical Record Length: " + len(lengthOfWorkingTable))
+print("All Historical Record Length After Deleting: " + str(len(lengthOfWorkingTable)))
 
 tech.putDataAppend(
     server=kingLiveServer,
@@ -193,6 +187,14 @@ tech.putDataAppend(
     data=lastTwoDaysJoynData,
     tableName="test_table"
 )
+
+masterSqlAllocatedProduction = tech.getData(
+    serverName=kingLiveServer,
+    databaseName="gabe",
+    tableName="test_table"
+)
+
+print("All Historical Record Length Final Value: " + str(len(masterSqlAllocatedProduction)))
 
 x= 5
 

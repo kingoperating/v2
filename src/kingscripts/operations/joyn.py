@@ -160,74 +160,48 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
     # set initial variables
     readingVolume = 0
     dataSource = "di"
+    
+     ## get headers out totalResults
+    headers = totalResults[0][0].keys()
+    ## turn into list
+    headersList = list(headers)
 
     # create empty dataframe to store results with correct headers for JOYN API
     headersJoynRaw = ["AssetId", "ID", "Name", "ReadingVolume",
                       "NetworkName", "Date", "Product", "Disposition","isDeleted"]
 
-    headersFinal = [
-        "Date",
-        "API14",
-        "Well Accounting Name",
-        "Oil Volume",
-        "Gas Volume",
-        "Water Volume",
-        "Oil Sold Volume",
-        "Data Source",
-    ]
-
     counter = 0
     # create empty dataframe to store results with correct headers for JOYN API for both raw and final data pivot
-    rawJoynTotalAssetProduction = pd.DataFrame(columns=headersJoynRaw)
-    currentRunTotalAssetProductionJoyn = pd.DataFrame(columns=headersFinal)
+    rawJoynTotalAssetProduction = pd.DataFrame(columns=headersList)
+    
+    
 
     ## Master loop through all results from JOYN API ##
     for i in range(0, len(totalResults)):
+        # loop through all results in each page
         for j in range(0, len(totalResults[i])):
-            # JOYN unquie ID for each asset
-            uuidRaw = totalResults[i][j]["assetId"]
-            apiNumber = getApiNumber(uuidRaw)
-            # reading volume for current allocation row
-            readingVolume = totalResults[i][j]["Volume"]
-            ## ID
-            readingId = totalResults[i][j]["ID"]
-            if readingId == 259662876447645699:
-                x = 5
-                testvolume = readingVolume
-                x=5
-            isDeleted = totalResults[i][j]["IsDeleted"]
-            # network name for current allocation row
-            networkName = totalResults[i][j]["NetworkName"]
-            niceName = getName(uuidRaw)
-            # reading date for current allocation row
-            date = totalResults[i][j]["ReadingDate"]
-            # runs splitdate() into correct format
-            dateBetter = splitDateFunction(date)
-            # product type for current allocation row
-            productName = totalResults[i][j]["Product"]
-            # runs switchProductType() to get correct product type
-            newProduct = switchProductType(productName)
-            # disposition for current allocation row
-            disposition = totalResults[i][j]["Disposition"]
-
-            # if isDeleted == True:
-            #     continue
-        
-            row = [apiNumber, readingId, niceName, readingVolume, networkName,
-                       dateBetter, productName, disposition, isDeleted]
-                # append row to dataframe
+            # loop over all headerList
+            listRaw = []
+            for k in range(0, len(headersList)):
+                currentHeader = headersList[k]
+                listRaw.append(totalResults[i][j][currentHeader])
+            ## create row from listRaw
+            row = listRaw
+            # append row to dataframe
             rawJoynTotalAssetProduction.loc[len(
                     rawJoynTotalAssetProduction)] = row
+        
+        
+            # row = [apiNumber, readingId, niceName, readingVolume, networkName,
+            #            dateBetter, productName, disposition, isDeleted]
+            #     # append row to dataframe
+            # rawJoynTotalAssetProduction.loc[len(
+            #         rawJoynTotalAssetProduction)] = row
             
 
-    # convert date column to datetime format for sorting purposes
-    rawJoynTotalAssetProduction["Date"] = pd.to_datetime(
-        rawJoynTotalAssetProduction["Date"])
-    # sort dataframe by date for loop to get daily production
-    rawTotalAssetProductionSorted = rawJoynTotalAssetProduction.sort_values(by=[
-        "Date"])
+    rawJoynTotalAssetProduction["ID"] = rawJoynTotalAssetProduction["ID"].astype(str)
     
-    return rawTotalAssetProductionSorted
+    return rawJoynTotalAssetProduction
 
 """
     
@@ -1672,12 +1646,13 @@ def compareJoynSqlDuplicates(sqlData, joynData):
     ## compare two lists and return duplicates
     duplicateRecordId = list(set(sqlIds) & set(joynIds))
     
-    print("Number of Duplicate Records: " + len(duplicateRecordId))
-    print("All Historcal Records Length: " + len(sqlIds))
-    print("Number of JOYN Records: " + len(joynIds))
+    print("Number of Duplicate Records: " + str(len(duplicateRecordId)))
+    print("All Historcal Records Length Prior to Delete: " + str(len(sqlIds)))
+    print("Number of JOYN Records: " + str(len(joynIds)))
     
     ## conver to dataframe with header "ID"
     duplicateRecordId = pd.DataFrame(duplicateRecordId, columns=["ID"])
+    duplicateRecordId["ID"] = duplicateRecordId["ID"].astype(str)
     
     return duplicateRecordId
 
