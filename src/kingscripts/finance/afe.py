@@ -511,43 +511,43 @@ def combineAfeFiles(listOfWells, workingDataDirectory):
     plannedCostCombineData = pd.concat(dataFrameStorePlanned)
 
     # PUT all dataframes in SQL Server
-    tech.putData(
+    tech.putDataReplace(
         server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
         database=str(os.getenv("SQL_AFE_DATABASE")),
         tableName="prod_afe_variance",
         data=afeVarianceCombineData,
     )
-    tech.putData(
+    tech.putDataReplace(
         server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
         database=str(os.getenv("SQL_AFE_DATABASE")),
         tableName="prod_daily_item_cost",
         data=dailyItemCostCombineData,
     )
-    tech.putData(
+    tech.putDataReplace(
         server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
         database=str(os.getenv("SQL_AFE_DATABASE")),
         tableName="prod_spend",
         data=spendCombineData,
     )
-    tech.putData(
+    tech.putDataReplace(
         server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
         database=str(os.getenv("SQL_AFE_DATABASE")),
         tableName="prod_paid",
         data=paidCombineData,
     )
-    tech.putData(
+    tech.putDataReplace(
         server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
         database=str(os.getenv("SQL_AFE_DATABASE")),
         tableName="prod_days_vs_depth",
         data=daysVsDepthCombineData,
     )
-    tech.putData(
+    tech.putDataReplace(
         server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
         database=str(os.getenv("SQL_AFE_DATABASE")),
         tableName="prod_afe_master",
         data=afeOgCombineData,
     )
-    tech.putData(
+    tech.putDataReplace(
         server=str(os.getenv("SQL_SERVER_KING_DATAWAREHOUSE")),
         database=str(os.getenv("SQL_AFE_DATABASE")),
         tableName="prod_planned_cost_depth",

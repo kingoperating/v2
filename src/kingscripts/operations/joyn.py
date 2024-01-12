@@ -190,8 +190,8 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
             # reading volume for current allocation row
             readingVolume = totalResults[i][j]["Volume"]
             ## ID
-            id = totalResults[i][j]["ID"]
-            if id == 259662876447645699:
+            readingId = totalResults[i][j]["ID"]
+            if readingId == 259662876447645699:
                 x = 5
                 testvolume = readingVolume
                 x=5
@@ -213,7 +213,7 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
             # if isDeleted == True:
             #     continue
         
-            row = [apiNumber, id, niceName, readingVolume, networkName,
+            row = [apiNumber, readingId, niceName, readingVolume, networkName,
                        dateBetter, productName, disposition, isDeleted]
                 # append row to dataframe
             rawJoynTotalAssetProduction.loc[len(
@@ -819,9 +819,6 @@ def getDailyAllocatedProduction(workingDataDirectory, joynUsername, joynPassword
                [1], dailyRawProduction[j][2], dailyRawProduction[j][3], dailyForecastedProduction[j][0], dailyForecastedProduction[j][1], dailyForecastedProduction[j][2], dataSource, stateName]
 
         currentRunTotalAssetProductionJoyn.loc[lastIndex + j] = row
-
-    # merge currentRunTotalAssetProductionJoyn into masterJoynData
-    masterJoynData = mergeBIntoA(masterJoynData, currentRunTotalAssetProductionJoyn)
 
     return masterJoynData
 
@@ -1667,39 +1664,20 @@ def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword)
     return data
 
 
-"""
-        
-For this script to work, A and B MUST have the same columns and column names.
-Two of those columns must be "Date" and "API". The function will merge B into A
-      
-"""
-
-def mergeBIntoA(A, B):
-    # convert date column to datetime format for sorting purposes
-    A["Date"] = pd.to_datetime(A["Date"])
-    A["Date"] = A["Date"].dt.strftime("%m/%d/%Y")
-    B["Date"] = pd.to_datetime(B["Date"])
-    B["Date"] = B["Date"].dt.strftime("%m/%d/%Y")
-    # compare rows in B to rows in A
-    for i in range(0, len(B)):
-        row = B.iloc[i]
-        # get index of row in A that matches row in B
-        index = A.index[(A["Date"] == row["Date"]) &
-                        (A["API"] == row["API"])].tolist()
-        # if no index is found, then append row to A
-        if len(index) > 1:
-            print("Error: More than one row found")
-        # if no index is found, then append row to A
-        if len(index) == 0:
-            A.loc[len(A)] = row
-        else:
-            A.iloc[index] = row
-
-    # convert date column to datetime format for sorting purposes
-    A["Date"] = pd.to_datetime(A["Date"])
-    A.sort_values(by=["Date"], inplace=True, ascending=True)
-    # convert date column to string format for viewing purposes
-    A["Date"] = A["Date"].dt.strftime("%m/%d/%Y")
-
-    return A
+def compareJoynSqlDuplicates(sqlData, joynData):
+    
+    sqlIds = sqlData["ID"].tolist()
+    joynIds = joynData["ID"].tolist()
+    
+    ## compare two lists and return duplicates
+    duplicateRecordId = list(set(sqlIds) & set(joynIds))
+    
+    print("Number of Duplicate Records: " + len(duplicateRecordId))
+    print("All Historcal Records Length: " + len(sqlIds))
+    print("Number of JOYN Records: " + len(joynIds))
+    
+    ## conver to dataframe with header "ID"
+    duplicateRecordId = pd.DataFrame(duplicateRecordId, columns=["ID"])
+    
+    return duplicateRecordId
 

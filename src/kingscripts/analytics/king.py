@@ -246,7 +246,7 @@ Pull planning Ghantt Chart from data lake and imports to SQL server
 
 def updateKingPlanningChart(dataplan, serverName, databaseName, tableName):
     
-    tech.putData(serverName, databaseName, dataplan, tableName)
+    tech.putDataReplace(serverName, databaseName, dataplan, tableName)
 
     return True
 

@@ -68,16 +68,16 @@ wellHeaderData = joyn.getWellHeaderData(
 
 ## Pull latest X Days of modified production data from JOYN
 
-dataframe = joyn.getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHeaderData,365)
+dataframe = joyn.getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHeaderData,5)
 
 
 
 # dataframe.to_csv(r"C:\Users\gtatman\Downloads\Python\testproduction.csv")
-tech.putData(
+tech.putDataReplace(
     server=kingLiveServer,
     database = "gabe",
     data = dataframe,
-    tableName= "test_table"
+    tableName= "working_table"
 )
 
 

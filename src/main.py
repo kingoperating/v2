@@ -134,6 +134,84 @@ listOfWells = [
 WORKING ZONE
 '''
 
+masterSqlAllocatedProduction = tech.getData(
+    serverName=kingLiveServer,
+    databaseName="gabe",
+    tableName="test_table"
+)
+
+wellData = joyn.getWellHeaderData(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+lastTwoDaysJoynData = joyn.getDailyAllocatedProductionRawWithDeleted(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    wellHeaderData=wellData,
+    daysToLookBack=2
+)
+
+lastTwoDaysJoynData["ID"] = lastTwoDaysJoynData["ID"].astype(str)
+
+duplicatedIdList = joyn.compareJoynSqlDuplicates(
+    joynData=lastTwoDaysJoynData,
+    sqlData=masterSqlAllocatedProduction
+)
+
+duplicatedIdList["ID"] = duplicatedIdList["ID"].astype(str)
+
+tech.putDataReplace(
+    server=kingLiveServer,
+    database="gabe",
+    data=duplicatedIdList,
+    tableName="duplicates_table"
+)
+
+x = 5
+
+listOfIds = duplicatedIdList["ID"].tolist()
+
+delete = tech.deleteDuplicateRecords(
+    server=kingLiveServer,
+    database="gabe",
+    tableName="test_table",
+    duplicateList=listOfIds
+)
+
+lengthOfWorkingTable = tech.getData(
+    serverName=kingLiveServer,
+    databaseName="gabe",
+    tableName="test_table"
+)
+
+print("All Historical Record Length: " + len(lengthOfWorkingTable))
+
+tech.putDataAppend(
+    server=kingLiveServer,
+    database="gabe",
+    data=lastTwoDaysJoynData,
+    tableName="test_table"
+)
+
+x= 5
+
+
+data = tech.getData(
+    serverName=kingLiveServer,
+    databaseName="production",
+    tableName="prod_daily_allocated_volume"
+)
+
+print(len(data))
+
+tech.putDataUpdate(
+    server=kingLiveServer,
+    database=kingProductionDatabase,
+    data=data,
+    tableName="prod_daily_allocated_volume"
+)
+
 wellData = joyn.getWellHeaderData(
     joynUsername=joynUsername,
     joynPassword=joynPassword
@@ -152,12 +230,14 @@ dataJoyn = joyn.getDailyAllocatedProductionRaw(
     daysToLookBack=2
 )
 
-tech.putData(
+tech.putDataReplace(
     server=kingLiveServer,
     database=kingProductionDatabase,
     data=dataJoyn,
     tableName="prod_joyn_data"
 )
+
+
 
 x = 5
 
