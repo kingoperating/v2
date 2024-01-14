@@ -134,15 +134,22 @@ listOfWells = [
 WORKING ZONE
 '''
 
+wellData = joyn.getWellHeaderData(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+data = joyn.getDailyAllocatedProductionRaw(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    wellHeaderData=wellData,
+    daysToLookBack=2
+)
+
 masterSqlAllocatedProduction = tech.getData(
     serverName=kingLiveServer,
     databaseName="gabe",
     tableName="test_table"
-)
-
-wellData = joyn.getWellHeaderData(
-    joynUsername=joynUsername,
-    joynPassword=joynPassword
 )
 
 lastTwoDaysJoynData = joyn.getDailyAllocatedProductionRawWithDeleted(

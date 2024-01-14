@@ -9,7 +9,6 @@ import numpy as np
 import copy
 from kingscripts.operations.combocurve import *
 
-
 """
     
 This script gets all the modifed daily allocated production over to the master JOYN dataframe in prep to merge    
@@ -352,27 +351,28 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
 
     # set initial variables
     readingVolume = 0
-    dataSource = "di"
 
     # create empty dataframe to store results with correct headers for JOYN API
-    headersJoynRaw = ["AssetId", "ID", "Name", "ReadingVolume",
-                      "NetworkName", "Date", "Product", "Disposition"]
-
-    headersFinal = [
-        "Date",
-        "API14",
-        "Well Accounting Name",
-        "Oil Volume",
-        "Gas Volume",
-        "Water Volume",
-        "Oil Sold Volume",
-        "Data Source",
+    headersJoynRaw = [
+        
+        "AssetId", 
+        "ID",
+        "Name",
+        "ReadingVolume",
+        "NetworkName",
+        "ReadingDate",
+        "Product", 
+        "Disposition", 
+        "isDeleted",
+        "modifiedTimestamp",
+        "Comments",
+        "CreatedBy",
+        "ObjectType"
     ]
+    
 
-    counter = 0
     # create empty dataframe to store results with correct headers for JOYN API for both raw and final data pivot
     rawJoynTotalAssetProduction = pd.DataFrame(columns=headersJoynRaw)
-    currentRunTotalAssetProductionJoyn = pd.DataFrame(columns=headersFinal)
 
     ## Master loop through all results from JOYN API ##
     for i in range(0, len(totalResults)):
@@ -383,31 +383,29 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
             # reading volume for current allocation row
             readingVolume = totalResults[i][j]["Volume"]
             ## ID
-            id = totalResults[i][j]["ID"]
-            if id == 259662876447645699:
-                x = 5
-                testvolume = readingVolume
-                x=5
+            id = str(totalResults[i][j]["ID"])
             isDeleted = totalResults[i][j]["IsDeleted"]
             # network name for current allocation row
             networkName = totalResults[i][j]["NetworkName"]
             niceName = getName(uuidRaw)
             # reading date for current allocation row
-            date = totalResults[i][j]["ReadingDate"]
+            readingDate = totalResults[i][j]["ReadingDate"]
             # runs splitdate() into correct format
-            dateBetter = splitDateFunction(date)
+            dateBetter = splitDateFunction(readingDate)
             # product type for current allocation row
-            productName = totalResults[i][j]["Product"]
-            # runs switchProductType() to get correct product type
-            newProduct = switchProductType(productName)
+            productName = int(totalResults[i][j]["Product"])
             # disposition for current allocation row
-            disposition = totalResults[i][j]["Disposition"]
+            disposition = int(totalResults[i][j]["Disposition"])
+            modifedTimestamp = totalResults[i][j]["ModifiedTimestamp"]
+            comments = str(totalResults[i][j]["Comments"])
+            createdBy = totalResults[i][j]["CreatedBy"]
+            objectType = totalResults[i][j]["ObjectType"]
 
             if isDeleted == True:
                 continue
         
             row = [apiNumber, id, niceName, readingVolume, networkName,
-                       dateBetter, productName, disposition]
+                       dateBetter, productName, disposition, isDeleted, modifedTimestamp, comments, createdBy, objectType]
                 # append row to dataframe
             rawJoynTotalAssetProduction.loc[len(
                     rawJoynTotalAssetProduction)] = row
@@ -415,7 +413,7 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
 
     # convert date column to datetime format for sorting purposes
     rawJoynTotalAssetProduction["Date"] = pd.to_datetime(
-        rawJoynTotalAssetProduction["Date"])
+        rawJoynTotalAssetProduction["ReadingDate"])
     # sort dataframe by date for loop to get daily production
     rawTotalAssetProductionSorted = rawJoynTotalAssetProduction.sort_values(by=[
         "Date"])
