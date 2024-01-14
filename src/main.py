@@ -133,11 +133,24 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
-
 wellData = joyn.getWellHeaderData(
     joynUsername=joynUsername,
     joynPassword=joynPassword
 )
+
+productTable = joyn.getProductType(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+)
+
+tech.putDataReplace(
+    server=kingLiveServer,
+    database="gabe",
+    data=productTable,
+    tableName="product_type"
+)
+
+
 
 data = joyn.getDailyAllocatedProductionRaw(
     joynUsername=joynUsername,
@@ -147,8 +160,8 @@ data = joyn.getDailyAllocatedProductionRaw(
 )
 
 masterSqlAllocatedProduction = tech.getData(
-    serverName=kingLiveServer,
-    databaseName="gabe",
+    server=kingLiveServer,
+    database="gabe",
     tableName="test_table"
 )
 
@@ -181,8 +194,8 @@ delete = tech.deleteDuplicateRecords(
 )
 
 lengthOfWorkingTable = tech.getData(
-    serverName=kingLiveServer,
-    databaseName="gabe",
+    server=kingLiveServer,
+    database="gabe",
     tableName="test_table"
 )
 
@@ -196,8 +209,8 @@ tech.putDataAppend(
 )
 
 masterSqlAllocatedProduction = tech.getData(
-    serverName=kingLiveServer,
-    databaseName="gabe",
+    server=kingLiveServer,
+    database="gabe",
     tableName="test_table"
 )
 
@@ -207,8 +220,8 @@ x= 5
 
 
 data = tech.getData(
-    serverName=kingLiveServer,
-    databaseName="production",
+    server=kingLiveServer,
+    database="production",
     tableName="prod_daily_allocated_volume"
 )
 

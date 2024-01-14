@@ -158,49 +158,73 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
 
     # set initial variables
     readingVolume = 0
-    dataSource = "di"
-    
-     ## get headers out totalResults
-    headers = totalResults[0][0].keys()
-    ## turn into list
-    headersList = list(headers)
 
     # create empty dataframe to store results with correct headers for JOYN API
-    headersJoynRaw = ["AssetId", "ID", "Name", "ReadingVolume",
-                      "NetworkName", "Date", "Product", "Disposition","isDeleted"]
+    headersJoynRaw = [
+        
+        "AssetId", 
+        "ID",
+        "Name",
+        "ReadingVolume",
+        "NetworkName",
+        "ReadingDate",
+        "Product", 
+        "Disposition", 
+        "isDeleted",
+        "modifiedTimestamp",
+        "Comments",
+        "CreatedBy",
+        "ObjectType"
+    ]
+    
 
-    counter = 0
     # create empty dataframe to store results with correct headers for JOYN API for both raw and final data pivot
-    rawJoynTotalAssetProduction = pd.DataFrame(columns=headersList)
-    
-    
+    rawJoynTotalAssetProduction = pd.DataFrame(columns=headersJoynRaw)
 
     ## Master loop through all results from JOYN API ##
     for i in range(0, len(totalResults)):
-        # loop through all results in each page
         for j in range(0, len(totalResults[i])):
-            # loop over all headerList
-            listRaw = []
-            for k in range(0, len(headersList)):
-                currentHeader = headersList[k]
-                listRaw.append(totalResults[i][j][currentHeader])
-            ## create row from listRaw
-            row = listRaw
-            # append row to dataframe
+            # JOYN unquie ID for each asset
+            uuidRaw = totalResults[i][j]["assetId"]
+            apiNumber = getApiNumber(uuidRaw)
+            # reading volume for current allocation row
+            readingVolume = totalResults[i][j]["Volume"]
+            ## ID
+            id = str(totalResults[i][j]["ID"])
+            isDeleted = totalResults[i][j]["IsDeleted"]
+            # network name for current allocation row
+            networkName = totalResults[i][j]["NetworkName"]
+            niceName = getName(uuidRaw)
+            # reading date for current allocation row
+            readingDate = totalResults[i][j]["ReadingDate"]
+            # runs splitdate() into correct format
+            dateBetter = splitDateFunction(readingDate)
+            # product type for current allocation row
+            productName = int(totalResults[i][j]["Product"])
+            # disposition for current allocation row
+            disposition = int(totalResults[i][j]["Disposition"])
+            modifedTimestamp = totalResults[i][j]["ModifiedTimestamp"]
+            comments = str(totalResults[i][j]["Comments"])
+            createdBy = totalResults[i][j]["CreatedBy"]
+            objectType = totalResults[i][j]["ObjectType"]
+
+            row = [apiNumber, id, niceName, readingVolume, networkName,
+                       dateBetter, productName, disposition, isDeleted, modifedTimestamp, comments, createdBy, objectType]
+                # append row to dataframe
             rawJoynTotalAssetProduction.loc[len(
                     rawJoynTotalAssetProduction)] = row
-        
-        
-            # row = [apiNumber, readingId, niceName, readingVolume, networkName,
-            #            dateBetter, productName, disposition, isDeleted]
-            #     # append row to dataframe
-            # rawJoynTotalAssetProduction.loc[len(
-            #         rawJoynTotalAssetProduction)] = row
             
 
-    rawJoynTotalAssetProduction["ID"] = rawJoynTotalAssetProduction["ID"].astype(str)
+    # convert date column to datetime format for sorting purposes
+    rawJoynTotalAssetProduction["Date"] = pd.to_datetime(
+        rawJoynTotalAssetProduction["ReadingDate"])
+    # sort dataframe by date for loop to get daily production
+    rawTotalAssetProductionSorted = rawJoynTotalAssetProduction.sort_values(by=[
+        "Date"])
     
-    return rawJoynTotalAssetProduction
+    return rawTotalAssetProductionSorted
+
+
 
 """
     
@@ -1654,3 +1678,118 @@ def compareJoynSqlDuplicates(sqlData, joynData):
     
     return duplicateRecordId
 
+def getProductType(joynUsername, joynPassword):
+    
+    def getIdToken():
+            
+            load_dotenv()
+    
+            login = joynUsername
+            password = joynPassword
+    
+            # User Token API
+            url = "https://api.joyn.ai/common/user/token"
+            # Payload for API - use JOYN crdentials
+            payload = {
+                "uname": str(login),
+                "pwd": str(password)
+            }
+            # Headers for API - make sure to use content type of json
+            headers = {
+                "Content-Type": "application/json"
+            }
+    
+            # dump payload into json format for correct format
+            payloadJson = json.dumps(payload)
+            response = requests.request(
+                "POST", url, data=payloadJson, headers=headers)
+            
+            if response.status_code == 200:  # 200 = success
+                print("Successful JOYN Authentication")
+            else:
+                print(response.status_code)
+            
+            results = response.json()  # get response in json format
+            idToken = results["IdToken"]
+            
+            return idToken
+    
+    idToken = getIdToken()  # get idToken from authJoyn function
+    
+    url = "https://api-fdg.joyn.ai/admin/api/ProductType"
+    
+    request = requests.request(
+        "GET",
+        url,
+        headers={"Authorization": idToken}
+    )
+    
+    response = request.json()
+    responseCode = request.status_code
+    print(responseCode)
+    
+    headers = ["id", "n"]
+    productTypeTable = pd.DataFrame(columns=headers)
+    
+    for i in range(0, len(response["Result"])):
+        id = response["Result"][i]["id"]
+        name = response["Result"][i]["n"]
+        row = [id, name]
+        productTypeTable.loc[len(productTypeTable)] = row
+
+    return productTypeTable
+
+
+def getPicklistOptions(joynUsername, joynPassword):
+    
+    def getIdToken():
+            
+            load_dotenv()
+    
+            login = joynUsername
+            password = joynPassword
+    
+            # User Token API
+            url = "https://api.joyn.ai/common/user/token"
+            # Payload for API - use JOYN crdentials
+            payload = {
+                "uname": str(login),
+                "pwd": str(password)
+            }
+            # Headers for API - make sure to use content type of json
+            headers = {
+                "Content-Type": "application/json"
+            }
+    
+            # dump payload into json format for correct format
+            payloadJson = json.dumps(payload)
+            response = requests.request(
+                "POST", url, data=payloadJson, headers=headers)
+            
+            if response.status_code == 200:  # 200 = success
+                print("Successful JOYN Authentication")
+            else:
+                print(response.status_code)
+            
+            results = response.json()  # get response in json format
+            idToken = results["IdToken"]
+            
+            return idToken
+    
+    idToken = getIdToken()  # get idToken from authJoyn function
+    
+    url = "https://api-fdg.joyn.ai/admin/api/PicklistOptions"
+    
+    request = requests.request(
+        "GET",
+        url,
+        headers={"Authorization": idToken}
+    )
+    
+    response = request.json()
+    responseCode = request.status_code
+    print(responseCode)
+    
+    x= 5
+    
+    return x

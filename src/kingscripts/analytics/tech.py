@@ -16,10 +16,10 @@ GET Function - returns a dataframe given serverName, databaseName, and tableName
     
 """
 
-def getData(serverName, databaseName, tableName):
+def getData(server, database, tableName):
     # Set up the connection parameters
-    server = serverName
-    database = databaseName
+    server = server
+    database = database
     # Establish the connection with Windows Authentication
     connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
     connection = pyodbc.connect(connection_string)
