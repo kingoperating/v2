@@ -23,8 +23,8 @@ load_dotenv()
 # getting API keys
 enverusApiKey = os.getenv('ENVERUS_API')
 greasebookApi = os.getenv('GREASEBOOK_API_KEY')
-serviceAccount = ServiceAccount.from_file(
-    os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
+#serviceAccount = ServiceAccount.from_file(
+    #os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
 joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
@@ -116,18 +116,18 @@ wellData = joyn.getWellHeaderData(
 # Gets Historical Allocated Production from KOC Datawarehouse 3.0
 historicalAllocatedProduction = tech.getData(
     server=kingLiveServer,
-    database="gabe",
-    tableName="working_table"
+    database= kingProductionDatabase,
+    tableName= "allocated_production"
 )
 
 print("Length of Historical Allocated Production: " + str(len(historicalAllocatedProduction)))
 
-# Get Last 3 Days of Production From JOYN
+# Get Last _ Days of Production From JOYN
 joynProduction = joyn.getDailyAllocatedProductionRawWithDeleted(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
     wellHeaderData=wellData,
-    daysToLookBack=3
+    daysToLookBack=2
 )
 
 # Compare the two dataframes and get the duplicates
@@ -141,16 +141,16 @@ listOfIds = duplicatedIdList['ID'].tolist()
 # Delete duplicate from Historical Allocated Production
 deleteRecords = tech.deleteDuplicateRecords(
     server=kingLiveServer,
-    database="gabe",
-    tableName="working_table",
+    database= kingProductionDatabase,
+    tableName="allocated_production",
     duplicateList=listOfIds
 )
 
 # Get New Length of Historical Allocated Production
 lengthOfWorkingTable = tech.getData(
     server=kingLiveServer,
-    database="gabe",
-    tableName="working_table"
+    database= kingProductionDatabase,
+    tableName="allocated_production"
 )
 
 print("All Historical Record Length After Deleting: " + str(len(lengthOfWorkingTable)))
@@ -158,20 +158,19 @@ print("All Historical Record Length After Deleting: " + str(len(lengthOfWorkingT
 ## Append joyn production to historical allocated production
 tech.putDataAppend(
     server=kingLiveServer,
-    database="gabe",
+    database=kingProductionDatabase,
     data=joynProduction,
-    tableName="working_table"
+    tableName="allocated_production"
 )
 
 historicalAllocatedProduction = tech.getData(
     server=kingLiveServer,
-    database="gabe",
-    tableName="working_table"
+    database=kingProductionDatabase,
+    tableName="allocated_production"
 )
 
 print("All Historical Record Length After Appending: " + str(len(historicalAllocatedProduction)))
 
-print("Genius")
+print("Congradulations you are amatuer data engnr")
 
-x= 5
     
