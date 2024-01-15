@@ -1318,7 +1318,7 @@ PUT Function - loads data from Read
       
 """
 
-def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword):
+def putJoynDataApi(userId, rawProductionData, objectId, joynUsername, joynPassword):
     
     userId = int(userId)
     
