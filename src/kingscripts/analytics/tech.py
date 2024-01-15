@@ -39,6 +39,8 @@ def getData(server, database, tableName):
     # Close the cursor and the connection
     cursor.close()
     connection.close()
+    
+    print("Data has been pulled from the " + str(tableName) + " in the " + str(database) + " database on the " + str(server) + " server.")
 
     # Return the dataframe
     return data

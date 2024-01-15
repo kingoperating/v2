@@ -105,6 +105,8 @@ listOfWells = [
 
 ### BEGIN PRODUCTION ETL PROCESS ###
 
+print("Beginning Production ETL Process")
+
 # Get Well Header Data
 wellData = joyn.getWellHeaderData(
     joynUsername=joynUsername,
