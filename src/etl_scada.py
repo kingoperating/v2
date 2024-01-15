@@ -140,7 +140,7 @@ userId = joyn.getJoynUsers(
 
 readData = king.getReadHowardProduction()
 
-joyn.putReadData(
+joyn.putJoynDataApi(
     userId=userId,
     rawProductionData=readData,
     objectId=read332hId,
