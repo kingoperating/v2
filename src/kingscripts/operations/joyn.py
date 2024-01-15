@@ -1387,7 +1387,7 @@ def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword)
     for i in range(0, numberOfRows):
         data = copy.deepcopy(dataTemplate)
         ##test zone
-        day = rawProductionData["Day"][i]
+        day = rawProductionData["Date"][i]
         readingDate = dt.datetime.strptime(day, "%m/%d/%Y")
         readingDateClean = readingDate.strftime("%Y-%m-%d")
         id = 1000 + i ## creates unique id for each row that ties everything together
@@ -1417,7 +1417,7 @@ def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword)
         ## Decs - Oil volume
         newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
         newDecs["attId"] = 263005
-        newDecs["v"] = str(rawProductionData[" Total Oil Produced"][i])
+        newDecs["v"] = str(rawProductionData["Oil"][i])
         newDecs["ID"] = j
         newDecs["ReadingID"] = id
         j = j + 1
@@ -1489,7 +1489,7 @@ def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword)
         ## Decs - MCF volume
         newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
         newDecs["attId"] = 263005
-        newDecs["v"] = str(rawProductionData[" Total MCF"][i])
+        newDecs["v"] = str(rawProductionData["Gas"][i])
         newDecs["ID"] = j
         newDecs["ReadingID"] = id
         j = j + 1
@@ -1553,7 +1553,7 @@ def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword)
         ## Decs = Oil Sold Volume
         newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
         newDecs["attId"] = 263005
-        newDecs["v"] = str(rawProductionData[" Total Oil Sold"][i])
+        newDecs["v"] = str(rawProductionData["Oil Sold"][i])
         newDecs["ID"] = j
         newDecs["ReadingID"] = id
         j = j + 1
@@ -1616,7 +1616,7 @@ def putReadData(userId, rawProductionData, objectId, joynUsername, joynPassword)
         ## Decs = Water Volume
         newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
         newDecs["attId"] = 263005
-        newDecs["v"] = str(rawProductionData[" Total Water"][i])
+        newDecs["v"] = str(rawProductionData["Water"][i])
         newDecs["ID"] = j
         newDecs["ReadingID"] = id
         j = j + 1
@@ -1677,6 +1677,7 @@ def compareJoynSqlDuplicates(sqlData, joynData):
     duplicateRecordId["ID"] = duplicateRecordId["ID"].astype(str)
     
     return duplicateRecordId
+
 
 def getProductType(joynUsername, joynPassword):
     
