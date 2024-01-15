@@ -1678,6 +1678,7 @@ def compareJoynSqlDuplicates(sqlData, joynData):
     
     return duplicateRecordId
 
+
 def getProductType(joynUsername, joynPassword):
     
     def getIdToken():
