@@ -200,9 +200,9 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
             # runs splitdate() into correct format
             dateBetter = splitDateFunction(readingDate)
             # product type for current allocation row
-            productName = int(totalResults[i][j]["Product"])
+            productName = totalResults[i][j]["Product"]
             # disposition for current allocation row
-            disposition = int(totalResults[i][j]["Disposition"])
+            disposition = totalResults[i][j]["Disposition"]
             modifedTimestamp = totalResults[i][j]["ModifiedTimestamp"]
             comments = str(totalResults[i][j]["Comments"])
             createdBy = totalResults[i][j]["CreatedBy"]
