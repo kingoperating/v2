@@ -988,11 +988,7 @@ def putJoynDataApi(userId, rawProductionData, objectId, joynUsername, joynPasswo
         ## POST request to JOYN API
         joynApiPost(data, idToken)
     
-    print("Finished Looping...")
-    
-    ## print dict to file
-    with open(r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\v2\src\kingscripts\operations\docs\Read342H_SampleUploadModifed" + str(objectId) + ".json", 'w') as json_file:  
-        json.dump(data, json_file)  
+    print("Finished Looping " + str(objectId))
 
     return data
 
