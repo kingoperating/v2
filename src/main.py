@@ -134,20 +134,16 @@ listOfWells = [
 WORKING ZONE
 '''
 
-
-
-
-dispostion = tech.getData(
-    server=kingLiveServer,
-    database="gabe",
-    tableName="disposition"
+wellHeaderData = joyn.getWellHeaderData(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
 )
 
 tech.putDataReplace(
     server=kingLiveServer,
     database="wells",
-    data=dispostion,
-    tableName="disposition"
+    data=wellHeaderData,
+    tableName="header_data"
 )
 
 productTable = joyn.getProductType(
