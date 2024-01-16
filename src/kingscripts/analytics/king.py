@@ -257,7 +257,7 @@ Reading Howard County Excel file and storing it in pandas dataframe
 
 """  
 
-def getReadHowardProduction(pathToFolder):
+def getHCEFProduction(pathToFolder):
     
     headers = [
         "Date",
