@@ -9,6 +9,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 import os.path
+from pathlib import Path
 import pandas as pd
 from kingscripts.analytics import tech
 
@@ -256,7 +257,7 @@ Reading Howard County Excel file and storing it in pandas dataframe
 
 """  
 
-def getReadHowardProduction():
+def getReadHowardProduction(pathToFolder):
     
     headers = [
         "Date",
@@ -268,8 +269,15 @@ def getReadHowardProduction():
         
     ]
     
-    
-    readData = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\hcef\readTest.xlsx", header=2)
+    # create list of all files in pathToFolder
+    files = os.listdir(pathToFolder)
+    # get the most recent file
+    files.sort(key=lambda x: os.path.getmtime(os.path.join(pathToFolder, x)))
+    # create path to most recent file
+    pathToData = os.path.join(pathToFolder, files[-1])
+    # read the data
+    readData = pd.read_excel(pathToData, header=2)
+
     readData = readData.drop(readData.columns[3], axis=1)
     readData = readData.drop(readData.columns[3], axis=1)
     readData = readData.drop(readData.columns[4], axis=1)

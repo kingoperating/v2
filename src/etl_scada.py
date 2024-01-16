@@ -74,7 +74,7 @@ todayDateString = dateToday.strftime("%Y-%m-%d")
 eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
 
 # Important Variables for scripts
-nglStream = 0
+pathToRead332H = str(os.getenv("READ_332H"))
 noNglStream = 1
 texas = "texas"
 wyoming = "wyoming"
@@ -138,7 +138,9 @@ userId = joyn.getJoynUsers(
     nameToFind="mtanner"
 )
 
-readData = king.getReadHowardProduction()
+readData = king.getReadHowardProduction(
+    pathToFolder=pathToRead332H,
+)
 
 joyn.putJoynDataApi(
     userId=userId,
