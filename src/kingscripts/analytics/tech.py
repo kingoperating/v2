@@ -89,17 +89,17 @@ def putDataUpdate(server, database, data, tableName):
     # Create a cursor object to interact with the database
     cursor = connection.cursor()
     
-    for index, row in data.iterrows():
-        columns = ', '.join([f'[{col}]' for col in row.index])  # Enclose column names in square brackets
-        placeholders = ', '.join(['?'] * len(row))
-        sql = f'INSERT INTO {tableName} ({columns}) VALUES ({placeholders})'
-        cursor.execute(sql, tuple(row))
-    
     # for index, row in data.iterrows():
-    #     columns = ', '.join(row.index)
-    #     values = ', '.join(['?'] * len(row))
-    #     sql = f'INSERT INTO {tableName} ({columns}) VALUES ({values})'
-    #     cursor.execute(sql, tuple(row))
+    #     columns = ', '.join([f'{col}' for col in row.index])  # Enclose column names in square brackets
+    #     placeholders = ', '.join(['?'] * len(row))
+    #     sql = f'INSERT INTO {tableName} {columns} VALUES {placeholders}'
+    #     cursor.execute(sql, row)
+    
+    for i, row in data.iterrows():
+        columns = ', '.join(row[i].index)
+        values = ', '.join(['?'] * len(row))
+        sql = f'INSERT INTO {tableName} {columns} VALUES {values}'
+        cursor.execute(sql, tuple(row))
 
     # Commit the transaction
     connection.commit()

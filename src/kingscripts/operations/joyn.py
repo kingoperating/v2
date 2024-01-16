@@ -570,10 +570,12 @@ def getWellHeaderData(joynUsername, joynPassword):
     responseCode = request.status_code
     print(responseCode)
     
-    ## dump response into dataframe
-    wellHeaderData = pd.DataFrame(response["Result"])
+    results = response["Result"]
     
-    return wellHeaderData
+    ## flatten nested json
+    data = pd.json_normalize(results)
+    
+    return data
 
 
 """

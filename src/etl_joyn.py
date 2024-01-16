@@ -34,6 +34,7 @@ kingServerExpress = str(os.getenv('SQL_SERVER'))
 kingDatabaseExpress = str(os.getenv('SQL_KING_DATABASE'))
 kingLiveServer = str(os.getenv('SQL_SERVER_KING_DATAWAREHOUSE'))
 kingProductionDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
+kingWellsDatabase = str(os.getenv('SQL_WELLS_DATABASE'))
 
 # Getting Date Variables
 dateToday = dt.datetime.today()
@@ -111,6 +112,14 @@ print("Beginning Production ETL Process")
 wellData = joyn.getWellHeaderData(
     joynUsername=joynUsername,
     joynPassword=joynPassword
+)
+
+# Append Well Header Data to SQL Server
+tech.putDataReplace(
+    server=kingLiveServer,
+    database=kingWellsDatabase,
+    data=wellData,
+    tableName="header_data"
 )
 
 # Gets Historical Allocated Production from KOC Datawarehouse 3.0
