@@ -6,8 +6,10 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 import numpy as np
+from pathlib import Path
 import copy
 from kingscripts.operations.combocurve import *
+from kingscripts.operations import docs
 
 """
     
@@ -223,7 +225,6 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
         "Date"])
     
     return rawTotalAssetProductionSorted
-
 
 
 """
@@ -709,8 +710,9 @@ def putJoynDataApi(userId, rawProductionData, objectId, joynUsername, joynPasswo
 
         return idToken
     
-    file = open(r"C:\Users\mtanner\OneDrive - King Operating\Documents 1\code\kingoperating\v2\src\kingscripts\operations\docs\Read342H_SampleUpload.json")
-
+    # Gets the Sample Upload Template from docs
+    pathBetter  = Path(__file__).parent / r"docs\Read342H_SampleUpload.json"
+    file = open(pathBetter, "r")
     dataTemplate = json.load(file)
     
     numberOfRows = len(rawProductionData)
