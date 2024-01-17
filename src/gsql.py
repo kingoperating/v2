@@ -14,18 +14,42 @@
 
 import os
 from kingscripts.analytics import tech
-from kingscripts.operations import joyn
+from kingscripts.operations import joyn, combocurve
 import pandas as pd
 import numpy as np
 from dotenv import load_dotenv
+from combocurve_api_v1 import ServiceAccount
 
 # load .env file
 load_dotenv()
 
-kingLiveServer = str(os.getenv('SQL_SERVER_KING_DATABASE'))
+kingLiveServer = str(os.getenv('SQL_SERVER_KING_DATAWAREHOUSE'))
 kingProductionDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
 
+serviceAccount = ServiceAccount.from_file(
+    os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
+comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
 
+forecast = combocurve.getDailyForecastVolume(
+    projectIdKey="6572267d2bcb2950186aca90",
+    forecastIdKey="65722aa4ea66fa10d79f2be6",
+    serviceAccount=serviceAccount,
+    comboCurveApi = comboCurveApiKey
+)
+
+print(len(forecast))
+
+print("Writing forecast to SQL Server...")
+
+tech.putDataReplace(
+     server=kingLiveServer,
+     database = "production",
+     data = forecast,
+     tableName= "daily_forecast"
+
+)
+
+x = 5
 # How to query
 
 # data = tech.getData(
@@ -45,7 +69,9 @@ kingProductionDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
 # )
 # print("Hooray")
 
+
 # ** WORKING SPACE **
+
 
 ## Get JOYN Username and password
 joynUsername = str(os.getenv('JOYN_USERNAME'))
@@ -68,16 +94,16 @@ wellHeaderData = joyn.getWellHeaderData(
 
 ## Pull latest X Days of modified production data from JOYN
 
-dataframe = joyn.getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHeaderData,5)
+# dataframe = joyn.getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHeaderData,5)
 
 
 
-# dataframe.to_csv(r"C:\Users\gtatman\Downloads\Python\testproduction.csv")
-tech.putDataReplace(
-    server=kingLiveServer,
-    database = "gabe",
-    data = dataframe,
-    tableName= "working_table"
-)
+# # dataframe.to_csv(r"C:\Users\gtatman\Downloads\Python\testproduction.csv")
+# tech.putDataReplace(
+#     server=kingLiveServer,
+#     database = "gabe",
+#     data = dataframe,
+#     tableName= "working_table"
+# )
 
 

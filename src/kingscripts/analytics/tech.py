@@ -60,7 +60,7 @@ def putDataReplace(server, database, data, tableName):
     
     engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(connection_string))
     
-    data.to_sql(tableName, engine, if_exists='replace', index=False)
+    data.to_sql(tableName, engine, if_exists='replace', index=False, chunksize = 25000)
     
     print("Data has been replaced to the " + str(tableName) + " in the " + str(database) + " database on the " + str(server) + " server.")
    
@@ -73,7 +73,7 @@ def putDataAppend(server, database, data, tableName):
     
     engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(connection_string))
     
-    data.to_sql(tableName, engine, if_exists='append', index=False)
+    data.to_sql(tableName, engine, if_exists='append', index=False, chunksize = 25000)
     
     print("Data has been appended to the " + str(tableName) + " in the " + str(database) + " database on the " + str(server) + " server.")
    
