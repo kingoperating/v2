@@ -135,6 +135,20 @@ listOfWells = [
 WORKING ZONE
 '''
 
+allocatedProd = tech.getData(
+    server=kingLiveServer,
+    database=kingProductionDatabase,
+    tableName="allocated_production"
+)
+
+combocurve.putJoynWellProductionData(
+    allocatedProductionMaster=allocatedProd,
+    comboCurveApi=comboCurveApiKey,
+    serviceAccount=serviceAccount,
+    daysToLookback=2
+)
+
+
 data = combocurve.getLatestScenarioMonthly(
     projectIdKey="653fcf9ec230f38554b3f1c1",
     scenarioIdKey="653fd02e16729ef21ebd8f08",
@@ -521,7 +535,7 @@ combocurve.putGreasebookWellProductionData(
 )
 
 combocurve.putJoynWellProductionData(
-    currentJoynData=joynData,
+    allocatedProductionMaster=joynData,
     comboCurveApi=comboCurveApiKey,
     serviceAccount=serviceAccount
 )
