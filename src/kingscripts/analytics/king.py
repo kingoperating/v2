@@ -13,6 +13,15 @@ from pathlib import Path
 import pandas as pd
 from kingscripts.analytics import tech
 
+# load .env file
+load_dotenv()
+
+kingLiveServer = str(os.getenv('SQL_SERVER_KING_DATAWAREHOUSE'))
+kingProductionDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
+kingWellsDatabase = str(os.getenv('SQL_WELLS_DATABASE'))
+kingUsageDatabase = str(os.getenv('SQL_USAGE_DATABASE'))
+
+
 
 """
 
@@ -291,6 +300,7 @@ def getHCEFProduction(pathToFolder):
     
     return readData
 
+
 def getworlandUnit108Production(numberOfDays):
     
     headers = [
@@ -333,3 +343,83 @@ def getworlandUnit108Production(numberOfDays):
     
     
     return wu108DataLastTwoRows
+
+def updateUsageStatsEtl(etlStartTime):
+    
+    ## convert time to datetime
+    etlStartTime = pd.to_datetime(etlStartTime)
+    
+    allocatedProduction = tech.getData(
+        server=kingLiveServer,
+        database= kingProductionDatabase,
+        tableName= "allocated_production"
+    )
+    
+    wellsData = tech.getData(
+        server=kingLiveServer,
+        database= kingWellsDatabase,
+        tableName= "header_data"
+    )
+    
+    lenAllocatedProduction = len(allocatedProduction)
+    lenWellsData = len(wellsData)
+    
+    columnsUsageStats = [
+        "Time",
+        "Table",
+        "Length"
+    ]
+    
+    columnsUsageFunction = [
+        "Time",
+        "Function",
+        "Runtime"
+    ]
+
+    ## create dataframe usage stats
+    usageTableOne = pd.DataFrame(columns=columnsUsageStats)
+    ## create row for usage dataframe
+    usageRowOne = [etlStartTime, "allocated_production", int(lenAllocatedProduction)]
+    usageRowTwo = [etlStartTime, "header_data", int(lenWellsData)]
+    ## append row to dataframe
+    usageTableOne.loc[0] = usageRowOne
+    usageTableOne.loc[1] = usageRowTwo
+    
+    ## append into usage database
+    tech.putDataReplace(
+        server=kingLiveServer,
+        database=kingUsageDatabase,
+        data=usageTableOne,
+        tableName="usage_stats"
+    )
+    
+    
+    return True
+
+def updateUsageStatsEtlRuntime(etlStartTime, etlEndTime, function, runtime):
+    
+    etlStartTime = pd.to_datetime(etlStartTime)
+    runtime = int(runtime)
+    
+    ## create dataframe usage stats
+    columnsUsageFunction = [
+        "Time",
+        "Function",
+        "Runtime"
+    ]
+    
+    usageTableTwo = pd.DataFrame(columns=columnsUsageFunction)
+    ## create row for usage dataframe
+    usageRowThree = [etlStartTime, function, runtime]
+    ## append row to dataframe
+    usageTableTwo.loc[0] = usageRowThree
+    
+    ## append into usage database
+    tech.putDataAppend(
+        server=kingLiveServer,
+        database=kingUsageDatabase,
+        data=usageTableTwo,
+        tableName="usage_function"
+    )
+    
+    return True

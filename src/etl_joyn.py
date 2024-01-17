@@ -28,6 +28,7 @@ greasebookApi = os.getenv('GREASEBOOK_API_KEY')
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
 joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
+function = "etl_joyn"
 
 ## SQL Server Variables - for KOC Datawarehouse 3.0
 kingServerExpress = str(os.getenv('SQL_SERVER'))
