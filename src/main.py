@@ -135,6 +135,44 @@ listOfWells = [
 WORKING ZONE
 '''
 
+data = combocurve.getLatestScenarioMonthly(
+    projectIdKey="653fcf9ec230f38554b3f1c1",
+    scenarioIdKey="653fd02e16729ef21ebd8f08",
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey
+)
+
+# crest = combocurve.ccScenarioToCrestFpSingleWell(
+#     comboCurveScenarioData=data,
+#     nglYield=noNglStream,
+#     gasBtuFactor=1,
+#     gasShrinkFactor=0,
+#     oilPricePercent=1,
+#     gasPricePercent=1,
+#     nglPricePercent=.35,
+#     oilVariableCost=0,
+#     gasVariableCost=.5,
+#     nglVariableCost=0,
+#     waterVariableCost=.6,
+#     state=texas,
+#     capex=6600000,
+# )
+
+crestPdp = combocurve.ccScenarioToCrestFpPdp(
+    comboCurveScenarioData=data,
+    nglYield=noNglStream,
+    gasBtuFactor=1,
+    gasShrinkFactor=0,
+    oilPricePercent=1,
+    gasPricePercent=1,
+    nglPricePercent=.3,
+)
+
+
+crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpJan2024Forecast1172024.csv", index=False)
+
+
+
 wellHeaderData = joyn.getWellHeaderData(
     joynUsername=joynUsername,
     joynPassword=joynPassword

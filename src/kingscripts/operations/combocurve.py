@@ -1604,16 +1604,4 @@ def ccScenarioToCrestFpPdp(
     # drop all rows that are empty
     crestFpOutput.dropna(axis=0, how="all", inplace=True)
 
-    # set empty list for storing month list
-    monthList = []
-    # create month list for printing
-    for i in range(0, len(crestFpOutput)):
-        monthList.append("Month " + str(i + 1))
-    # insert month list into dataframe
-    crestFpOutput.insert(0, "Month", monthList)
-
-    crestFpOutputShifted = crestFpOutput.shift(2, axis=0)
-    crestFpOutputShifted = crestFpOutputShifted.shift(1, axis=1)
-    crestFpOutputShifted = crestFpOutputShifted.fillna("0")
-    
-    return crestFpOutputShifted  # return dataframe
+    return crestFpOutput  # return dataframe
