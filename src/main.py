@@ -41,6 +41,7 @@ serviceAccount = ServiceAccount.from_file(
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
 joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
+function = "main"
 
 ## SQL Server Variables - for KOC Datawarehouse 3.0
 kingServerExpress = str(os.getenv('SQL_SERVER'))
@@ -138,6 +139,25 @@ wellHeaderData = joyn.getWellHeaderData(
     joynUsername=joynUsername,
     joynPassword=joynPassword
 )
+
+dateEnd = dt.datetime.today()
+
+runtimeSeconds = (dateEnd - dateToday).total_seconds()
+
+usageFunction = king.updateUsageStatsEtlRuntime(
+    etlStartTime=dateToday,
+    etlEndTime=dateEnd,
+    function=function,
+    runtime=runtimeSeconds
+)
+
+date = king.updateUsageStatsEtl(
+    etlStartTime=dateToday,
+    runtime=0,
+    function=function,
+    )
+
+
 
 tech.putDataReplace(
     server=kingLiveServer,
