@@ -63,6 +63,7 @@ eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
 pathToRead332H = str(os.getenv("READ_332H"))
 pathToRead342H = str(os.getenv("READ_342H"))
 joynUser = str(os.getenv('JOYN_USER'))
+function = "etl_scada"
 
 ## BEGIN ETL PROCESS
 
