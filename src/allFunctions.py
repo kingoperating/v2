@@ -118,7 +118,7 @@ king.createPumperMessage(
 )
 
 combocurve.putJoynWellProductionData(
-    currentJoynData="INSERT CURRENT JOYN DATA HERE",
+    allocatedProductionMaster="INSERT CURRENT JOYN DATA HERE",
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey,
 )

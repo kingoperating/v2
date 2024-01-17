@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import json
 import pandas as pd
 from combocurve_api_v1 import ComboCurveAuth
+import numpy as np
 
 """
 
@@ -14,10 +15,18 @@ from combocurve_api_v1 import ComboCurveAuth
 """
 
 
-def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
+def putJoynWellProductionData(allocatedProductionMaster, serviceAccount, comboCurveApi, daysToLookback):
+    
     load_dotenv()  # load enviroment variables
 
-    masterJoynData = currentJoynData
+    allocatedProduction = allocatedProductionMaster
+    ## convert date to datetime and sort by date
+    allocatedProduction["ReadingDate"] = pd.to_datetime(allocatedProduction["ReadingDate"])
+    allocatedProduction = allocatedProduction.sort_values(by="ReadingDate")
+    ## get last 30 days of data
+    allocatedProduction = allocatedProduction[
+        allocatedProduction["ReadingDate"] >= datetime.now() - timedelta(days=daysToLookback)
+    ]
 
     print("Start upsert of daily well production data for update records from JOYN")
 
@@ -30,45 +39,110 @@ def putJoynWellProductionData(currentJoynData, serviceAccount, comboCurveApi):
 
     # converts API to int (removing decimals) and then back to string for JSON
 
-    masterJoynData["Date"] = pd.to_datetime(masterJoynData["Date"])
-
-    masterJoynData = masterJoynData.astype({"Date": "string", "API": "string"})
+    # allocatedProduction = allocatedProduction.astype({"ReadingDate": "string", "API": "string"})
 
     # helps when uploading to ComboCurve to check for length of data (can only send 20,000 data points at a time)
-    print("Length of Total Asset Production: " + str(len(masterJoynData)))
+    print("Length of Total Asset Production: " + str(len(allocatedProduction)))
+    
+    columnsComboCurve = [
+        "date",
+        "chosenID",
+        "oil",
+        "gas",
+        "water",
+        "dataSource",
+    ]
+    
+    currentRunJoynData = pd.DataFrame(columns=columnsComboCurve)
+    
+    # Setting some initial variables for loop
+    dailyRawProduction = np.zeros([200, 3])
+    dailyRawAssetId = []
+    dailyRawDate = []
+    priorDate = -999
+    wellCounter = 0
+    lastIndex = 0
+    dataSource = "di"
+    
+    for i in range(0, len(allocatedProduction)):
+        row = allocatedProduction.iloc[i]
+        apiNumberPivot = row["AssetId"]
+        readingVolumePivot = row["ReadingVolume"]
+        productTypePivot = row["Product"]
+        datePivot = row["ReadingDate"]
+        dispostion = int(row["Disposition"])
+        
+        if dispostion == 760096:
+    
+            if datePivot != priorDate and priorDate != -999:
+                # prints all the data for the day
+                for j in range(0, wellCounter):
+                    rowBetter = [dailyRawDate[j], dailyRawAssetId[j], dailyRawProduction[j][0], dailyRawProduction[j]
+                        [1], dailyRawProduction[j][2], dataSource]
 
-    # drops columns that are not needed
-    masterJoynData = masterJoynData.drop(
-        [
-            "Well Accounting Name",
-            "Client",
-            "Oil Forecast",
-            "Gas Forecast",
-            "Water Forecast",
-            "State",
-        ],
-        axis=1,
-    )
-
-    masterJoynDataLastRows = masterJoynData.tail(5000)
-
-    # renames columns to match ComboCurve
-    masterJoynDataLastRows.rename(
-        columns={
-            "Oil Volume": "oil",
-            "Date": "date",
-            "Gas Volume": "gas",
-            "Water Volume": "water",
-            "API": "chosenID",
-            "Data Source": "dataSource",
-            "Oil Sold Volume": "customNumber0",
-        },
-        inplace=True,
-    )
-
-    totalAssetProductionJson = masterJoynDataLastRows.to_json(
+                    currentRunJoynData.loc[lastIndex + j] = rowBetter
+                    
+                    
+                # resets the daily variables
+                dailyRawProduction = np.zeros([200, 4])
+                dailyRawAssetId = []
+                dailyRawDate = []
+                wellCounter = 0  # keeping track of how many results we have on the same day
+                lastIndex = lastIndex + j + 1
+            
+            # if API number is in the list, then we need to update the dailyRawProduction array
+            if apiNumberPivot in dailyRawAssetId:
+                index = dailyRawAssetId.index(apiNumberPivot)
+                # update the dailyRawProduction array with correct index
+                if productTypePivot == 760011:
+                    dailyRawProduction[index][0] = readingVolumePivot
+                elif productTypePivot == 760010:
+                    dailyRawProduction[index][1] = readingVolumePivot
+                elif productTypePivot == 760012:
+                    dailyRawProduction[index][2] = readingVolumePivot
+            else:
+                dailyRawAssetId.append(apiNumberPivot)
+                cleanDatePivot = datePivot.strftime("%m/%d/%Y")
+                dailyRawDate.append(cleanDatePivot)
+                if productTypePivot == 760011:
+                    dailyRawProduction[wellCounter][0] = readingVolumePivot
+                elif productTypePivot == 760010:
+                    dailyRawProduction[wellCounter][1] = readingVolumePivot
+                elif productTypePivot == 760012:
+                    dailyRawProduction[wellCounter][2] = readingVolumePivot
+     
+                wellCounter = wellCounter + 1
+            # update priorDate to current date
+            priorDate = datePivot
+        
+            for j in range(0, wellCounter):
+                rowBetter = [dailyRawDate[j], dailyRawAssetId[j], dailyRawProduction[j][0], dailyRawProduction[j][1],
+                    dailyRawProduction[j][2], dataSource]
+                
+                currentRunJoynData.loc[lastIndex + j] = rowBetter
+        
+        ## skip all other values
+        else:
+            continue
+    
+    # drop all rows with chosenId = 123456789
+    currentRunJoynData = currentRunJoynData[currentRunJoynData["chosenID"] != "123456789"]
+    ##drop index column
+    currentRunJoynData = currentRunJoynData.reset_index(drop=True)
+    
+    ## conver date to YYYY-MM-DD
+    currentRunJoynData["date"] = pd.to_datetime(currentRunJoynData["date"])
+    currentRunJoynData["date"] = currentRunJoynData["date"].dt.strftime("%Y-%m-%d")
+    ## convert date to string
+    currentRunJoynData["date"] = currentRunJoynData["date"].astype(str)      
+    ## convert API to string
+    currentRunJoynData["chosenID"] = currentRunJoynData["chosenID"].astype(str)
+    
+    
+    totalAssetProductionJson = currentRunJoynData.to_json(
         orient="records"
     )  # converts to internal json format
+    
     # loads json into format that can be sent to ComboCurve
     cleanTotalAssetProduction = json.loads(totalAssetProductionJson)
 
