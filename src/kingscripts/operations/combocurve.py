@@ -70,9 +70,10 @@ def putJoynWellProductionData(allocatedProductionMaster, serviceAccount, comboCu
         readingVolumePivot = row["ReadingVolume"]
         productTypePivot = row["Product"]
         datePivot = row["ReadingDate"]
+        isDeleted = row["isDeleted"]
         dispostion = int(row["Disposition"])
         
-        if dispostion == 760096:
+        if dispostion == 760096 and isDeleted == False:
     
             if datePivot != priorDate and priorDate != -999:
                 # prints all the data for the day
@@ -129,6 +130,8 @@ def putJoynWellProductionData(allocatedProductionMaster, serviceAccount, comboCu
     currentRunJoynData = currentRunJoynData[currentRunJoynData["chosenID"] != "123456789"]
     ##drop index column
     currentRunJoynData = currentRunJoynData.reset_index(drop=True)
+    
+    currentRunJoynData.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\currentRunJoynData.xlsx")
     
     ## conver date to YYYY-MM-DD
     currentRunJoynData["date"] = pd.to_datetime(currentRunJoynData["date"])
