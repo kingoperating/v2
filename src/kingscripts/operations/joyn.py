@@ -247,8 +247,10 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
     dateTomorrowString = dateTomorrow.strftime("%Y-%m-%d")
     dateToLookBackString = dateToLookBack.strftime("%Y-%m-%d")
 
-   
-
+    def removeDash(string):
+        string = string.replace("-", "")
+        return string
+    
     # Functions
     
     # Function to split date from JOYN API into correct format - returns date in format of 5/17/2023 from format of 2023-05-17T00:00:00
@@ -407,6 +409,7 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
             assetId = totalResults[i][j]["assetId"]
             apiNumber = getApiNumber(assetId)
             uuid = totalResults[i][j]["UUID"]
+            uuid = removeDash(uuid)
             # reading volume for current allocation row
             readingVolume = totalResults[i][j]["Volume"]
             ## ID
