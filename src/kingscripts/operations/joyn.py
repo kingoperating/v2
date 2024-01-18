@@ -382,6 +382,7 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
         
         "AssetId", 
         "ID",
+        "UUID",
         "Name",
         "ReadingVolume",
         "NetworkName",
@@ -403,16 +404,20 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
     for i in range(0, len(totalResults)):
         for j in range(0, len(totalResults[i])):
             # JOYN unquie ID for each asset
-            uuidRaw = totalResults[i][j]["assetId"]
-            apiNumber = getApiNumber(uuidRaw)
+            assetId = totalResults[i][j]["assetId"]
+            apiNumber = getApiNumber(assetId)
+            uuid = totalResults[i][j]["UUID"]
             # reading volume for current allocation row
             readingVolume = totalResults[i][j]["Volume"]
             ## ID
             id = str(totalResults[i][j]["ID"])
             isDeleted = totalResults[i][j]["IsDeleted"]
+            isFinalized = totalResults[i][j]["IsFinalized"]
+            if isFinalized == False:
+                x = 5
             # network name for current allocation row
             networkName = totalResults[i][j]["NetworkName"]
-            niceName = getName(uuidRaw)
+            niceName = getName(assetId)
             # reading date for current allocation row
             readingDate = totalResults[i][j]["ReadingDate"]
             # runs splitdate() into correct format
@@ -420,7 +425,7 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
             # product type for current allocation row
             productName = int(totalResults[i][j]["Product"])
             # disposition for current allocation row
-            disposition = int(totalResults[i][j]["Disposition"])
+            disposition = totalResults[i][j]["Disposition"]
             modifedTimestamp = totalResults[i][j]["ModifiedTimestamp"]
             comments = str(totalResults[i][j]["Comments"])
             createdBy = totalResults[i][j]["CreatedBy"]
@@ -429,7 +434,7 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
             if isDeleted == True:
                 continue
         
-            row = [apiNumber, id, niceName, readingVolume, networkName,
+            row = [apiNumber, id, uuid, niceName, readingVolume, networkName,
                        dateBetter, productName, disposition, isDeleted, modifedTimestamp, comments, createdBy, objectType]
                 # append row to dataframe
             rawJoynTotalAssetProduction.loc[len(
