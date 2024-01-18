@@ -140,19 +140,64 @@ wellHeaderData = joyn.getWellHeaderData(
     joynPassword=joynPassword
 )
 
-data = joyn.getDailyAllocatedProductionRaw(
+tech.putDataReplace(
+    server=kingLiveServer,
+    database="wells",
+    data=wellHeaderData,
+    tableName="header_data"
+)
+
+historicalAllocatedProduction = tech.getData(
+    server=kingLiveServer,
+    database="gabe",
+    tableName="test_table"
+)
+
+print("All Historical Record Length Before Deleting: " + str(len(historicalAllocatedProduction)))
+
+joynData = joyn.getDailyAllocatedProductionRaw(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
     wellHeaderData=wellHeaderData,
     daysToLookBack=5
 )
 
+duplicatedIdList = joyn.compareJoynSqlDuplicates(
+    joynData=joynData,
+    sqlData=historicalAllocatedProduction
+)
+
+listOfIds = duplicatedIdList["UUID"].tolist()
+
+delete = tech.deleteDuplicateRecords(
+    server=kingLiveServer,
+    database="gabe",
+    tableName="test_table",
+    duplicateList=listOfIds
+)
 
 allocatedProd = tech.getData(
     server=kingLiveServer,
-    database=kingProductionDatabase,
-    tableName="allocated_production"
+    database="gabe",
+    tableName="test_table"
 )
+
+print("All Historical Record Length After Deleting: " + str(len(allocatedProd)))
+
+tech.putDataAppend(
+    server=kingLiveServer,
+    database="gabe",
+    data=joynData,
+    tableName="test_table"
+)
+
+historicalAllocatedProduction = tech.getData(
+    server=kingLiveServer,
+    database="gabe",
+    tableName="test_table"
+)
+
+print("All Historical Record Length Final Value: " + str(len(historicalAllocatedProduction)))
 
 combocurve.putJoynWellProductionData(
     allocatedProductionMaster=allocatedProd,
