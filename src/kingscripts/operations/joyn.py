@@ -81,6 +81,8 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
         idToken = results["IdToken"]  # get idToken from response
 
         return idToken
+    
+    x =5 
 
     # Function to change product type to Oil, Gas, or Water
 
