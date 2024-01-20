@@ -31,7 +31,10 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
     dateTomorrowString = dateTomorrow.strftime("%Y-%m-%d")
     dateToLookBackString = dateToLookBack.strftime("%Y-%m-%d")
 
-   
+    def removeDash(string):
+        string = string.replace("-", "")
+        
+        return string
 
     # Functions
     
@@ -165,7 +168,7 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
     headersJoynRaw = [
         
         "AssetId", 
-        "ID",
+        "UUID",
         "Name",
         "ReadingVolume",
         "NetworkName",
@@ -174,9 +177,7 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
         "Disposition", 
         "isDeleted",
         "modifiedTimestamp",
-        "Comments",
-        "CreatedBy",
-        "ObjectType"
+        "CreatedBy"
     ]
     
 
@@ -187,16 +188,18 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
     for i in range(0, len(totalResults)):
         for j in range(0, len(totalResults[i])):
             # JOYN unquie ID for each asset
-            uuidRaw = totalResults[i][j]["assetId"]
-            apiNumber = getApiNumber(uuidRaw)
+            assetId = totalResults[i][j]["assetId"]
+            apiNumber = getApiNumber(assetId)
             # reading volume for current allocation row
             readingVolume = totalResults[i][j]["Volume"]
             ## ID
-            id = str(totalResults[i][j]["ID"])
+            # id = str(totalResults[i][j]["ID"])
+            uuid = totalResults[i][j]["UUID"]
+            uuid = removeDash(uuid)
             isDeleted = totalResults[i][j]["IsDeleted"]
             # network name for current allocation row
             networkName = totalResults[i][j]["NetworkName"]
-            niceName = getName(uuidRaw)
+            niceName = getName(assetId)
             # reading date for current allocation row
             readingDate = totalResults[i][j]["ReadingDate"]
             # runs splitdate() into correct format
@@ -206,12 +209,12 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
             # disposition for current allocation row
             disposition = totalResults[i][j]["Disposition"]
             modifedTimestamp = totalResults[i][j]["ModifiedTimestamp"]
-            comments = str(totalResults[i][j]["Comments"])
+           # comments = str(totalResults[i][j]["Comments"])
             createdBy = totalResults[i][j]["CreatedBy"]
-            objectType = totalResults[i][j]["ObjectType"]
+           # objectType = totalResults[i][j]["ObjectType"]
 
-            row = [apiNumber, id, niceName, readingVolume, networkName,
-                       dateBetter, productName, disposition, isDeleted, modifedTimestamp, comments, createdBy, objectType]
+            row = [apiNumber, uuid, niceName, readingVolume, networkName,
+                       dateBetter, productName, disposition, isDeleted, modifedTimestamp, createdBy]
                 # append row to dataframe
             rawJoynTotalAssetProduction.loc[len(
                     rawJoynTotalAssetProduction)] = row
@@ -383,7 +386,6 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
     headersJoynRaw = [
         
         "AssetId", 
-        "ID",
         "UUID",
         "Name",
         "ReadingVolume",
@@ -393,9 +395,7 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
         "Disposition", 
         "isDeleted",
         "modifiedTimestamp",
-        "Comments",
-        "CreatedBy",
-        "ObjectType"
+        "CreatedBy"
     ]
     
 
@@ -413,7 +413,7 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
             # reading volume for current allocation row
             readingVolume = totalResults[i][j]["Volume"]
             ## ID
-            id = str(totalResults[i][j]["ID"])
+            #id = str(totalResults[i][j]["ID"])
             isDeleted = totalResults[i][j]["IsDeleted"]
             isFinalized = totalResults[i][j]["IsFinalized"]
             if isFinalized == False:
@@ -426,19 +426,19 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
             # runs splitdate() into correct format
             dateBetter = splitDateFunction(readingDate)
             # product type for current allocation row
-            productName = int(totalResults[i][j]["Product"])
+            productName = totalResults[i][j]["Product"]
             # disposition for current allocation row
             disposition = totalResults[i][j]["Disposition"]
             modifedTimestamp = totalResults[i][j]["ModifiedTimestamp"]
-            comments = str(totalResults[i][j]["Comments"])
+            #comments = str(totalResults[i][j]["Comments"])
             createdBy = totalResults[i][j]["CreatedBy"]
-            objectType = totalResults[i][j]["ObjectType"]
+            #objectType = totalResults[i][j]["ObjectType"]
 
             if isDeleted == True:
                 continue
         
-            row = [apiNumber, id, uuid, niceName, readingVolume, networkName,
-                       dateBetter, productName, disposition, isDeleted, modifedTimestamp, comments, createdBy, objectType]
+            row = [apiNumber, uuid, niceName, readingVolume, networkName,
+                       dateBetter, productName, disposition, isDeleted, modifedTimestamp, createdBy]
                 # append row to dataframe
             rawJoynTotalAssetProduction.loc[len(
                     rawJoynTotalAssetProduction)] = row
@@ -1005,8 +1005,8 @@ def putJoynDataApi(userId, rawProductionData, objectId, joynUsername, joynPasswo
 
 def compareJoynSqlDuplicates(sqlData, joynData):
     
-    sqlIds = sqlData["ID"].tolist()
-    joynIds = joynData["ID"].tolist()
+    sqlIds = sqlData["UUID"].tolist()
+    joynIds = joynData["UUID"].tolist()
     
     ## compare two lists and return duplicates
     duplicateRecordId = list(set(sqlIds) & set(joynIds))
@@ -1016,8 +1016,8 @@ def compareJoynSqlDuplicates(sqlData, joynData):
     print("Number of JOYN Records: " + str(len(joynIds)))
     
     ## conver to dataframe with header "ID"
-    duplicateRecordId = pd.DataFrame(duplicateRecordId, columns=["ID"])
-    duplicateRecordId["ID"] = duplicateRecordId["ID"].astype(str)
+    duplicateRecordId = pd.DataFrame(duplicateRecordId, columns=["UUID"])
+    duplicateRecordId["UUID"] = duplicateRecordId["UUID"].astype(str)
     
     return duplicateRecordId
 

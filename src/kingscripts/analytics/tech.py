@@ -127,8 +127,9 @@ def deleteDuplicateRecords(server, database, tableName, duplicateList):
     
     try:
         for recordId in duplicateList:
-            sql = f"DELETE FROM {tableName} WHERE ID = {recordId}"
-            cursor.execute(sql)
+            recordId = str(recordId)
+            sql = f"DELETE FROM {tableName} WHERE UUID = ?"
+            cursor.execute(sql, recordId)
             # Commit the transaction
             connection.commit()
     

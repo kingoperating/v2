@@ -127,7 +127,7 @@ tech.putDataReplace(
 historicalAllocatedProduction = tech.getData(
     server=kingLiveServer,
     database= kingProductionDatabase,
-    tableName= "allocated_production"
+    tableName= "daily_production"
 )
 
 print("Length of Historical Allocated Production: " + str(len(historicalAllocatedProduction)))
@@ -146,13 +146,13 @@ duplicatedIdList = joyn.compareJoynSqlDuplicates(
     sqlData=historicalAllocatedProduction
 )
 
-listOfIds = duplicatedIdList['ID'].tolist()
+listOfIds = duplicatedIdList['UUID'].tolist()
 
 # Delete duplicate from Historical Allocated Production
 deleteRecords = tech.deleteDuplicateRecords(
     server=kingLiveServer,
     database= kingProductionDatabase,
-    tableName="allocated_production",
+    tableName="daily_production",
     duplicateList=listOfIds
 )
 
@@ -160,7 +160,7 @@ deleteRecords = tech.deleteDuplicateRecords(
 lengthOfWorkingTable = tech.getData(
     server=kingLiveServer,
     database= kingProductionDatabase,
-    tableName="allocated_production"
+    tableName="daily_production"
 )
 
 print("All Historical Record Length After Deleting: " + str(len(lengthOfWorkingTable)))
@@ -170,17 +170,17 @@ tech.putDataAppend(
     server=kingLiveServer,
     database=kingProductionDatabase,
     data=joynProduction,
-    tableName="allocated_production"
+    tableName="daily_production"
 )
 
 historicalAllocatedProduction = tech.getData(
     server=kingLiveServer,
     database=kingProductionDatabase,
-    tableName="allocated_production"
+    tableName="daily_production"
 )
 
 print("All Historical Record Length After Appending: " + str(len(historicalAllocatedProduction)))
 
-print("Congradulations you are amatuer data engnr")
+print("Genius")
 
     

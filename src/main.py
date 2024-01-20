@@ -140,6 +140,66 @@ wellHeaderData = joyn.getWellHeaderData(
     joynPassword=joynPassword
 )
 
+tech.putDataReplace(
+    server=kingLiveServer,
+    database="wells",
+    data=wellHeaderData,
+    tableName="header_data"
+)
+
+historicalAllocatedProduction = tech.getData(
+    server=kingLiveServer,
+    database="gabe",
+    tableName="test_table"
+)
+
+print("All Historical Record Length Before Deleting: " + str(len(historicalAllocatedProduction)))
+
+lastTwoDaysJoynData = joyn.getDailyAllocatedProductionRawWithDeleted(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    wellHeaderData=wellHeaderData,
+    daysToLookBack=2
+)
+
+duplicatedIdList = joyn.compareJoynSqlDuplicates(
+    joynData=lastTwoDaysJoynData,
+    sqlData=historicalAllocatedProduction
+)
+
+listOfIds = duplicatedIdList["UUID"].tolist()
+
+tech.deleteDuplicateRecords(
+    server=kingLiveServer,
+    database="gabe",
+    tableName="test_table",
+    duplicateList=listOfIds
+)
+
+lengthOfWorkingTable = tech.getData(
+    server=kingLiveServer,
+    database="gabe",
+    tableName="test_table"
+)
+
+print("All Historical Record Length After Deleting: " + str(len(lengthOfWorkingTable)))
+
+tech.putDataAppend(
+    server=kingLiveServer,
+    database="gabe",
+    data=lastTwoDaysJoynData,
+    tableName="test_table"
+)
+
+historicalAllocatedProduction = tech.getData(
+    server=kingLiveServer,
+    database="gabe",
+    tableName="test_table"
+)
+
+print("All Historical Record Length Final Value: " + str(len(historicalAllocatedProduction)))
+
+
 data = joyn.getDailyAllocatedProductionRaw(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
