@@ -30,6 +30,39 @@ serviceAccount = ServiceAccount.from_file(
     os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
 
+
+joynUsername = str(os.getenv('JOYN_USERNAME'))
+joynPassword = str(os.getenv('JOYN_PASSWORD'))
+
+
+getWellHeaderData = joyn.getWellHeaderData(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+# get Daily Well Reading
+DailyWellReading = joyn.getDailyWellReading(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    wellHeaderData=getWellHeaderData,
+    daysToLookBack = 5
+)
+
+# Post Daily Well Reading to SQL Server
+tech.putDataReplace(
+    server=kingLiveServer,
+    database = "production",
+    data = DailyWellReading,
+    tableName= "daily_well_reading"
+)
+
+
+x = 5
+
+
+
+
+
 forecast = combocurve.getDailyForecastVolume(
     projectIdKey="6572267d2bcb2950186aca90",
     forecastIdKey="65722aa4ea66fa10d79f2be6",

@@ -1137,3 +1137,288 @@ def getPicklistOptions(joynUsername, joynPassword):
     x= 5
     
     return x
+
+# Gets JOYN Entity ID from JOYN API
+def getEntityIdList():
+        
+        load_dotenv()
+        
+        joynUsername = os.getenv("JOYN_USERNAME")
+        joynPassword = os.getenv("JOYN_PASSWORD")
+        
+        def getIdToken():
+                
+                load_dotenv()
+        
+                login = joynUsername
+                password = joynPassword
+        
+                # User Token API
+                url = "https://api.joyn.ai/common/user/token"
+                # Payload for API - use JOYN crdentials
+                payload = {
+                    "uname": str(login),
+                    "pwd": str(password)
+                }
+                # Headers for API - make sure to use content type of json
+                headers = {
+                    "Content-Type": "application/json"
+                }
+        
+                # dump payload into json format for correct format
+                payloadJson = json.dumps(payload)
+                response = requests.request(
+                    "POST", url, data=payloadJson, headers=headers)
+                
+                if response.status_code == 200:  # 200 = success
+                    print("Successful JOYN Authentication")
+                else:
+                    print(response.status_code)
+                
+                results = response.json()  # get response in json format
+                idToken = results["IdToken"]
+                
+                return idToken
+        
+        idToken = getIdToken()  # get idToken from authJoyn function
+        
+        url = "https://api-fdg.joyn.ai/admin/api/ReadingView"
+        
+        request = requests.request(
+            "GET",
+            url,
+            headers={"Authorization": idToken}
+        )
+        
+        response = request.json()
+        responseCode = request.status_code
+        print(responseCode)
+        x=5
+        
+        headers = ["id", "n"]
+        entityIdTable = pd.DataFrame(columns=headers)
+        
+        for i in range(0, len(response["Result"])):
+            id = response["Result"][i]["id"]
+            name = response["Result"][i]["n"]
+            row = [id, name]
+            entityIdTable.loc[len(entityIdTable)] = row
+    
+        return entityIdTable
+
+
+def getDailyWellReading(joynUsername, joynPassword, wellHeaderData, daysToLookBack):
+
+    load_dotenv()
+
+    if daysToLookBack == 0 or type(daysToLookBack) != int:
+        print("Error: daysToLookBack must be an integer greater than 0")
+        return
+
+    # Date values
+    dateToday = dt.datetime.today()
+    dateTomorrow = dateToday + dt.timedelta(days=1)
+    dateToLookBack = dateToday - timedelta(days=daysToLookBack)
+    dateTomorrowString = dateTomorrow.strftime("%Y-%m-%d")
+    dateToLookBackString = dateToLookBack.strftime("%Y-%m-%d")
+
+    def removeDash(string):
+        string = string.replace("-", "")
+        
+        return string
+
+    # Functions
+    
+    # Function to split date from JOYN API into correct format - returns date in format of 5/17/2023 from format of 2023-05-17T00:00:00
+
+    def splitDateFunction(badDate):
+        splitDate = re.split("T", badDate)
+        splitDate2 = re.split("-", splitDate[0])
+        year = int(splitDate2[0])
+        month = int(splitDate2[1])
+        day = int(splitDate2[2])
+        dateString = str(month) + "/" + str(day) + "/" + str(year)
+
+        return dateString
+
+    # Function to authenticate JOYN API - returns idToke used as header for authorization in other API calls
+
+    def getIdToken():
+
+        load_dotenv()
+
+        login = joynUsername
+        password = joynPassword
+
+        # User Token API
+        url = "https://api.joyn.ai/common/user/token"
+        # Payload for API - use JOYN crdentials
+        payload = {
+            "uname": str(login),
+            "pwd": str(password)
+        }
+        # Headers for API - make sure to use content type of json
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        # dump payload into json format for correct format
+        payloadJson = json.dumps(payload)
+        response = requests.request(
+            "POST", url, data=payloadJson, headers=headers)  # make request
+        if response.status_code == 200:  # 200 = success
+            print("Successful JOYN Authentication")
+        else:
+            print(response.status_code)
+
+        results = response.json()  # get response in json format
+        idToken = results["IdToken"]  # get idToken from response
+
+        return idToken
+
+    # Function to get API number from wellHeaderData "xid" using uuid from JOYN API
+    def getApiNumber(uuid):
+        if uuid in wellHeaderData["UUID"].tolist():
+            index = wellHeaderData["UUID"].tolist().index(uuid)
+            apiNumberYay = wellHeaderData["xid"][index]
+        else:
+            apiNumberYay = "Unknown"
+
+        return apiNumberYay
+    
+    ## Function to get well name "n" from wellHeaderData using "uuid" from JOYN API
+    def getName(uuid):
+        if uuid in wellHeaderData["UUID"].tolist():
+            index = wellHeaderData["UUID"].tolist().index(uuid)
+            name = wellHeaderData["n"][index]
+        else:
+            name = "Unknown"
+
+        return name
+    
+
+    #### BEGIN SCRIPT #####
+
+    idToken = getIdToken()  # get idToken from authJoyn function
+
+    # set correct URL for Reading Data API JOYN - use idToken as header for authorization. Note the isCustom=true is required for custom entities and todate and fromdate are based on modified timestamp and rolling 7 days lookback
+    urlRolling = (
+        "https://api-fdg.joyn.ai/admin/api/ReadingData?isCustom=true&entityids=15404&fromdate="
+        + dateToLookBackString
+        + "&todate="
+        + dateTomorrowString
+        + "&pagesize=1000&pagenumber="
+
+    )
+
+    pageNumber = 1  # set page number to 1
+    nextPage = False  # set nextPage to True to start while loop
+    totalResults = []  # create empty list to store results
+
+    while not nextPage:  # loop through all pages of data
+        url = urlRolling + str(pageNumber)
+        # makes the request to the API
+        response = requests.request(
+            "GET", url, headers={"Authorization": idToken})
+        # Dislay status code of response - 200 = GOOD
+        if response.status_code != 200:
+            print(response.status_code)
+
+        print("Length of Response: " + str(len(response.json())))
+
+        # get response in json format and append to totalResults list
+        resultsReadingType = response.json()
+
+        # if length of response is 0, then there is no more data to return
+        if len(resultsReadingType) == 0:
+            break
+            # triggers while loop to end when no more data is returned and length of response is 0
+
+        totalResults.append(resultsReadingType)
+
+        pageNumber = pageNumber + 1  # increment page number by 1 for pagination
+
+    # Unpack Total Results into dataframe
+    headers = [
+        "UUID",
+        "assetId",
+        "IsDeleted",
+        "Comments",
+        "ReadingDate",
+        "ModifiedTimestamp",
+        "CasingPressure",
+        "SurfaceCasingPressure",
+        "TubingPressure",
+        "ObjectID",
+        "CreatedBy",
+        "Downtime",
+        "DowntimeReason",
+        "FlowlinePressure",
+        "FluidLevel",
+        "InjectionPressure"
+    ]
+
+    masterComments = pd.DataFrame(columns=headers)
+    for i in range(0, len(totalResults)):
+        for j in range(0, len(totalResults[i])):
+            # JOYN unquie ID for each asset
+            uuid = totalResults[i][j]["UUID"]
+            uuid = removeDash(uuid)
+            # AssetID for current allocation row
+            assetId = totalResults[i][j]["assetId"]
+            # isDeleted for current allocation row
+            isDeleted = totalResults[i][j]["IsDeleted"]
+            # Comments for current allocation row
+            comments = str(totalResults[i][j]["Comments"])
+            # reading date for current allocation row
+            readingDate = totalResults[i][j]["ReadingDate"]
+            # modified timestamp for current allocation row
+            modifiedTimestamp = totalResults[i][j]["ModifiedTimestamp"]
+            # casing pressure for current allocation row
+            casingPressure = totalResults[i][j]["CasingPressure"]
+            # surface casing pressure for current allocation row
+            surfaceCasingPressure = totalResults[i][j]["SurfaceCasingPressure"]
+            # tubing pressure for current allocation row
+            tubingPressure = totalResults[i][j]["TubingPressure"]
+            # object id for current allocation row
+            objectId = totalResults[i][j]["ObjectID"]
+            # created by for current allocation row
+            createdBy = totalResults[i][j]["CreatedBy"]
+            # downtime for current allocation row
+            downtime = totalResults[i][j]["Downtime"]
+            # downtime reason for current allocation row
+            downtimeReason = totalResults[i][j]["DowntimeReason"]
+            # flowline pressure for current allocation row
+            flowlinePressure = totalResults[i][j]["FlowLinePressure"]
+            # fluid level for current allocation row
+            fluidLevel = totalResults[i][j]["FluidLevel"]
+            # Injection Pressure for current allocation row
+            InjectionPressure = totalResults[i][j]["InjectionPressure"]
+
+            if isDeleted == True:
+                continue
+
+            row = [
+                uuid,
+                assetId,
+                isDeleted,
+                comments,
+                readingDate,
+                modifiedTimestamp,
+                casingPressure,
+                surfaceCasingPressure,
+                tubingPressure,
+                objectId,
+                createdBy,
+                downtime,
+                downtimeReason,
+                flowlinePressure,
+                fluidLevel,
+                InjectionPressure
+            ]
+
+            # append row to dataframe
+            masterComments.loc[len(masterComments)] = row
+
+
+    return masterComments
