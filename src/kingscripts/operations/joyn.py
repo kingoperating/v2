@@ -16,7 +16,7 @@ from kingscripts.operations import docs
 This script gets all the modifed daily allocated production over to the master JOYN dataframe in prep to merge    
 
 """
-def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHeaderData, daysToLookBack):
+def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, daysToLookBack):
 
     load_dotenv()
 
@@ -37,18 +37,6 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
         return string
 
     # Functions
-    
-    # Function to split date from JOYN API into correct format - returns date in format of 5/17/2023 from format of 2023-05-17T00:00:00
-
-    def splitDateFunction(badDate):
-        splitDate = re.split("T", badDate)
-        splitDate2 = re.split("-", splitDate[0])
-        year = int(splitDate2[0])
-        month = int(splitDate2[1])
-        day = int(splitDate2[2])
-        dateString = str(month) + "/" + str(day) + "/" + str(year)
-
-        return dateString
 
     # Function to authenticate JOYN API - returns idToke used as header for authorization in other API calls
 
@@ -84,41 +72,6 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
         idToken = results["IdToken"]  # get idToken from response
 
         return idToken
-
-    # Function to change product type to Oil, Gas, or Water
-
-    def switchProductType(product):
-        if product == 760010:
-            product = "Gas"
-        elif product == 760011:
-            product = "Oil"
-        elif product == 760012:
-            product = "Water"
-        else:
-            product = "Unknown"
-
-        return product
-
-    # Function to get API number from wellHeaderData "xid" using uuid from JOYN API
-    def getApiNumber(uuid):
-        if uuid in wellHeaderData["UUID"].tolist():
-            index = wellHeaderData["UUID"].tolist().index(uuid)
-            apiNumberYay = wellHeaderData["xid"][index]
-        else:
-            apiNumberYay = "Unknown"
-
-        return apiNumberYay
-    
-    ## Function to get well name "n" from wellHeaderData using "uuid" from JOYN API
-    def getName(uuid):
-        if uuid in wellHeaderData["UUID"].tolist():
-            index = wellHeaderData["UUID"].tolist().index(uuid)
-            name = wellHeaderData["n"][index]
-        else:
-            name = "Unknown"
-
-        return name
-    
 
     #### BEGIN SCRIPT #####
 
@@ -167,9 +120,8 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
     # create empty dataframe to store results with correct headers for JOYN API
     headersJoynRaw = [
         
-        "AssetId", 
+        "AssetId",
         "UUID",
-        "Name",
         "ReadingVolume",
         "NetworkName",
         "ReadingDate",
@@ -189,7 +141,7 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
         for j in range(0, len(totalResults[i])):
             # JOYN unquie ID for each asset
             assetId = totalResults[i][j]["assetId"]
-            apiNumber = getApiNumber(assetId)
+            assetId = removeDash(assetId) # remove dash for ease of SQL server
             # reading volume for current allocation row
             readingVolume = totalResults[i][j]["Volume"]
             ## ID
@@ -199,11 +151,8 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
             isDeleted = totalResults[i][j]["IsDeleted"]
             # network name for current allocation row
             networkName = totalResults[i][j]["NetworkName"]
-            niceName = getName(assetId)
             # reading date for current allocation row
             readingDate = totalResults[i][j]["ReadingDate"]
-            # runs splitdate() into correct format
-            dateBetter = splitDateFunction(readingDate)
             # product type for current allocation row
             productName = totalResults[i][j]["Product"]
             # disposition for current allocation row
@@ -212,9 +161,12 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
            # comments = str(totalResults[i][j]["Comments"])
             createdBy = totalResults[i][j]["CreatedBy"]
            # objectType = totalResults[i][j]["ObjectType"]
+            
+            #if isDeleted == True:
+              #  continue
 
-            row = [apiNumber, uuid, niceName, readingVolume, networkName,
-                       dateBetter, productName, disposition, isDeleted, modifedTimestamp, createdBy]
+            row = [assetId, uuid, readingVolume, networkName,
+                       readingDate, productName, disposition, isDeleted, modifedTimestamp, createdBy]
                 # append row to dataframe
             rawJoynTotalAssetProduction.loc[len(
                     rawJoynTotalAssetProduction)] = row
@@ -223,11 +175,8 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, wellHe
     # convert date column to datetime format for sorting purposes
     rawJoynTotalAssetProduction["Date"] = pd.to_datetime(
         rawJoynTotalAssetProduction["ReadingDate"])
-    # sort dataframe by date for loop to get daily production
-    rawTotalAssetProductionSorted = rawJoynTotalAssetProduction.sort_values(by=[
-        "Date"])
     
-    return rawTotalAssetProductionSorted
+    return rawJoynTotalAssetProduction
 
 
 """
@@ -252,21 +201,10 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
 
     def removeDash(string):
         string = string.replace("-", "")
+        
         return string
-    
+
     # Functions
-    
-    # Function to split date from JOYN API into correct format - returns date in format of 5/17/2023 from format of 2023-05-17T00:00:00
-
-    def splitDateFunction(badDate):
-        splitDate = re.split("T", badDate)
-        splitDate2 = re.split("-", splitDate[0])
-        year = int(splitDate2[0])
-        month = int(splitDate2[1])
-        day = int(splitDate2[2])
-        dateString = str(month) + "/" + str(day) + "/" + str(year)
-
-        return dateString
 
     # Function to authenticate JOYN API - returns idToke used as header for authorization in other API calls
 
@@ -302,41 +240,6 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
         idToken = results["IdToken"]  # get idToken from response
 
         return idToken
-
-    # Function to change product type to Oil, Gas, or Water
-
-    def switchProductType(product):
-        if product == 760010:
-            product = "Gas"
-        elif product == 760011:
-            product = "Oil"
-        elif product == 760012:
-            product = "Water"
-        else:
-            product = "Unknown"
-
-        return product
-
-    # Function to get API number from wellHeaderData "xid" using uuid from JOYN API
-    def getApiNumber(uuid):
-        if uuid in wellHeaderData["UUID"].tolist():
-            index = wellHeaderData["UUID"].tolist().index(uuid)
-            apiNumberYay = wellHeaderData["xid"][index]
-        else:
-            apiNumberYay = "Unknown"
-
-        return apiNumberYay
-    
-    ## Function to get well name "n" from wellHeaderData using "uuid" from JOYN API
-    def getName(uuid):
-        if uuid in wellHeaderData["UUID"].tolist():
-            index = wellHeaderData["UUID"].tolist().index(uuid)
-            name = wellHeaderData["n"][index]
-        else:
-            name = "Unknown"
-
-        return name
-    
 
     #### BEGIN SCRIPT #####
 
@@ -385,9 +288,8 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
     # create empty dataframe to store results with correct headers for JOYN API
     headersJoynRaw = [
         
-        "AssetId", 
+        "AssetId",
         "UUID",
-        "Name",
         "ReadingVolume",
         "NetworkName",
         "ReadingDate",
@@ -407,38 +309,32 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
         for j in range(0, len(totalResults[i])):
             # JOYN unquie ID for each asset
             assetId = totalResults[i][j]["assetId"]
-            apiNumber = getApiNumber(assetId)
-            uuid = totalResults[i][j]["UUID"]
-            uuid = removeDash(uuid)
+            assetId = removeDash(assetId) # remove dash for ease of SQL server
             # reading volume for current allocation row
             readingVolume = totalResults[i][j]["Volume"]
             ## ID
-            #id = str(totalResults[i][j]["ID"])
+            # id = str(totalResults[i][j]["ID"])
+            uuid = totalResults[i][j]["UUID"]
+            uuid = removeDash(uuid)
             isDeleted = totalResults[i][j]["IsDeleted"]
-            isFinalized = totalResults[i][j]["IsFinalized"]
-            if isFinalized == False:
-                x = 5
             # network name for current allocation row
             networkName = totalResults[i][j]["NetworkName"]
-            niceName = getName(assetId)
             # reading date for current allocation row
             readingDate = totalResults[i][j]["ReadingDate"]
-            # runs splitdate() into correct format
-            dateBetter = splitDateFunction(readingDate)
             # product type for current allocation row
             productName = totalResults[i][j]["Product"]
             # disposition for current allocation row
             disposition = totalResults[i][j]["Disposition"]
             modifedTimestamp = totalResults[i][j]["ModifiedTimestamp"]
-            #comments = str(totalResults[i][j]["Comments"])
+           # comments = str(totalResults[i][j]["Comments"])
             createdBy = totalResults[i][j]["CreatedBy"]
-            #objectType = totalResults[i][j]["ObjectType"]
-
+           # objectType = totalResults[i][j]["ObjectType"]
+            
             if isDeleted == True:
                 continue
-        
-            row = [apiNumber, uuid, niceName, readingVolume, networkName,
-                       dateBetter, productName, disposition, isDeleted, modifedTimestamp, createdBy]
+
+            row = [assetId, uuid, readingVolume, networkName,
+                       readingDate, productName, disposition, isDeleted, modifedTimestamp, createdBy]
                 # append row to dataframe
             rawJoynTotalAssetProduction.loc[len(
                     rawJoynTotalAssetProduction)] = row
@@ -447,11 +343,8 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
     # convert date column to datetime format for sorting purposes
     rawJoynTotalAssetProduction["Date"] = pd.to_datetime(
         rawJoynTotalAssetProduction["ReadingDate"])
-    # sort dataframe by date for loop to get daily production
-    rawTotalAssetProductionSorted = rawJoynTotalAssetProduction.sort_values(by=[
-        "Date"])
     
-    return rawTotalAssetProductionSorted
+    return rawJoynTotalAssetProduction
 
 """
     
@@ -582,6 +475,7 @@ def getWellHeaderData(joynUsername, joynPassword):
     
     ## flatten nested json
     data = pd.json_normalize(results)
+    data["UUID"] = data["UUID"].str.replace("-", "")
     
     return data
 
