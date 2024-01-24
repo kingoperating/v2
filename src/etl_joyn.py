@@ -16,13 +16,15 @@ import os
 import datetime as dt
 from datetime import timedelta
 import pandas as pd
+import time
+
+# Record the start time
+start_time = time.time()
+
 
 # load .env file
 load_dotenv()
 
-# getting API keys
-enverusApiKey = os.getenv('ENVERUS_API')
-greasebookApi = os.getenv('GREASEBOOK_API_KEY')
 #serviceAccount = ServiceAccount.from_file(
     #os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
@@ -54,57 +56,6 @@ yesDateString = dateYesterday.strftime("%Y-%m-%d")
 todayDateString = dateToday.strftime("%Y-%m-%d")
 eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
 
-# Important Variables for scripts
-nglStream = 0
-noNglStream = 1
-texas = "texas"
-wyoming = "wyoming"
-browning5181H = "42033325890000"
-browningOperatorName = "BROWNING OIL"
-basin = "MIDLAND"
-comboCurveProjectId = "612fc3d36880c20013a885df"
-comboCurveScenarioId = "64aca0abaa25aa001201b299"
-comboCurveForecastId = "64a5d95390c0320012a83df9"
-millerranchb501mh = "millerranchb501mh"
-millerrancha502v = "millerrancha502v"
-millerrancha501mh = "millerrancha501mh"
-millerranchc301 = "millerranchc301"
-millerranchc302mh = "millerranchc302mh"
-thurman23v = "thurman23v"
-chunn923v = "chunn923v"
-ayres79v = "ayres79v"
-porter33v = "porter33v"
-wu108 = "wu108"
-wu105 = "wu105"
-wu99 = "wu99"
-kinga199cv1h = "kinga199cv1h"
-kinga199cv2h = "kinga199cv2h"
-nameOfWell = "thurman23v"
-irvinSisters53m1h = "irvinsisters53m1h"
-pshigoda752h = "pshigoda752h"
-itSqlTable = "itSpend"
-daysToPull = 35
-daysToLookBack = 2
-testFile = r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\assetPrettyName.xlsx"
-listOfWells = [
-    irvinSisters53m1h,
-    pshigoda752h,
-    thurman23v,
-    chunn923v,
-    ayres79v,
-    porter33v,
-    kinga199cv1h,
-    kinga199cv2h,
-    wu108,
-    wu105,
-    wu99,
-    millerrancha501mh,
-    millerrancha502v,
-    millerranchb501mh,
-    millerranchc301,
-    millerranchc302mh
-]
-
 ### BEGIN PRODUCTION ETL PROCESS ###
 
 print("Beginning Production ETL Process")
@@ -123,6 +74,73 @@ tech.putDataReplace(
     tableName="header_data"
 )
 
+# Get Historical Daily Well Reading from SQL Server
+
+historicalDailyWellReading = tech.getData(
+    server=kingLiveServer,
+    database=kingProductionDatabase,
+    tableName="daily_well_reading"
+)
+
+print("Length of Historical Daily Well Reading: " + str(len(historicalDailyWellReading)))
+
+# Get last 2 days of daily well reading from JOYN
+
+joynDailyWellReading = joyn.getDailyWellReading(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    daysToLookBack=2
+)
+
+# Compare the two dataframes and get the duplicates
+duplicatedIdList = joyn.compareJoynSqlDuplicates(
+    joynData=joynDailyWellReading,
+    sqlData=historicalDailyWellReading
+)
+
+listOfIds = duplicatedIdList['UUID'].tolist()
+
+# Delete duplicate from Historical daily well reading
+
+print("Length of Duplicate List: " + str(len(listOfIds)))
+
+deleteRecords = tech.deleteDuplicateRecords(
+    server=kingLiveServer,
+    database=kingProductionDatabase,
+    tableName="daily_well_reading",
+    duplicateList=listOfIds
+)
+
+# Get New Length of Historical Daily Well Reading
+
+historicalDailyWellReading = tech.getData(
+    server=kingLiveServer,
+    database=kingProductionDatabase,
+    tableName="daily_well_reading"
+)
+
+print("Length of Historical Daily Well Reading After Deleting: " + str(len(historicalDailyWellReading)))
+
+# Append joyn daily well reading to historical daily well reading
+
+tech.putDataAppend(
+    server=kingLiveServer,
+    database=kingProductionDatabase,
+    data=joynDailyWellReading,
+    tableName="daily_well_reading"
+)
+
+# Get New Length of Historical Daily Well Reading
+
+historicalDailyWellReading = tech.getData(
+    server=kingLiveServer,
+    database=kingProductionDatabase,
+    tableName="daily_well_reading"
+)
+
+print("Length of Historical Daily Well Reading After Appending: " + str(len(historicalDailyWellReading)))
+
+
 # Gets Historical Allocated Production from KOC Datawarehouse 3.0
 historicalAllocatedProduction = tech.getData(
     server=kingLiveServer,
@@ -136,7 +154,6 @@ print("Length of Historical Allocated Production: " + str(len(historicalAllocate
 joynProduction = joyn.getDailyAllocatedProductionRawWithDeleted(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
-    wellHeaderData=wellData,
     daysToLookBack=2
 )
 
@@ -181,6 +198,14 @@ historicalAllocatedProduction = tech.getData(
 
 print("All Historical Record Length After Appending: " + str(len(historicalAllocatedProduction)))
 
-print("Genius")
+# Record the end time
+end_time = time.time()
 
-    
+# Calculate the elapsed time in seconds
+elapsed_time_seconds = end_time - start_time
+
+# Convert seconds to minutes with two decimal places
+elapsed_time_minutes = elapsed_time_seconds / 60
+
+# Print the runtime in minutes with two decimal places
+print(f"Script execution time: {elapsed_time_minutes:.2f} minutes")
