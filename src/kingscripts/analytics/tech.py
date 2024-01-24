@@ -138,6 +138,41 @@ def deleteDuplicateRecords(server, database, tableName, duplicateList):
         
     cursor.close()
     connection.close()
-        
 
-    print("Duplicate records have been deleted from the " + str(tableName) + " in the " + str(database) + " database on the " + str(server) + " server.")   
+# The below code was an attempt to delete the duplicate records in batches to improve runtime. While it did work, it was not faster than the above code.
+# We will keep it here for reference in case we need to use it in the future - will revisit after looking into multi-threading. 
+
+# def deleteDuplicateRecords(server, database, tableName, duplicateList):
+#     # Set up the connection parameters
+#     connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
+    
+#     # Establish the connection with Windows Authentication
+#     connection = pyodbc.connect(connection_string)
+    
+#     # Create a cursor object to interact with the database
+#     cursor = connection.cursor()
+
+#     try:
+#         # Begin the transaction
+#         connection.autocommit = False
+
+#         # Loop through the duplicate list and delete the rows with the duplicate IDs in batches
+#         batch_size = 1000  # Adjust the batch size based on your requirements
+#         for i in range(0, len(duplicateList), batch_size):
+#             batch_ids = duplicateList[i:i + batch_size]
+#             # Use parameterized query with explicit parameter type
+#             sql = f"DELETE FROM {tableName} WHERE UUID = CAST(? AS NVARCHAR(MAX))"
+#             cursor.executemany(sql, [(str(recordId),) for recordId in batch_ids])
+
+#         # Commit the transaction
+#         connection.commit()
+
+#     except pyodbc.Error as e:
+#         # Rollback the transaction in case of an error
+#         connection.rollback()
+#         print("Database error:", e)
+    
+#     finally:
+#         # Ensure to close cursor and connection
+#         cursor.close()
+#         connection.close()

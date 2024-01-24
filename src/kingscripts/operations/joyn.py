@@ -1101,7 +1101,7 @@ def getEntityIdList():
         return entityIdTable
 
 
-def getDailyWellReading(joynUsername, joynPassword, wellHeaderData, daysToLookBack):
+def getDailyWellReading(joynUsername, joynPassword, daysToLookBack):
 
     load_dotenv()
 
@@ -1122,18 +1122,6 @@ def getDailyWellReading(joynUsername, joynPassword, wellHeaderData, daysToLookBa
         return string
 
     # Functions
-    
-    # Function to split date from JOYN API into correct format - returns date in format of 5/17/2023 from format of 2023-05-17T00:00:00
-
-    def splitDateFunction(badDate):
-        splitDate = re.split("T", badDate)
-        splitDate2 = re.split("-", splitDate[0])
-        year = int(splitDate2[0])
-        month = int(splitDate2[1])
-        day = int(splitDate2[2])
-        dateString = str(month) + "/" + str(day) + "/" + str(year)
-
-        return dateString
 
     # Function to authenticate JOYN API - returns idToke used as header for authorization in other API calls
 
@@ -1169,27 +1157,6 @@ def getDailyWellReading(joynUsername, joynPassword, wellHeaderData, daysToLookBa
         idToken = results["IdToken"]  # get idToken from response
 
         return idToken
-
-    # Function to get API number from wellHeaderData "xid" using uuid from JOYN API
-    def getApiNumber(uuid):
-        if uuid in wellHeaderData["UUID"].tolist():
-            index = wellHeaderData["UUID"].tolist().index(uuid)
-            apiNumberYay = wellHeaderData["xid"][index]
-        else:
-            apiNumberYay = "Unknown"
-
-        return apiNumberYay
-    
-    ## Function to get well name "n" from wellHeaderData using "uuid" from JOYN API
-    def getName(uuid):
-        if uuid in wellHeaderData["UUID"].tolist():
-            index = wellHeaderData["UUID"].tolist().index(uuid)
-            name = wellHeaderData["n"][index]
-        else:
-            name = "Unknown"
-
-        return name
-    
 
     #### BEGIN SCRIPT #####
 
@@ -1289,9 +1256,6 @@ def getDailyWellReading(joynUsername, joynPassword, wellHeaderData, daysToLookBa
             # Injection Pressure for current allocation row
             InjectionPressure = totalResults[i][j]["InjectionPressure"]
 
-            if isDeleted == True:
-                continue
-
             row = [
                 uuid,
                 assetId,
@@ -1313,6 +1277,5 @@ def getDailyWellReading(joynUsername, joynPassword, wellHeaderData, daysToLookBa
 
             # append row to dataframe
             masterComments.loc[len(masterComments)] = row
-
 
     return masterComments
