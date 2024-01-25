@@ -15,9 +15,21 @@ import numpy as np
 """
 
 
-def putJoynWellProductionData(allocatedProductionMaster, serviceAccount, comboCurveApi, daysToLookback):
+def putJoynWellProductionData(allocatedProductionMaster, serviceAccount, comboCurveApi, daysToLookback, headerData):
     
     load_dotenv()  # load enviroment variables
+    
+    def getApiNumber(id):
+        idList = headerData["UUID"].tolist()
+        if id in idList:
+            index = idList.index(id)
+            apiNumber = headerData["xid"][index]
+        else:
+            apiNumber = "Not Found"
+            print("API Number Not Found")
+        
+        return apiNumber
+    
 
     allocatedProduction = allocatedProductionMaster
     ## convert date to datetime and sort by date
@@ -67,6 +79,7 @@ def putJoynWellProductionData(allocatedProductionMaster, serviceAccount, comboCu
     for i in range(0, len(allocatedProduction)):
         row = allocatedProduction.iloc[i]
         apiNumberPivot = row["AssetId"]
+        apiNumberPivot = getApiNumber(apiNumberPivot) ## gets API Number from Well Header
         readingVolumePivot = row["ReadingVolume"]
         productTypePivot = row["Product"]
         datePivot = row["ReadingDate"]

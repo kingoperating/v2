@@ -135,6 +135,28 @@ listOfWells = [
 WORKING ZONE
 '''
 
+allocatedProd = tech.getData(
+    server=kingLiveServer,
+    database=kingProductionDatabase,
+    tableName="daily_production"
+)
+
+wellHeaderData = tech.getData(
+    server=kingLiveServer,
+    database="wells",
+    tableName="header_data"
+)
+
+combocurve.putJoynWellProductionData(
+    allocatedProductionMaster=allocatedProd,
+    comboCurveApi=comboCurveApiKey,
+    serviceAccount=serviceAccount,
+    daysToLookback=3,
+    headerData=wellHeaderData
+)
+
+
+
 wellHeaderData = joyn.getWellHeaderData(
     joynUsername=joynUsername,
     joynPassword=joynPassword
