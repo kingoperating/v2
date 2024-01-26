@@ -4,7 +4,7 @@
   <img src=".\src\images\logo.png" width="400" title="kingscripts">
 </p>
 
-This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 3.3.0
+This open source python package allows for easy access to the majority of KOC data products for KOC employees. Currently on version 3.4.0
 
 Developed and Maintained by Michael Tanner and Gabe Tatman. Please email development@kingoperating.com with any questions.
 
@@ -29,7 +29,7 @@ from kingscripts.finance import wenergy
 
 Three (3) packages `greasebook`, `joyn` and `combocurve`
 
-### greasebook
+### greasebook (Legacy)
 
 1. `greasebook.getProductionData` - pulls production data from Greasebook, formats and exports CSV into working data folder
 
@@ -59,16 +59,23 @@ Three (3) packages `greasebook`, `joyn` and `combocurve`
      - `pumperNotReportedList`: list of `str` that represent pumpers who have failed to submit production data
      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
 
+5. `greasebook.getTankGauges` - returns a dataframe of tank gauge data for a given well
+
+   - Arguments
+     - `greasebookApi`: Greasebook API key `str`
+     - `startDate`: Start date of tank gauge data `datetime`
+     - `endDate`: End date of tank gauge data `datetime`
+
 ### combocurve
 
-5. `combocurve.putJoynWellProductionData` - takes last modifed JOYN data and loads it into ComboCurve
+6. `combocurve.putJoynWellProductionData` - takes last modifed JOYN data and loads it into ComboCurve
 
    - Arguments
      - `currentJoynData`: pandas Dataframe of modifed data in JOYN for last 7 days `dataframe`
      - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
 
-6. `combocurve.putGreasebookWellProductionData` - requests data from Greasebooks and inserts into ComboCurve
+7. `combocurve.putGreasebookWellProductionData` - requests data from Greasebooks and inserts into ComboCurve
 
    - Arguments
      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
@@ -77,7 +84,7 @@ Three (3) packages `greasebook`, `joyn` and `combocurve`
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
      - `daysToPull`: Number of days to pull, if `pullFromAllocation=True` set to 0 `int`
 
-7. `combocurve.getLatestScenario` - returns pandas dataframe of the latest scenerio given a projectId and scenerioId
+8. `combocurve.getLatestScenario` - returns pandas dataframe of the latest scenerio given a projectId and scenerioId
 
    - Arguments
      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
@@ -86,14 +93,14 @@ Three (3) packages `greasebook`, `joyn` and `combocurve`
      - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
 
-8. `combocurve.putGreasebookWellComments` - takes Greasebook well comments and load them in ComboCurve under customString2
+9. `combocurve.putGreasebookWellComments` - takes Greasebook well comments and load them in ComboCurve under customString2
 
    - Arguments
      - `cleanJson`: takes JSON formatted comment dataset `json`
      - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
 
-9. `combocurve.getDailyForecastVolume` - gets daily forecast volumes for given CC project ID and forecast ID
+10. `combocurve.getDailyForecastVolume` - gets daily forecast volumes for given CC project ID and forecast ID
 
    - Arguments
      - `projectIdKey`: ComboCurve specific project id - get through front-end UI `str`
@@ -101,7 +108,7 @@ Three (3) packages `greasebook`, `joyn` and `combocurve`
      - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
      - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
 
-10. `combocurve.getLatestScenarioMonthly` - gets monthly aggerate cash flow statement for given CC project ID and scenarioI ID
+11. `combocurve.getLatestScenarioMonthly` - gets monthly aggerate cash flow statement for given CC project ID and scenarioI ID
 
 - Arguments
   - `projectIdKey`: ComboCurve specific project id - get through front-end UI `str`
@@ -109,7 +116,7 @@ Three (3) packages `greasebook`, `joyn` and `combocurve`
   - `serviceAccount`: ComboCurve Service Account - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `object`
   - `comboCurveApi`: ComboCurve Api connection - see [ComboCurve PyPI](https://pypi.org/project/combocurve-api-v1/) `json`
 
-11. `combocurve.ccScenarioToCrestFpSingleWell` - injests getLatestScenarioMonthly() pandas dataframe and converts it to crestFp Single Well Forecast
+12. `combocurve.ccScenarioToCrestFpSingleWell` - injests getLatestScenarioMonthly() pandas dataframe and converts it to crestFp Single Well Forecast
     
     - Arguments
       - `comboCurveScenarioData`: pandas dataframe with specific rows and columns that have discounted net present values - `dataframe`
@@ -125,7 +132,7 @@ Three (3) packages `greasebook`, `joyn` and `combocurve`
       - `waterVariableCost`: water dispoal cost ($/bbl) `double`
       - `state`: state intials - only `tx` avaiable at the moment `str`
 
-12. `combocurve.ccScenarioToCrestFpPdp` - injests getLatestScenarioMonthly() pandas dataframe and converts it to crestFp PDP Forecast
+13. `combocurve.ccScenarioToCrestFpPdp` - injests getLatestScenarioMonthly() pandas dataframe and converts it to crestFp PDP Forecast
 - Arguments
       - `comboCurveScenarioData`: pandas dataframe with specific rows and columns that have discounted net present values - `dataframe`
       - `nglYield`: Natural Gas Liquids yield - 1 represents 100% yield
@@ -134,21 +141,76 @@ Three (3) packages `greasebook`, `joyn` and `combocurve`
       - `oilPricePercent`: 1 unless oil price differential is not 100% `double`
       - `gasPricePercent`: 1 unless gas price differential is not 100% `double`
       - `nglPricePercnet`: 1 unless ngl price differential is not 100% `double`
+
+
 ### joyn
 
-12. `joyn.getDailyAllocatedProduction` - returns pandas dataframe of modified production data from JOYN during given data length
+12. `joyn.getDailyAllocatedProductionRawWithDeleted` - returns pandas dataframe of modified production data from JOYN during given data length with deleted wells
 
     - Arguments
-      - `workingDataDirectory`: Data directory where all exports and imports come from `str`
       - `joynUsername` - username for login to JOYN `str`
       - `joynPassword` - password for JOYN `str`
       - `daysToLookBack` - how many days to look back for modified production data? `int`
 
-13. `joyn.mergeBIntoA` - merges two dataframes together and updates A if B is different
+13. `joyn.getDailyAllocatedProductionRaw` - returns pandas dataframe of modified production data from JOYN during given data length with and without deleted wells
 
     - Arguments
-      - `A`: pandas dataframe which will be updated `dataframe`
-      - `B`: pandas datafrme which will do the updating `dataframe`
+      - `joynUsername` - username for login to JOYN `str`
+      - `joynPassword` - password for JOYN `str`
+      - `daysToLookBack` - how many days to look back for modified production data? `int`
+
+14. `joyn.getJoynUser` - returns specific user XID from JOYN give a name
+
+    - Arguments
+      - `joynUsername` - username for login to JOYN `str`
+      - `joynPassword` - password for JOYN `str`
+      - `nameToFind` - name of JOYN user to find `str` 
+ 
+15. `joyn.getWellObjectId` - returns specific well object id from JOYN given a well name
+
+    - Arguments
+      - `joynUsername` - username for login to JOYN `str`
+      - `joynPassword` - password for JOYN `str`
+      - `nameOfWell` - name of JOYN well to find `str`
+
+16. `joyn.putJoynData` - loads data from dataframe into JOYN - see `operations.docs` for sample upload`
+      - Arguments
+        - `userId` - JOYN user id which is return in `getJoynUser` - `str` 
+        - `data` - pandas dataframe of data to load into JOYN `dataframe`
+        - `joynUsername` - username for login to JOYN `str`
+        - `joynPassword` - password for JOYN `str`
+        
+17. `joyn.compareJoynSqlDuplicates` - compares JOYN data to SQL data to find duplicates
+
+    - Arguments
+      - `sqlData` - data from `daily_production` table in SQL `dataframe`
+      - `joynData` - last XX days of modified JOYN data `dataframe`
+
+18. `joyn.getProductList` - returns product listing for a given well
+
+    - Arguments
+      - `joynUsername` - username for login to JOYN `str`
+      - `joynPassword` - password for JOYN `str`
+
+19. `joyn.getPicklistOptions` - returns picklist options and returns JSON
+
+    - Arguments
+      - `joynUsername` - username for login to JOYN `str`
+      - `joynPassword` - password for JOYN `str`
+
+20. `joyn.getEntityIdList` - returns entity id list for a given well
+
+    - Arguments
+      - `joynUsername` - username for login to JOYN `str`
+      - `joynPassword` - password for JOYN `str`
+
+21. `joyn.getDailyWellReading` - returns a dataframe with the well comments from the Daily Well Reading View
+  
+      - Arguments
+        - `joynUsername` - username for login to JOYN `str`
+        - `joynPassword` - password for JOYN `str`
+        - `daysToLookBack` - how many days to look back for modified production data `int`
+
 
 ## analytics Module
 
@@ -156,13 +218,13 @@ Two (2) packages `enverus` and `king` with 3 functions
 
 ### enverus
 
-14. `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
+22. `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
 
 - Arguments:
   - `apiKey`: Enverus API authentication `object`
   - `wellApi14`: Well API14 of interest `str`
 
-15. `enverus.checkWellStatus` - chekcs the status a specific operator in a specific basin
+23. `enverus.checkWellStatus` - chekcs the status a specific operator in a specific basin
 
     - Arguments:
       - `apiKey`: Enverus API authentication `object`
@@ -171,7 +233,7 @@ Two (2) packages `enverus` and `king` with 3 functions
 
 ### king
 
-16. `king.sendEmail`
+24. `king.sendEmail`
 
     - Arugments:
       - `emailRecipient` - email address of the person to email `str`
@@ -181,33 +243,48 @@ Two (2) packages `enverus` and `king` with 3 functions
       - `nameOfFile` (optional) name of the file - user created
       - `attachment` - (optional) attachment to be sent (Excel File only)
 
-17. `king.getAverageDailyVolumes`
+25. `king.getAverageDailyVolumes`
 
     - Arugments:
       - `masterKingProdData` - master allocated volumes excel sheet in KOC Datawarehouse `dataframe`
       - `startDate` - YYYY-MM-DD `datetime`
       - `endDate` - YYYY-MM-DD `datetime`
 
-18. `king.getNotReportedPumperList` - refactored pumper naughty list which creates and returns a list of pumpers who have not entered there data
+26. `king.getNotReportedPumperList` - refactored pumper naughty list which creates and returns a list of pumpers who have not entered there data
 
     - Arugments:
     - `masterKingProdData` - master allocated volumes excel sheet in KOC Datawarehouse `dataframe`
     - `checkDate` - date to check `datetime`
 
-19. `king.createPumperMessage` - takes a list of names and orders them by well to create the email message that goes out the operations team about missing pumper data on a given data
+27. `king.createPumperMessage` - takes a list of names and orders them by well to create the email message that goes out the operations team about missing pumper data on a given data
 
     - Arugments
       - `badPumperData` - dataframe of wells,names and pumper number for naughty list `dataframe`
       - `badPumperTrimmedList` - list of bad pumpers trimmed to only unquie pumper names `list`
       - `badPumperMessage` - any header information you want to begin the message with `str`
 
-20. `king.updateKingPlanningChart` - injests pandas dataframe for KOC master ghantt chart and loads into SQL database
+28. `king.getHCEFProduction` - gets raw HCEF production data from KOC Datawarehouse
 
-    - Arugments
-      - `dataplan`: pandas dataframe with KOC specific ghantt chart data `dataframe`
-      - `serverName` - name of server `str`
-      - `databaseName` - name of database `str`
-      - `tableName` - specific table to access `str`
+    - Arguments
+      - `pathToFolder` - path to Read data `str`
+
+29. `king.getWorlandUnit108Production` - gets raw HCEF production data from KOC Datawarehouse
+
+    - Arguments
+      - `pathToFolder` - path to Worland data `str`
+
+30. `king.updateUsageStatsEtl` - returns dataframe of select usage stats for ETL
+    
+    - Arguments
+      - `etlStartTime` - start time of ETL `datetime`
+
+31. `king.updateUsageStatsEtlRuntime` - returns dataframe of select usage stats for ETL runtime and automatically loads into SQL stats 
+    
+    - Arguments
+      - `etlStartTime` - start time of ETL `datetime`
+      - `etlEndTime` - end time of ETL `datetime`
+      - `function` - name of function `str`
+      - `runtime`- runtime of function `str`
 
 ## finance Module
 
@@ -215,39 +292,54 @@ Two packages `tech` and `wenergy`
 
 ### tech
 
-21. `tech.getData` - returns a dataframe given KOC Datawarehouse parameters
+32. `tech.getData` - returns a dataframe given KOC Datawarehouse parameters
 
     - Arguments:
       - `serverName` - name of server `str`
       - `databaseName` - name of database `str`
       - `tableName` - specific table to access `str`
 
-22. `tech.putData` - replaces entire table with dataframne given KOC Datawarehouse parameters
+33. `tech.putDataReplace` - replaces entire table with dataframne given KOC Datawarehouse parameters
 
     - Arguments:
       - `serverName` - name of server `str`
       - `databaseName` - name of database `str`
       - `tableName` - specific table to access - optional `str`
 
+34. `tech.putDataAppend` - appends entire table with dataframne given KOC Datawarehouse parameters
+
+    - Arguments:
+      - `serverName` - name of server `str`
+      - `databaseName` - name of database `str`
+      - `tableName` - specific table to access - optional `str`
+
+35. `tech.deleteDuplicateRecords` - deletes the duplicateIdList from SQL server
+
+    - Arguments:
+       - `serverName` - name of server `str`
+       - `databaseName` - name of database `str`
+       - `tableName` - specific table to access - optional `str`
+       - `duplicateList` - list of duplicate ids to delete `list`
+
 ## afe Module
 
 One (1) package `afe.py` and three (3) functions
 
-23. `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
+36. `afe.dailyCost` - calculates and outputs two csv files, daysvsdepth.csv and dailyItemCost.csv for given `nameOfWell`
 
     - Note: see `afe.py` to set correct paths to data folder
     - Arguments
       - `workingDataDirectory`: Data directory where all exports and imports come from `str`
       - `name`: Name of the well, see masterWellList for details `str`
 
-24. `afe.variance`
+37. `afe.variance`
 
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments
         - `workingDataDirectory`: Data directory where all exports and imports come from `str`
         - `name`: Name of the well, see masterWellList for details
 
-25. `afe.combineAfeFiles`
+38. `afe.combineAfeFiles`
 
     - Note: see `afe.py` to set correct paths to data folder
       - Arguments

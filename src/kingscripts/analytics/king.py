@@ -248,17 +248,7 @@ def createPumperMessage(badPumperData, badPumperTrimmedList, badPumperMessage):
 
     return badPumperMessage
 
-"""
-    
-Pull planning Ghantt Chart from data lake and imports to SQL server
 
-"""
-
-def updateKingPlanningChart(dataplan, serverName, databaseName, tableName):
-    
-    tech.putDataReplace(serverName, databaseName, dataplan, tableName)
-
-    return True
 
 """
     
@@ -300,8 +290,14 @@ def getHCEFProduction(pathToFolder):
     
     return readData
 
+"""
+    
+Get Wyoming Data
 
-def getworlandUnit108Production(numberOfDays):
+"""  
+
+
+def getWorlandUnit108Production(numberOfDays):
     
     headers = [
         "Date",
@@ -343,6 +339,12 @@ def getworlandUnit108Production(numberOfDays):
     
     
     return wu108DataLastTwoRows
+
+"""
+    
+Usage Stats for the ETL
+
+"""  
 
 def updateUsageStatsEtl(etlStartTime):
     
@@ -395,6 +397,12 @@ def updateUsageStatsEtl(etlStartTime):
     
     
     return True
+
+"""
+    
+Usage Stats etl runtime
+
+"""  
 
 def updateUsageStatsEtlRuntime(etlStartTime, etlEndTime, function, runtime):
     
