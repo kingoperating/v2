@@ -24,7 +24,6 @@ from datetime import datetime
 
 '''
 
-
 def getBatteryProductionData(workingDataDirectory, fullProd, days, greasebookApi):
 
     print("Begin Pulling Battery Production Data From Greasebook")
@@ -603,7 +602,6 @@ GET COMMENTS FROM GREASEBOOK and returns a clean JSON file ready to loading into
 
 '''
 
-
 def getComments(workingDataDirectory, greasebookApi, prodStartDate, prodEndDate):
 
     workingDir = workingDataDirectory
@@ -719,7 +717,6 @@ def getComments(workingDataDirectory, greasebookApi, prodStartDate, prodEndDate)
 This function will allocated production by both SubAccount ID (accounting purposes) and API14 (engineering purposes)
 
 '''
-
 
 def allocateWells(pullProd, days, workingDataDirectory, greasebookApi, edgeCaseRollingAverage):
 
@@ -1213,7 +1210,6 @@ This function is used to send Operations an email of the pumpers who have not go
 
 '''
 
-
 def sendPumperEmail(pumperNotReportedList, workingDataDirectory):
 
     dateToday = dt.datetime.today()
@@ -1317,6 +1313,10 @@ def sendPumperEmail(pumperNotReportedList, workingDataDirectory):
     print("Completed Sending Pumper Not Reported List to " +
           str(counter[1]) + " people")
 
+"""
+this function gets the tank gauge levels for Greasebook and exports to dataframe
+
+"""
 
 def getTankGauges(greasebookApi, startDate, endDate):
     
@@ -1395,9 +1395,3 @@ def getTankGauges(greasebookApi, startDate, endDate):
     
     return masterTankGauge
 
-
-
-
-
-def getTicketInfo(greasebookApi):
-    x = 5

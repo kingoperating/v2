@@ -313,7 +313,7 @@ tech.putDataReplace(
     tableName="header_data"
 )
 
-productTable = joyn.getProductType(
+productTable = joyn.getProductList(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
 )
@@ -339,7 +339,7 @@ wellData = joyn.getWellHeaderData(
     joynPassword=joynPassword
 )
 
-productTable = joyn.getProductType(
+productTable = joyn.getProductList(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
 )
@@ -575,7 +575,7 @@ crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\p
 
 # data.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\masterAllocatedProductionDataDateTime.xlsx", index=False)
 
-joyn.getJoynUsers(
+joyn.getJoynUser(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
     nameToFind="mtanner"

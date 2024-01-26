@@ -79,7 +79,7 @@ read342Id = joyn.getWellObjectId(
     nameOfWell="Read 342H"
 )
 
-userId = joyn.getJoynUsers(
+userId = joyn.getJoynUser(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
     nameToFind=joynUser
@@ -89,21 +89,23 @@ read332HData = king.getHCEFProduction(
     pathToFolder=pathToRead332H,
 )
 
+read332HData.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\read332HData.xlsx")
+
 read342HData = king.getHCEFProduction(
     pathToFolder=pathToRead342H,
 )
 
-joyn.putJoynDataApi(
+joyn.putJoynData(
     userId=userId,
-    rawProductionData=read332HData,
+    data=read332HData,
     objectId=read332hId,
     joynUsername=joynUsername,
     joynPassword=joynPassword
 )
 
-joyn.putJoynDataApi(
+joyn.putJoynData(
     userId=userId,
-    rawProductionData=read342HData,
+    data=read342HData,
     objectId=read342Id,
     joynUsername=joynUsername,
     joynPassword=joynPassword

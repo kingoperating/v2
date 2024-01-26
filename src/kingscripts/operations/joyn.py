@@ -184,7 +184,8 @@ def getDailyAllocatedProductionRawWithDeleted(joynUsername, joynPassword, daysTo
 This script gets all the modifed daily allocated production over to the master JOYN dataframe in prep to merge    
 
 """
-def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, daysToLookBack):
+
+def getDailyAllocatedProductionRaw(joynUsername, joynPassword, daysToLookBack):
 
     load_dotenv()
 
@@ -346,13 +347,14 @@ def getDailyAllocatedProductionRaw(joynUsername, joynPassword, wellHeaderData, d
     
     return rawJoynTotalAssetProduction
 
+
 """
     
 This script gets all current users in JOYN    
 
 """
 
-def getJoynUsers(joynUsername, joynPassword, nameToFind):
+def getJoynUser(joynUsername, joynPassword, nameToFind):
     
     def getIdToken():
 
@@ -416,7 +418,7 @@ def getJoynUsers(joynUsername, joynPassword, nameToFind):
 
 """
 
-GET Well API and ObjectID master table
+GET Well header data 
 
 """
 
@@ -558,7 +560,7 @@ PUT Function - loads data from Read
       
 """
 
-def putJoynDataApi(userId, rawProductionData, objectId, joynUsername, joynPassword):
+def putJoynData(userId, data, objectId, joynUsername, joynPassword):
     
     userId = int(userId)
     
@@ -619,7 +621,7 @@ def putJoynDataApi(userId, rawProductionData, objectId, joynUsername, joynPasswo
     file = open(pathBetter, "r")
     dataTemplate = json.load(file)
     
-    numberOfRows = len(rawProductionData)
+    numberOfRows = len(data)
     j = 0
     r = 1
     
@@ -628,7 +630,7 @@ def putJoynDataApi(userId, rawProductionData, objectId, joynUsername, joynPasswo
     for i in range(0, numberOfRows):
         data = copy.deepcopy(dataTemplate)
         ##test zone
-        day = rawProductionData["Date"][i]
+        day = data["Date"][i]
         readingDate = dt.datetime.strptime(day, "%m/%d/%Y")
         readingDateClean = readingDate.strftime("%Y-%m-%d")
         id = 1000 + i ## creates unique id for each row that ties everything together
@@ -658,7 +660,7 @@ def putJoynDataApi(userId, rawProductionData, objectId, joynUsername, joynPasswo
         ## Decs - Oil volume
         newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
         newDecs["attId"] = 263005
-        newDecs["v"] = str(rawProductionData["Oil"][i])
+        newDecs["v"] = str(data["Oil"][i])
         newDecs["ID"] = j
         newDecs["ReadingID"] = id
         j = j + 1
@@ -730,7 +732,7 @@ def putJoynDataApi(userId, rawProductionData, objectId, joynUsername, joynPasswo
         ## Decs - MCF volume
         newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
         newDecs["attId"] = 263005
-        newDecs["v"] = str(rawProductionData["Gas"][i])
+        newDecs["v"] = str(data["Gas"][i])
         newDecs["ID"] = j
         newDecs["ReadingID"] = id
         j = j + 1
@@ -794,7 +796,7 @@ def putJoynDataApi(userId, rawProductionData, objectId, joynUsername, joynPasswo
         ## Decs = Oil Sold Volume
         newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
         newDecs["attId"] = 263005
-        newDecs["v"] = str(rawProductionData["Oil Sold"][i])
+        newDecs["v"] = str(data["Oil Sold"][i])
         newDecs["ID"] = j
         newDecs["ReadingID"] = id
         j = j + 1
@@ -857,7 +859,7 @@ def putJoynDataApi(userId, rawProductionData, objectId, joynUsername, joynPasswo
         ## Decs = Water Volume
         newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
         newDecs["attId"] = 263005
-        newDecs["v"] = str(rawProductionData["Water"][i])
+        newDecs["v"] = str(data["Water"][i])
         newDecs["ID"] = j
         newDecs["ReadingID"] = id
         j = j + 1
@@ -897,6 +899,12 @@ def putJoynDataApi(userId, rawProductionData, objectId, joynUsername, joynPasswo
     return data
 
 
+"""
+        
+Compares JOYN and SQL data to find duplicates and returns a list of duplicate UUIDs
+      
+"""
+
 def compareJoynSqlDuplicates(sqlData, joynData):
     
     sqlIds = sqlData["UUID"].tolist()
@@ -916,7 +924,13 @@ def compareJoynSqlDuplicates(sqlData, joynData):
     return duplicateRecordId
 
 
-def getProductType(joynUsername, joynPassword):
+"""
+        
+Gets the product types from JOYN API
+      
+"""
+
+def getProductList(joynUsername, joynPassword):
     
     def getIdToken():
             
@@ -978,6 +992,12 @@ def getProductType(joynUsername, joynPassword):
     return productTypeTable
 
 
+"""
+        
+Gets all the picklistoptions and returns the JSON response
+      
+"""
+
 def getPicklistOptions(joynUsername, joynPassword):
     
     def getIdToken():
@@ -1032,7 +1052,13 @@ def getPicklistOptions(joynUsername, joynPassword):
     
     return x
 
-# Gets JOYN Entity ID from JOYN API
+
+"""
+        
+Gets all the Entity ID's and returns the JSON response allows for different dataviews
+      
+"""
+
 def getEntityIdList():
         
         load_dotenv()
@@ -1100,6 +1126,12 @@ def getEntityIdList():
     
         return entityIdTable
 
+
+"""
+        
+Gets the comments for all wells in daily well reading
+      
+"""
 
 def getDailyWellReading(joynUsername, joynPassword, daysToLookBack):
 
