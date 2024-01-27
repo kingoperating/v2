@@ -341,6 +341,37 @@ def getWorlandUnit108Production(numberOfDays):
     
     return wu108DataLastTwoRows
 
+
+"""
+    
+Get Buffalo 6-8H Data from Power Automate folder
+
+"""  
+
+def getBuffalo68h(pathToFolder):
+     
+    headers = [
+        "Date",
+        "Oil",
+        "Oil Sold",
+        "Water",
+        "Gas",
+        "Comments"
+        
+    ]
+    
+    # create list of all files in pathToFolder
+    files = os.listdir(pathToFolder)
+    # get the most recent file
+    files.sort(key=lambda x: os.path.getmtime(os.path.join(pathToFolder, x)))
+    # create path to most recent file
+    pathToData = os.path.join(pathToFolder, files[-1])
+    # read the data
+    buffData = pd.read_excel(pathToData, header=2)
+    
+    
+    return buffData
+
 """
     
 Getting Buffalo 6-8H data from powerAutomate folder\
