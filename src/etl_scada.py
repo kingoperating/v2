@@ -89,8 +89,6 @@ read332HData = king.getHCEFProduction(
     pathToFolder=pathToRead332H,
 )
 
-read332HData.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\read332HData.xlsx")
-
 read342HData = king.getHCEFProduction(
     pathToFolder=pathToRead342H,
 )
