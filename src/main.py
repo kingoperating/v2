@@ -134,9 +134,9 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
-path = r"C:\Users\mtanner\OneDrive - King Operating\PowerAutomate\Buffalo 6-8"
+path = r"C:\Users\mtanner\OneDrive - King Operating\PowerAutomate\WU108"
 
-buffalo = king.getBuffalo68h(
+wu108 = king.getWorlandUnit108Production(
     pathToFolder=path
 )
 
@@ -154,7 +154,7 @@ testWellObjectId = joyn.getWellObjectId(
 
 joyn.putJoynData(
     userId=userId,
-    rawData=buffalo,
+    rawData=wu108,
     objectId=testWellObjectId,
     joynUsername=joynUsername,
     joynPassword=joynPassword
