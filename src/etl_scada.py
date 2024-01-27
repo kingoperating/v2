@@ -31,11 +31,11 @@ SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER. CURREN
 joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
 
-## SQL Server Variables - for KOC Datawarehouse 3.0
-kingServerExpress = str(os.getenv('SQL_SERVER'))
+## SQL Server Variables
 kingDatabaseExpress = str(os.getenv('SQL_KING_DATABASE'))
 kingLiveServer = str(os.getenv('SQL_SERVER_KING_DATAWAREHOUSE'))
 kingProductionDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
+kingUsageDatabase = str(os.getenv('SQL_USAGE_DATABASE'))
 
 ## Names of KOC Employees
 michaelTanner = os.getenv("MICHAEL_TANNER_EMAIL")
@@ -97,7 +97,7 @@ read342HData = king.getHCEFProduction(
 
 joyn.putJoynData(
     userId=userId,
-    data=read332HData,
+    rawData=read332HData,
     objectId=read332hId,
     joynUsername=joynUsername,
     joynPassword=joynPassword
@@ -105,10 +105,21 @@ joyn.putJoynData(
 
 joyn.putJoynData(
     userId=userId,
-    data=read342HData,
+    rawData=read342HData,
     objectId=read342Id,
     joynUsername=joynUsername,
     joynPassword=joynPassword
+)
+
+dateEnd = dt.datetime.today()
+
+runtimeSeconds = (dateEnd - dateToday).total_seconds()
+
+usageFunction = king.updateUsageStatsEtlRuntime(
+    etlStartTime=dateToday,
+    etlEndTime=dateEnd,
+    function=function,
+    runtime=runtimeSeconds
 )
 
 print("ETL Process Complete")

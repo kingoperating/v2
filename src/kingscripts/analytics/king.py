@@ -363,6 +363,12 @@ def updateUsageStatsEtl(etlStartTime):
         tableName= "header_data"
     )
     
+    dailyForecast = tech.getData(
+        server=kingLiveServer,
+        database= kingProductionDatabase,
+        tableName= "daily_forecast"
+    )
+    
     lenAllocatedProduction = len(allocatedProduction)
     lenWellsData = len(wellsData)
     
@@ -383,12 +389,14 @@ def updateUsageStatsEtl(etlStartTime):
     ## create row for usage dataframe
     usageRowOne = [etlStartTime, "allocated_production", int(lenAllocatedProduction)]
     usageRowTwo = [etlStartTime, "header_data", int(lenWellsData)]
+    usageRowThree = [etlStartTime, "daily_forecast", int(len(dailyForecast))]
     ## append row to dataframe
     usageTableOne.loc[0] = usageRowOne
     usageTableOne.loc[1] = usageRowTwo
+    usageTableOne.loc[2] = usageRowThree
     
     ## append into usage database
-    tech.putDataReplace(
+    tech.putDataAppend(
         server=kingLiveServer,
         database=kingUsageDatabase,
         data=usageTableOne,
