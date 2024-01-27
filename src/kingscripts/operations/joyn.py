@@ -617,7 +617,7 @@ def putJoynData(userId, rawData, objectId, joynUsername, joynPassword):
         return idToken
     
     # Gets the Sample Upload Template from docs
-    pathBetter  = Path(__file__).parent / r"docs\Read342H_SampleUpload.json"
+    pathBetter  = Path(__file__).parent / r"docs\sample_joyn.json"
     file = open(pathBetter, "r")
     dataTemplate = json.load(file)
     
