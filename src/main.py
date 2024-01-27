@@ -135,6 +135,12 @@ listOfWells = [
 WORKING ZONE
 '''
 
+path = r"C:\Users\mtanner\OneDrive - King Operating\PowerAutomate\Buffalo 6-8"
+
+buffalo = king.getBuffalo68h(
+    pathToFolder=path
+)
+
 allocatedProd = tech.getData(
     server=kingLiveServer,
     database=kingProductionDatabase,
