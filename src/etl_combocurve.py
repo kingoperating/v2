@@ -4,7 +4,7 @@ Main ETL for the JOYN - ComboCurve ETL Process
 Developer: Michael Tanner, Gabe Tatman
 
 """
-# KOC v3.3.0 Python Packages
+# KOC v3.4.0 Python Packages
 from kingscripts.operations import greasebook, combocurve, joyn
 from kingscripts.analytics import enverus, king, tech
 from kingscripts.finance import wenergy, afe
@@ -24,6 +24,7 @@ load_dotenv()
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
 joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
+dateToday = dt.datetime.today()
 
 function = "etl_combocurve"
 
@@ -59,6 +60,17 @@ combocurve.putJoynWellProductionData(
     serviceAccount=serviceAccount,
     daysToLookback=5,
     headerData=headerData,
+)
+
+dateEnd = dt.datetime.today()
+
+runtimeSeconds = (dateEnd - dateToday).total_seconds()
+
+usageFunction = king.updateUsageStatsEtlRuntime(
+    etlStartTime=dateToday,
+    etlEndTime=dateEnd,
+    function=function,
+    runtime=runtimeSeconds
 )
 
 print("Finished etl_combocurve")

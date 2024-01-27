@@ -207,5 +207,16 @@ elapsed_time_seconds = end_time - start_time
 # Convert seconds to minutes with two decimal places
 elapsed_time_minutes = elapsed_time_seconds / 60
 
+dateEnd = dt.datetime.today()
+
+runtimeSeconds = (dateEnd - dateToday).total_seconds()
+
+usageFunction = king.updateUsageStatsEtlRuntime(
+    etlStartTime=dateToday,
+    etlEndTime=dateEnd,
+    function=function,
+    runtime=runtimeSeconds
+)
+
 # Print the runtime in minutes with two decimal places
 print(f"Script execution time: {elapsed_time_minutes:.2f} minutes")

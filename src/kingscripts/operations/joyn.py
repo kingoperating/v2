@@ -560,7 +560,7 @@ PUT Function - loads data from Read
       
 """
 
-def putJoynData(userId, data, objectId, joynUsername, joynPassword):
+def putJoynData(userId, rawData, objectId, joynUsername, joynPassword):
     
     userId = int(userId)
     
@@ -621,22 +621,22 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
     file = open(pathBetter, "r")
     dataTemplate = json.load(file)
     
-    numberOfRows = len(data)
+    numberOfRows = len(rawData)
     j = 0
     r = 1
     
     print("Starting Looping...")
     ## Master loop, goes through all five days and updates JOYN
     for i in range(0, numberOfRows):
-        data = copy.deepcopy(dataTemplate)
+        sampleData = copy.deepcopy(dataTemplate)
         ##test zone
-        day = data["Date"][i]
+        day = rawData["Date"][i]
         readingDate = dt.datetime.strptime(day, "%m/%d/%Y")
         readingDateClean = readingDate.strftime("%Y-%m-%d")
         id = 1000 + i ## creates unique id for each row that ties everything together
         j = j + 1
         ## Readings
-        readings = copy.deepcopy(data["LCustomEntity"]["Readings"][0])
+        readings = copy.deepcopy(sampleData["LCustomEntity"]["Readings"][0])
         readings["ID"] = id
         readings["ReadingID"] = id
         readings["ReadingDate"] = readingDateClean
@@ -653,26 +653,26 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
         
         ##WRITE STATEMENT - ADD TO JSON
         if j < 3:
-            data["LCustomEntity"]["Readings"][0].update(readings)
+            sampleData["LCustomEntity"]["Readings"][0].update(readings)
         else:
-            data["LCustomEntity"]["Readings"].append(readings)
+            sampleData["LCustomEntity"]["Readings"].append(readings)
         
         ## Decs - Oil volume
-        newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
+        newDecs = copy.deepcopy(sampleData["LCustomEntity"]["custo"]["decs"][0])
         newDecs["attId"] = 263005
-        newDecs["v"] = str(data["Oil"][i])
+        newDecs["v"] = str(rawData["Oil"][i])
         newDecs["ID"] = j
         newDecs["ReadingID"] = id
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
         if j < 4:
-            data["LCustomEntity"]["custo"]["decs"][0].update(newDecs)
+            sampleData["LCustomEntity"]["custo"]["decs"][0].update(newDecs)
         else:
-            data["LCustomEntity"]["custo"]["decs"].append(newDecs)
+            sampleData["LCustomEntity"]["custo"]["decs"].append(newDecs)
         
         ## INTS - Product Oil
-        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts = copy.deepcopy(sampleData["LCustomEntity"]["custo"]["ints"][0])
         newInts["attId"] = 263002 ## product code
         newInts["ID"] = j
         newInts["ReadingID"] = id
@@ -681,12 +681,12 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
         
         ## WRITE STATEMENT - ADD TO JSON
         if j < 5:
-            data["LCustomEntity"]["custo"]["ints"][0].update(newInts)
+            sampleData["LCustomEntity"]["custo"]["ints"][0].update(newInts)
         else:
-            data["LCustomEntity"]["custo"]["ints"].append(newInts)
+            sampleData["LCustomEntity"]["custo"]["ints"].append(newInts)
         
         ## INTS - Disposition Production
-        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts = copy.deepcopy(sampleData["LCustomEntity"]["custo"]["ints"][0])
         newInts["attId"] = 263003 ## dispostion code
         newInts["ID"] = j
         newInts["ReadingID"] = id
@@ -694,19 +694,19 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
-        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        sampleData["LCustomEntity"]["custo"]["ints"].append(newInts)
         
         idToken = getIdToken()  # get idToken from authJoyn function
     
         ## POST request to JOYN API
-        joynApiPost(data, idToken)
+        joynApiPost(sampleData, idToken)
         
         ## STARTING MCF VOLUME
         
-        data = copy.deepcopy(dataTemplate)
+        sampleData = copy.deepcopy(dataTemplate)
             
         ## Readings
-        readings = copy.deepcopy(data["LCustomEntity"]["Readings"][0])
+        readings = copy.deepcopy(sampleData["LCustomEntity"]["Readings"][0])
         readings["ID"] = id
         readings["ReadingID"] = id
         readings["ReadingDate"] = readingDateClean
@@ -723,25 +723,25 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
         
         ##WRITE STATEMENT - ADD TO JSON
         if j < 3:
-            data["LCustomEntity"]["Readings"][0].update(readings)
+            sampleData["LCustomEntity"]["Readings"][0].update(readings)
         else:
-            data["LCustomEntity"]["Readings"].append(readings)
+            sampleData["LCustomEntity"]["Readings"].append(readings)
             
             
               
         ## Decs - MCF volume
-        newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
+        newDecs = copy.deepcopy(sampleData["LCustomEntity"]["custo"]["decs"][0])
         newDecs["attId"] = 263005
-        newDecs["v"] = str(data["Gas"][i])
+        newDecs["v"] = str(rawData["Gas"][i])
         newDecs["ID"] = j
         newDecs["ReadingID"] = id
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
-        data["LCustomEntity"]["custo"]["decs"].append(newDecs)
+        sampleData["LCustomEntity"]["custo"]["decs"].append(newDecs)
         
         ## INTS - Product Gas
-        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts = copy.deepcopy(sampleData["LCustomEntity"]["custo"]["ints"][0])
         newInts["attId"] = 263002 ## product code
         newInts["ID"] = j
         newInts["ReadingID"] = id
@@ -749,10 +749,10 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
-        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        sampleData["LCustomEntity"]["custo"]["ints"].append(newInts)
         
         ## INTS - Disposition Production
-        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts = copy.deepcopy(sampleData["LCustomEntity"]["custo"]["ints"][0])
         newInts["attId"] = 263003 ## disposition code
         newInts["ID"] = j
         newInts["ReadingID"] = id
@@ -760,18 +760,18 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
-        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        sampleData["LCustomEntity"]["custo"]["ints"].append(newInts)
         
         
         idToken = getIdToken()  # get idToken from authJoyn function
         ## POST request to JOYN API
-        joynApiPost(data, idToken)
+        joynApiPost(sampleData, idToken)
     
         ## NEW READING OIL SALES VOLUME
-        data = copy.deepcopy(dataTemplate)
+        sampleData = copy.deepcopy(dataTemplate)
         
         ## Readings
-        readings = copy.deepcopy(data["LCustomEntity"]["Readings"][0])
+        readings = copy.deepcopy(sampleData["LCustomEntity"]["Readings"][0])
         readings["ID"] = id
         readings["ReadingID"] = id
         readings["ReadingDate"] = readingDateClean
@@ -788,24 +788,24 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
         
         ##WRITE STATEMENT - ADD TO JSON
         if j < 3:
-            data["LCustomEntity"]["Readings"][0].update(readings)
+            sampleData["LCustomEntity"]["Readings"][0].update(readings)
         else:
-            data["LCustomEntity"]["Readings"].append(readings)
+            sampleData["LCustomEntity"]["Readings"].append(readings)
         
         
         ## Decs = Oil Sold Volume
-        newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
+        newDecs = copy.deepcopy(sampleData["LCustomEntity"]["custo"]["decs"][0])
         newDecs["attId"] = 263005
-        newDecs["v"] = str(data["Oil Sold"][i])
+        newDecs["v"] = str(rawData["Oil Sold"][i])
         newDecs["ID"] = j
         newDecs["ReadingID"] = id
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
-        data["LCustomEntity"]["custo"]["decs"].append(newDecs)
+        sampleData["LCustomEntity"]["custo"]["decs"].append(newDecs)
         
         ## INTS - Product
-        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts = copy.deepcopy(sampleData["LCustomEntity"]["custo"]["ints"][0])
         newInts["attId"] = 263002 ## product
         newInts["ID"] = j
         newInts["ReadingID"] = id
@@ -813,9 +813,9 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
-        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        sampleData["LCustomEntity"]["custo"]["ints"].append(newInts)
         
-        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts = copy.deepcopy(sampleData["LCustomEntity"]["custo"]["ints"][0])
         newInts["attId"] = 263003 ## disposition
         newInts["ID"] = j
         newInts["ReadingID"] = id
@@ -823,19 +823,19 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
-        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        sampleData["LCustomEntity"]["custo"]["ints"].append(newInts)
         
         idToken = getIdToken()  # get idToken from authJoyn function
     
         ## POST request to JOYN API
-        joynApiPost(data, idToken)
+        joynApiPost(sampleData, idToken)
         
         ### STARTING WATER VOLUME
         
-        data = copy.deepcopy(dataTemplate)
+        sampleData = copy.deepcopy(dataTemplate)
         
         ## Readings
-        readings = copy.deepcopy(data["LCustomEntity"]["Readings"][0])
+        readings = copy.deepcopy(sampleData["LCustomEntity"]["Readings"][0])
         readings["ID"] = id
         readings["ReadingID"] = id
         readings["ReadingDate"] = readingDateClean
@@ -852,23 +852,23 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
         
         ##WRITE STATEMENT - ADD TO JSON
         if j < 3:
-            data["LCustomEntity"]["Readings"][0].update(readings)
+            sampleData["LCustomEntity"]["Readings"][0].update(readings)
         else:
-            data["LCustomEntity"]["Readings"].append(readings)
+            sampleData["LCustomEntity"]["Readings"].append(readings)
         
         ## Decs = Water Volume
-        newDecs = copy.deepcopy(data["LCustomEntity"]["custo"]["decs"][0])
+        newDecs = copy.deepcopy(sampleData["LCustomEntity"]["custo"]["decs"][0])
         newDecs["attId"] = 263005
-        newDecs["v"] = str(data["Water"][i])
+        newDecs["v"] = str(rawData["Water"][i])
         newDecs["ID"] = j
         newDecs["ReadingID"] = id
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
-        data["LCustomEntity"]["custo"]["decs"].append(newDecs)
+        sampleData["LCustomEntity"]["custo"]["decs"].append(newDecs)
         
         ## INTS - Product
-        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts = copy.deepcopy(sampleData["LCustomEntity"]["custo"]["ints"][0])
         newInts["attId"] = 263002
         newInts["ID"] = j
         newInts["ReadingID"] = id
@@ -876,10 +876,10 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
-        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        sampleData["LCustomEntity"]["custo"]["ints"].append(newInts)
         
         ## INTS - Disposition
-        newInts = copy.deepcopy(data["LCustomEntity"]["custo"]["ints"][0])
+        newInts = copy.deepcopy(sampleData["LCustomEntity"]["custo"]["ints"][0])
         newInts["attId"] = 263003 # disposition
         newInts["ID"] = j
         newInts["ReadingID"] = id
@@ -887,16 +887,16 @@ def putJoynData(userId, data, objectId, joynUsername, joynPassword):
         j = j + 1
         
         ## WRITE STATEMENT - ADD TO JSON
-        data["LCustomEntity"]["custo"]["ints"].append(newInts)
+        sampleData["LCustomEntity"]["custo"]["ints"].append(newInts)
         
         idToken = getIdToken()  # get idToken from authJoyn function
     
         ## POST request to JOYN API
-        joynApiPost(data, idToken)
+        joynApiPost(sampleData, idToken)
     
     print("Finished Looping " + str(objectId))
 
-    return data
+    return sampleData
 
 
 """
