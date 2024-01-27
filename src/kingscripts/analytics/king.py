@@ -12,6 +12,7 @@ import os.path
 from pathlib import Path
 import pandas as pd
 from kingscripts.analytics import tech
+import xlrd as xl
 
 # load .env file
 load_dotenv()
@@ -339,6 +340,68 @@ def getWorlandUnit108Production(numberOfDays):
     
     
     return wu108DataLastTwoRows
+
+"""
+    
+Getting Buffalo 6-8H data from powerAutomate folder\
+    
+"""  
+
+def getBuffalo68h(pathToFolder):
+    
+    headers = [
+        "Date",
+        "Oil",
+        "Oil Sold",
+        "Water",
+        "Gas",
+        "Comments"
+        
+    ]
+    
+    # create list of all files in pathToFolder
+    files = os.listdir(pathToFolder)
+    # get the most recent file
+    files.sort(key=lambda x: os.path.getmtime(os.path.join(pathToFolder, x)))
+    # create path to most recent file
+    pathToData = os.path.join(pathToFolder, files[-1])
+    # read the data
+    buffaloData = pd.read_excel(pathToData, engine="xlrd", header=3)
+    
+    ## convert Date column to pandas datetime
+    buffaloData["Date"] = pd.to_datetime(buffaloData["Date"])
+    ## sort by newest date to oldest date
+    buffaloData = buffaloData.sort_values(by=["Date"])
+    
+    ## get the last 5 days of data
+    buffaloData = buffaloData.tail(5)
+    
+    # drop all columns except for Date, BOPD, MCFD, BWPD and REMARKS
+    buffaloData = buffaloData.drop(buffaloData.columns[5:20], axis=1)
+    buffaloData = buffaloData.drop(buffaloData.columns[4], axis=1)
+    
+    ## replace all nan values with ""
+    buffaloData = buffaloData.fillna("")
+    
+    ## insert oil sold column in between BOPD and MCFD
+    buffaloData.insert(2, "Oil Sold", 0)
+    
+    ## switch MCFD and BWPD columns
+    buffaloData = buffaloData[["Date", "BOPD", "Oil Sold", "BWPD", "MCFD", "REMARKS"]]
+    
+    ## replcace headers
+    buffaloData.columns = headers
+    
+    ## rest index
+    buffaloData = buffaloData.reset_index()
+    
+    ## convert date to string
+    buffaloData["Date"] = buffaloData["Date"].dt.strftime("%m/%d/%Y")
+    
+    return buffaloData
+
+
+
 
 """
     

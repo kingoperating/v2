@@ -144,8 +144,6 @@ def putJoynWellProductionData(allocatedProductionMaster, serviceAccount, comboCu
     ##drop index column
     currentRunJoynData = currentRunJoynData.reset_index(drop=True)
     
-    currentRunJoynData.to_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\currentRunJoynData.xlsx")
-    
     ## conver date to YYYY-MM-DD
     currentRunJoynData["date"] = pd.to_datetime(currentRunJoynData["date"])
     currentRunJoynData["date"] = currentRunJoynData["date"].dt.strftime("%Y-%m-%d")

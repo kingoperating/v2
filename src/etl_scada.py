@@ -62,11 +62,13 @@ eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
 # Important Variables for scripts
 pathToRead332H = str(os.getenv("READ_332H"))
 pathToRead342H = str(os.getenv("READ_342H"))
+pathToBuffalo68h = str(os.getenv("BUFFALO_68H"))
 joynUser = str(os.getenv('JOYN_USER'))
 function = "etl_scada"
 
 ## BEGIN ETL PROCESS
 
+# Get object IDs for wells
 read332hId = joyn.getWellObjectId(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
@@ -79,11 +81,21 @@ read342Id = joyn.getWellObjectId(
     nameOfWell="Read 342H"
 )
 
+buffalo68Id = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="Buffalo 6-8 1H"
+)
+
+# Get User ID for Michael Tanner / Gabe Tatman
+
 userId = joyn.getJoynUser(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
     nameToFind=joynUser
 )
+
+# Get Production Data from SCADA folders
 
 read332HData = king.getHCEFProduction(
     pathToFolder=pathToRead332H,
@@ -92,6 +104,12 @@ read332HData = king.getHCEFProduction(
 read342HData = king.getHCEFProduction(
     pathToFolder=pathToRead342H,
 )
+
+buffalo68hData = king.getBuffalo68h(
+    pathToFolder=pathToBuffalo68h,
+)
+
+# Put Production Data in JOYN
 
 joyn.putJoynData(
     userId=userId,
@@ -108,6 +126,16 @@ joyn.putJoynData(
     joynUsername=joynUsername,
     joynPassword=joynPassword
 )
+
+joyn.putJoynData(
+    userId=userId,
+    rawData=buffalo68hData,
+    objectId=buffalo68Id,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+# USAGE STATS
 
 dateEnd = dt.datetime.today()
 

@@ -134,6 +134,31 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
+path = r"C:\Users\mtanner\OneDrive - King Operating\PowerAutomate\Buffalo 6-8"
+
+buffalo = king.getBuffalo68h(
+    pathToFolder=path
+)
+
+userId = joyn.getJoynUser(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameToFind="mtanner"
+)
+
+testWellObjectId = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="test_well"
+)
+
+joyn.putJoynData(
+    userId=userId,
+    rawData=buffalo,
+    objectId=testWellObjectId,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
 
 allocatedProd = tech.getData(
     server=kingLiveServer,
