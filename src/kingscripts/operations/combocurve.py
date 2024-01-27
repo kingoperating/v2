@@ -143,7 +143,7 @@ def putJoynWellProductionData(allocatedProductionMaster, serviceAccount, comboCu
     currentRunJoynData = currentRunJoynData[currentRunJoynData["chosenID"] != "123456789"]
     ##drop index column
     currentRunJoynData = currentRunJoynData.reset_index(drop=True)
-      
+
     ## conver date to YYYY-MM-DD
     currentRunJoynData["date"] = pd.to_datetime(currentRunJoynData["date"])
     currentRunJoynData["date"] = currentRunJoynData["date"].dt.strftime("%Y-%m-%d")
