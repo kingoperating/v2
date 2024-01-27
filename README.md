@@ -25,10 +25,6 @@ from kingscripts.afe import afe
 from kingscripts.finance import wenergy
 ```
 
-## operations Module
-
-Three (3) packages `greasebook`, `joyn` and `combocurve`
-
 ### greasebook (Legacy)
 
 1. `greasebook.getProductionData` - pulls production data from Greasebook, formats and exports CSV into working data folder
@@ -211,11 +207,6 @@ Three (3) packages `greasebook`, `joyn` and `combocurve`
         - `joynPassword` - password for JOYN `str`
         - `daysToLookBack` - how many days to look back for modified production data `int`
 
-
-## analytics Module
-
-Two (2) packages `enverus` and `king` with 3 functions
-
 ### enverus
 
 22. `enverus.getWellData` - returns pandas dataframe of monthly oil/gas/water production
@@ -286,9 +277,6 @@ Two (2) packages `enverus` and `king` with 3 functions
       - `function` - name of function `str`
       - `runtime`- runtime of function `str`
 
-## finance Module
-
-Two packages `tech` and `wenergy`
 
 ### tech
 
@@ -321,7 +309,7 @@ Two packages `tech` and `wenergy`
        - `tableName` - specific table to access - optional `str`
        - `duplicateList` - list of duplicate ids to delete `list`
 
-## afe Module
+## afe
 
 One (1) package `afe.py` and three (3) functions
 
