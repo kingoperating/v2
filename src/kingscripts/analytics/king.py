@@ -297,8 +297,7 @@ Get Wyoming Data
 
 """  
 
-
-def getWorlandUnit108Production(numberOfDays):
+def getWorlandUnit108Production(pathToFolder):
     
     headers = [
         "Date",
@@ -307,57 +306,6 @@ def getWorlandUnit108Production(numberOfDays):
         "Water",
         "Gas",
         "Comments"
-    
-    ]
-    
-    
-    wu108Data = pd.read_excel(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\wyoming\wu108Prod.xlsx", header=3)
-    # replace NaN values with 0
-    wu108Data = wu108Data.fillna(0)
-    wu108DataLastTwoRows = wu108Data.tail(numberOfDays)
-    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Cum oil prod bo"])
-    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Cum gas prod mcf"])
-    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Cum water prod bbls"])
-    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Load left to recover bbls"])
-    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["% load recovery"])
-    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Total Load to Recover bbls"])
-    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Load added bbls"])
-    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["King Completions Comments"]) 
-    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Report date"])
-    wu108DataLastTwoRows = wu108DataLastTwoRows.drop(columns=["Gauge date"])
-    
-    ## convert the dates to datetime
-    wu108DataLastTwoRows["Prod date"] = pd.to_datetime(wu108DataLastTwoRows["Prod date"])
-    
-    ## insert oil sold column at end
-    wu108DataLastTwoRows.insert(5, "Oil Sold", 0)
-
-    # order columns for header
-    wu108DataLastTwoRows = wu108DataLastTwoRows[["Prod date", "Prod oil bo", "Oil Sold", "Prod water bwp", "Prod gas mcf", "Kentex Production Comments"]]
-   
-    # replace headers
-    wu108DataLastTwoRows.columns = headers
-    
-    
-    return wu108DataLastTwoRows
-
-
-"""
-    
-Get Buffalo 6-8H Data from Power Automate folder
-
-"""  
-
-def getBuffalo68h(pathToFolder):
-     
-    headers = [
-        "Date",
-        "Oil",
-        "Oil Sold",
-        "Water",
-        "Gas",
-        "Comments"
-        
     ]
     
     # create list of all files in pathToFolder
@@ -366,11 +314,24 @@ def getBuffalo68h(pathToFolder):
     files.sort(key=lambda x: os.path.getmtime(os.path.join(pathToFolder, x)))
     # create path to most recent file
     pathToData = os.path.join(pathToFolder, files[-1])
-    # read the data
-    buffData = pd.read_excel(pathToData, header=2)
     
+    wu108Data = pd.read_csv(pathToData)
     
-    return buffData
+    ## drop first column
+    wu108Data = wu108Data.drop(wu108Data.columns[0], axis=1)
+    
+    ## switch 3 and 4 columns by index
+    wu108Data = wu108Data[[wu108Data.columns[0], wu108Data.columns[1], wu108Data.columns[2], wu108Data.columns[4], wu108Data.columns[3], wu108Data.columns[5]]]
+    
+    wu108Data.columns = headers
+    
+    ## conver to datetime
+    wu108Data["Date"] = pd.to_datetime(wu108Data["Date"])
+    ## convert to string
+    wu108Data["Date"] = wu108Data["Date"].dt.strftime("%m/%d/%Y")
+    
+    return wu108Data
+
 
 """
     
@@ -430,8 +391,6 @@ def getBuffalo68h(pathToFolder):
     buffaloData["Date"] = buffaloData["Date"].dt.strftime("%m/%d/%Y")
     
     return buffaloData
-
-
 
 
 """
