@@ -13,9 +13,9 @@ print("Starting etl_main")
 
 dateNow = dt.datetime.now()
 
-import etl_combocurve
 import etl_scada
 import etl_joyn
+import etl_combocurve
 
 ## calculate time to run
 dateEnding = dt.datetime.today()
