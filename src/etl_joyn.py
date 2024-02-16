@@ -4,7 +4,7 @@ ETL Script for Production Data
 Developer: Michael Tanner, Gabe Tatman
 
 """
-# KOC v3.3.0 Python Packages
+# KOC v3.4.0 Python Packages
 from kingscripts.operations import greasebook, combocurve, joyn
 from kingscripts.analytics import enverus, king, tech
 from kingscripts.finance import wenergy, afe
