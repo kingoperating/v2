@@ -8,7 +8,7 @@ This open source python package allows for easy access to the majority of KOC da
 
 Developed and Maintained by Michael Tanner and Gabe Tatman. Please email development@kingoperating.com with any questions.
 
-Visit [KOC Development Site](https://mtanner161.github.io/kingdashboard/#/kingdashboard) for our ongoing front-end application development!
+Visit [KOC Development Site](https://mtanner161.github.io/kingdashboard/#/kingdashboard) for our ongoing front-end application development
 
 ## Documentation
 
