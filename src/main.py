@@ -134,10 +134,11 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
+
 data = combocurve.getLatestScenarioMonthly(
-    projectIdKey="653fcf9ec230f38554b3f1c1",
-    scenarioIdKey="653fd02e16729ef21ebd8f08",
-    serviceAccount=serviceAccount,
+    projectIdKey="65a6afbf92947f6c05a9005d",
+    scenarioIdKey="65a6b1073b802015558a1c55",
+    rviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
 
@@ -167,8 +168,7 @@ crestPdp = combocurve.ccScenarioToCrestFpPdp(
     nglPricePercent=.3,
 )
 
-
-crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpJan2024Forecast1302024.csv", index=False)
+crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpBuffalo68h312024.csv", index=False)
 
 
 path = r"C:\Users\mtanner\OneDrive - King Operating\PowerAutomate\WU108"

@@ -55,6 +55,7 @@ yesDay = int(dateYesterday.strftime("%d"))
 yesDateString = dateYesterday.strftime("%Y-%m-%d")
 todayDateString = dateToday.strftime("%Y-%m-%d")
 eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
+days = 5
 
 ### BEGIN PRODUCTION ETL PROCESS ###
 
@@ -89,7 +90,7 @@ print("Length of Historical Daily Well Reading: " + str(len(historicalDailyWellR
 joynDailyWellReading = joyn.getDailyWellReading(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
-    daysToLookBack=2
+    daysToLookBack=days
 )
 
 # Compare the two dataframes and get the duplicates
@@ -154,7 +155,7 @@ print("Length of Historical Allocated Production: " + str(len(historicalAllocate
 joynProduction = joyn.getDailyAllocatedProductionRawWithDeleted(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
-    daysToLookBack=2
+    daysToLookBack=days
 )
 
 # Compare the two dataframes and get the duplicates

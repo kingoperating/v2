@@ -114,6 +114,7 @@ read342HData = king.getHCEFProduction(
 
 buffalo68hData = king.getBuffalo68h(
     pathToFolder=pathToBuffalo68h,
+    daysToLookback=5
 )
 
 wu108Data = king.getWorlandUnit108Production(

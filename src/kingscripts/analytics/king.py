@@ -339,7 +339,7 @@ Getting Buffalo 6-8H data from powerAutomate folder\
     
 """  
 
-def getBuffalo68h(pathToFolder):
+def getBuffalo68h(pathToFolder, daysToLookback):
     
     headers = [
         "Date",
@@ -366,7 +366,7 @@ def getBuffalo68h(pathToFolder):
     buffaloData = buffaloData.sort_values(by=["Date"])
     
     ## get the last 5 days of data
-    buffaloData = buffaloData.tail(5)
+    buffaloData = buffaloData.tail(daysToLookback)
     
     # drop all columns except for Date, BOPD, MCFD, BWPD and REMARKS
     buffaloData = buffaloData.drop(buffaloData.columns[5:20], axis=1)
