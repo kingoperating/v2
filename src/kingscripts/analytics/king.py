@@ -392,6 +392,61 @@ def getBuffalo68h(pathToFolder, daysToLookback):
     
     return buffaloData
 
+## Import ConocoPhillips Data into the King Datawarehouse
+
+def getConocoEchoUnit(pathToFolder, daysToLookBack):
+    
+    headers = [
+        "Date",
+        "Oil",
+        "Oil Sold",
+        "Water",
+        "Gas",
+        "Comments"
+        
+    ]
+    
+    # create list of all files in pathToFolder
+    files = os.listdir(pathToFolder)
+    # get the most recent file
+    files.sort(key=lambda x: os.path.getmtime(os.path.join(pathToFolder, x)))
+    # create path to most recent file
+    pathToData = os.path.join(pathToFolder, files[-1])
+    
+    echoUnitData = pd.read_csv(pathToData)
+    
+    ##convert PRODDATE to datetime
+    echoUnitData["PRODDATE"] = pd.to_datetime(echoUnitData["PRODDATE"], format="mixed")
+    echoUnitData = echoUnitData.sort_values(by=["PRODDATE"], ascending=False)
+    
+    ##get last 10 days of data
+    echoUnitData = echoUnitData.head(daysToLookBack)
+    
+    ## drop WELL ID, COMPLETION NO, WELL NAME, API, GAS SALES, TUBING PRESSURE, CASING PRESSURE, BOTTOMHOLE PRESSURE
+    headersToDrop = [
+        "WELL ID",
+        "COMPLETION NO",
+        "WELL NAME",
+        "API",
+        "GAS SALES",
+        "TUBING PRESSURE",
+        "CASING PRESSURE",
+        "BOTTOMHOLE PRESSURE",
+    ]
+    
+    echoUnitData = echoUnitData.drop(columns=headersToDrop)
+    
+    ## insert comments column with ""
+    echoUnitData.insert(5, "Comments", "")
+    
+    ## replace headers
+    echoUnitData.columns = headers
+    ## convert date to string
+    echoUnitData["Date"] = echoUnitData["Date"].dt.strftime("%m/%d/%Y")
+    ## convert nan to ""
+    echoUnitData = echoUnitData.fillna("")
+    
+    return echoUnitData
 
 """
     

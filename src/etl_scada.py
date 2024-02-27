@@ -64,6 +64,9 @@ pathToRead332H = str(os.getenv("READ_332H"))
 pathToRead342H = str(os.getenv("READ_342H"))
 pathToBuffalo68h = str(os.getenv("BUFFALO_68H"))
 pathToWorlandUnit108 = str(os.getenv("WU_108"))
+pathtoEchoUnit2250 = str(os.getenv("ECHO_UNIT_2250"))
+pathToEchoUnit2251 = str(os.getenv("ECHO_UNIT_2251"))
+pathToEchoUnit2252 = str(os.getenv("ECHO_UNIT_2252"))
 joynUser = str(os.getenv('JOYN_USER'))
 function = "etl_scada"
 
@@ -94,6 +97,24 @@ wu108Id = joyn.getWellObjectId(
     nameOfWell="WU-108"
 )
 
+echoUnit2250Id = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="ECHO BS UNIT A 2250H"
+)
+
+echoUnit2251Id = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="ECHO BS UNIT A 2251H"
+)
+
+echoUnit2252Id = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="ECHO BS UNIT A 2252H"
+)
+
 # Get User ID for Michael Tanner / Gabe Tatman
 
 userId = joyn.getJoynUser(
@@ -121,7 +142,46 @@ wu108Data = king.getWorlandUnit108Production(
     pathToFolder=pathToWorlandUnit108,
 )
 
+echoUnit2250Data = king.getConocoEchoUnit(
+    pathToFolder=pathtoEchoUnit2250,
+    daysToLookBack=10
+)
+
+echoUnit2251Data = king.getConocoEchoUnit(
+    pathToFolder=pathToEchoUnit2251,
+    daysToLookBack=10
+)
+
+echoUnit2252Data = king.getConocoEchoUnit(
+    pathToFolder=pathToEchoUnit2252,
+    daysToLookBack=10
+)
 # Put Production Data in JOYN
+
+joyn.putJoynData(
+    userId=userId,
+    rawData=echoUnit2250Data,
+    objectId=echoUnit2250Id,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+joyn.putJoynData(
+    userId=userId,
+    rawData=echoUnit2251Data,
+    objectId=echoUnit2251Id,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+joyn.putJoynData(
+    userId=userId,
+    rawData=echoUnit2252Data,
+    objectId=echoUnit2252Id,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+    
 
 joyn.putJoynData(
     userId=userId,
