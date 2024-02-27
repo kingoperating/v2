@@ -139,6 +139,11 @@ listOfWells = [
 WORKING ZONE
 '''
 
+conocoData = king.getConocoEchoUnit(
+    pathToFolder=r"C:\Users\mtanner\OneDrive - King Operating\PowerAutomate\ECHO UNIT 2252",
+    daysToLookBack=10
+)
+
 data = zdscada.getScadaToken(
     username=zdscadaUsername,
     password=zdscadaPassword,
