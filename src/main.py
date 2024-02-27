@@ -1,11 +1,11 @@
 """
-Main Script for KOC Python Packages 3.3.0
+Main Script for KOC Python Packages 3.4.0
 
 Developer: Michael Tanner
 
 """
 # KOC v3.3.0 Python Packages
-from kingscripts.operations import greasebook, combocurve, joyn
+from kingscripts.operations import greasebook, combocurve, joyn, zdscada
 from kingscripts.analytics import enverus, king, tech
 from kingscripts.finance import wenergy, afe
 
@@ -41,6 +41,10 @@ serviceAccount = ServiceAccount.from_file(
 comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
 joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
+## import ZDSCADA API Username / Password and Company ID
+zdscadaUsername = str(os.getenv('ZDSCADA_API_USERNAME'))
+zdscadaPassword = str(os.getenv('ZDSCADA_API_PASSWORD'))
+zdscadaCompanyID = str(os.getenv('ZDSCADA_API_COMPANY_ID'))
 function = "main"
 
 ## SQL Server Variables - for KOC Datawarehouse 3.0
@@ -135,10 +139,17 @@ listOfWells = [
 WORKING ZONE
 '''
 
+data = zdscada.getScadaToken(
+    username=zdscadaUsername,
+    password=zdscadaPassword,
+    companyid=zdscadaCompanyID
+)
+
+
 data = combocurve.getLatestScenarioMonthly(
-    projectIdKey="65a6afbf92947f6c05a9005d",
-    scenarioIdKey="65a6b1073b802015558a1c55",
-    rviceAccount=serviceAccount,
+    projectIdKey="653fcf9ec230f38554b3f1c1",
+    scenarioIdKey="653fd02e16729ef21ebd8f08",
+    serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey
 )
 
@@ -168,7 +179,7 @@ crestPdp = combocurve.ccScenarioToCrestFpPdp(
     nglPricePercent=.3,
 )
 
-crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdpBuffalo68h312024.csv", index=False)
+crestPdp.to_csv(r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\production\crestPdp312024withCholla.csv", index=False)
 
 
 path = r"C:\Users\mtanner\OneDrive - King Operating\PowerAutomate\WU108"
