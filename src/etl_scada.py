@@ -72,7 +72,7 @@ function = "etl_scada"
 
 ## BEGIN ETL PROCESS
 
-webscraper.download_echo()
+# webscraper.download_echo()
 
 # Get object IDs for wells
 read332hId = joyn.getWellObjectId(
@@ -146,17 +146,17 @@ wu108Data = king.getWorlandUnit108Production(
 
 echoUnit2250Data = king.getConocoEchoUnit(
     pathToFolder=pathtoEchoUnit2250,
-    daysToLookBack=10
+    daysToLookBack=5
 )
 
 echoUnit2251Data = king.getConocoEchoUnit(
     pathToFolder=pathToEchoUnit2251,
-    daysToLookBack=10
+    daysToLookBack=5
 )
 
 echoUnit2252Data = king.getConocoEchoUnit(
     pathToFolder=pathToEchoUnit2252,
-    daysToLookBack=10
+    daysToLookBack=5
 )
 # Put Production Data in JOYN
 
