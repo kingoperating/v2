@@ -5,7 +5,7 @@ Developer: Michael Tanner, Gabe Tatman
 
 """
 # KOC v3.4.0 Python Packages
-from kingscripts.operations import greasebook, combocurve, joyn
+from kingscripts.operations import greasebook, combocurve, joyn, webscraper
 from kingscripts.analytics import enverus, king, tech
 from kingscripts.finance import wenergy, afe
 
@@ -71,6 +71,8 @@ joynUser = str(os.getenv('JOYN_USER'))
 function = "etl_scada"
 
 ## BEGIN ETL PROCESS
+
+webscraper.download_echo()
 
 # Get object IDs for wells
 read332hId = joyn.getWellObjectId(
