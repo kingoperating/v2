@@ -435,9 +435,13 @@ def getConocoEchoUnit(pathToFolder, daysToLookBack):
     ]
     
     echoUnitData = echoUnitData.drop(columns=headersToDrop)
+
     
     ## insert comments column with ""
     echoUnitData.insert(5, "Comments", "")
+
+    # Swap columns 'GAS PROD' and 'WATER PROD' to maintain correct upload order
+    echoUnitData['GAS PROD'], echoUnitData['WATER PROD'] = echoUnitData['WATER PROD'], echoUnitData['GAS PROD']
     
     ## replace headers
     echoUnitData.columns = headers
