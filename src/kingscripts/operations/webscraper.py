@@ -35,6 +35,8 @@ def download_echo():
             'safebrowsing.enabled': True,
             'download.default_filename': desired_filename
         })
+        # Run headless
+        options.add_argument("--headless=new")
 
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 

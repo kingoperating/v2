@@ -72,7 +72,7 @@ function = "etl_scada"
 
 ## BEGIN ETL PROCESS
 
-# webscraper.download_echo()
+webscraper.download_echo()
 
 # Get object IDs for wells
 read332hId = joyn.getWellObjectId(

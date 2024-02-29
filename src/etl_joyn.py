@@ -55,7 +55,7 @@ yesDay = int(dateYesterday.strftime("%d"))
 yesDateString = dateYesterday.strftime("%Y-%m-%d")
 todayDateString = dateToday.strftime("%Y-%m-%d")
 eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
-days = 5
+days = 2
 
 ### BEGIN PRODUCTION ETL PROCESS ###
 
