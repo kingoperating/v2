@@ -5,37 +5,45 @@
 
 from dotenv import load_dotenv
 from kingscripts.analytics import king
-
+from kingscripts.operations import reporting
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from dotenv import load_dotenv
 
 import os
 import datetime as dt
+import smtplib
+import socket
+import time
+import os
 
 # Getting Date Variables
 dateToday = dt.datetime.today()
 function = "daily_reporting"
 
-## ECHO UNIT WELLS
+# Load environment variables from .env file
 
-## Get file locations for the wells
-pathtoEchoUnit2250 = str(os.getenv("ECHO_UNIT_2250"))
-pathToEchoUnit2251 = str(os.getenv("ECHO_UNIT_2251"))
-pathToEchoUnit2252 = str(os.getenv("ECHO_UNIT_2252"))
+load_dotenv()
 
-# Get the data for the wells
-echoUnit2250Data = king.getConocoEchoUnit(
-    pathToFolder=pathtoEchoUnit2250,
-    daysToLookBack=10
-)
+# Email details
+sender_email = "operations@kingoperating.com"
+#receiver_email = os.getenv("GABE_TATMAN_EMAIL")
+receiver_email = "mtanner@sandstone-group.com"
+subject = "Successful Automation Run"
+body = "The automation has run successfully."
+# SMTP server details
+smtp_server = "kingoperating-com.mail.protection.outlook.com"
+port = 25
 
-echoUnit2251Data = king.getConocoEchoUnit(
-    pathToFolder=pathToEchoUnit2251,
-    daysToLookBack=10
-)
-
-echoUnit2252Data = king.getConocoEchoUnit(
-    pathToFolder=pathToEchoUnit2252,
-    daysToLookBack=10
-)
+# Send email
+reporting.send_script_confirmation_email(
+    sender_email = sender_email, 
+    receiver_email = receiver_email, 
+    subject =   subject, 
+    body = body, 
+    smtp_server = smtp_server, 
+    port = port
+    )
 
 
 dateEnd = dt.datetime.today()
