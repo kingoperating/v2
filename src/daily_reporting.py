@@ -27,8 +27,8 @@ load_dotenv()
 
 # Email details
 sender_email = "operations@kingoperating.com"
-#receiver_email = os.getenv("GABE_TATMAN_EMAIL")
-receiver_email = "mtanner@sandstone-group.com"
+receiver_email = os.getenv("GABE_TATMAN_EMAIL")
+#receiver_email = "mtanner@sandstone-group.com"
 subject = "Successful Automation Run"
 body = "The automation has run successfully."
 # SMTP server details
