@@ -309,7 +309,7 @@ def getWorlandUnit108Production(pathToFolder):
     ]
     
     # create list of all files in pathToFolder
-    files = os.listdir(pathToFolder)
+    files = [f for f in os.listdir(pathToFolder) if f.endswith('.csv')]
     # get the most recent file
     files.sort(key=lambda x: os.path.getmtime(os.path.join(pathToFolder, x)))
     # create path to most recent file
