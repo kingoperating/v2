@@ -4,7 +4,7 @@
 
 
 from dotenv import load_dotenv
-from kingscripts.analytics import king
+from kingscripts.analytics import king, tech
 from kingscripts.operations import reporting
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -25,10 +25,13 @@ function = "daily_reporting"
 
 load_dotenv()
 
-# Email details
-sender_email = "operations@kingoperating.com"
-receiver_email = os.getenv("GABE_TATMAN_EMAIL")
-#receiver_email = "mtanner@sandstone-group.com"
+kingLiveServer = str(os.getenv('SQL_SERVER_KING_DATAWAREHOUSE'))
+kingProductionDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
+
+
+# Script Confirmation Email details
+sender_email = str(os.getenv('OPERATIONS_EMAIL')) 
+receiver_email = str(os.getenv("GABE_TATMAN_EMAIL"))
 subject = "Successful Automation Run"
 body = "The automation has run successfully."
 # SMTP server details
@@ -44,6 +47,12 @@ reporting.send_script_confirmation_email(
     smtp_server = smtp_server, 
     port = port
     )
+
+historicalAllocatedProduction = tech.getData(
+    server=kingLiveServer,
+    database=kingProductionDatabase,
+    tableName="daily_production"
+)
 
 
 dateEnd = dt.datetime.today()
