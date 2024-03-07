@@ -16,6 +16,7 @@ dateNow = dt.datetime.now()
 import etl_scada
 import etl_joyn
 import etl_combocurve
+import daily_reporting
 
 ## calculate time to run
 dateEnding = dt.datetime.today()

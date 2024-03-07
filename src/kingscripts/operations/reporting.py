@@ -2,6 +2,8 @@
 ## Date: 2024-02-28
 ## Description: This script will send out a daily report for a specific group of wells to a desired email distribution list
 
+
+
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -10,17 +12,8 @@ import time
 from dotenv import load_dotenv
 import os
 
-# Load environment variables from .env file
 
-load_dotenv()
-
-# Email details
-sender_email = "operations@kingoperating.com"
-receiver_email = os.getenv("GABE_TATMAN_EMAIL")
-subject = "Test Email"
-body = "This is a test email sent using Python."
-
-def send_email(sender_email, receiver_email, subject, body, smtp_server, port):
+def send_script_confirmation_email(sender_email, receiver_email, subject, body, smtp_server, port):
     # Constructing the email
     message = MIMEMultipart()
     message['From'] = sender_email
@@ -42,10 +35,3 @@ def send_email(sender_email, receiver_email, subject, body, smtp_server, port):
         # Close the connection
         server.quit()
 
-
-# SMTP server details
-smtp_server = "kingoperating-com.mail.protection.outlook.com"
-port = 25
-
-# Send email
-send_email(sender_email, receiver_email, subject, body, smtp_server, port)
