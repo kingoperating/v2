@@ -21,7 +21,7 @@ def getData(server, database, tableName, uid=None, password=None):
     server = server
     database = database
     
-    if uid and password is None:
+    if uid is None and password is None:
         # Establish the connection with Windows Authentication
         connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
     else:
@@ -60,7 +60,7 @@ PUT Function - replaces entire table with dataframe given serverName, databaseNa
 
 def putDataReplace(server, database, data, tableName, uid=None, password=None):
     
-    if uid and password is None:
+    if uid is None and password is None:
         # Set up the connection parameters
         # Establish the connection with Windows Authentication
         connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
@@ -84,7 +84,7 @@ PUT Function - appends entire table with dataframe given serverName, databaseNam
 
 def putDataAppend(server, database, data, tableName, uid=None, password=None):
     
-    if uid and password is None:
+    if uid is None and password is None:
         # Establish the connection with Windows Authentication
         connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
     else:

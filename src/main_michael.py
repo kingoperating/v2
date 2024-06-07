@@ -260,7 +260,7 @@ joyn.putJoynData(
 
 path = r"C:\Users\mtanner\OneDrive - King Operating\PowerAutomate\Buffalo 6-8"
 
-buffalo = king.getBuffalo68h(
+buffalo = king.getChollaData(
     pathToFolder=path
 )
 

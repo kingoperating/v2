@@ -62,7 +62,8 @@ eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
 # Important Variables for scripts
 pathToRead332H = str(os.getenv("READ_332H"))
 pathToRead342H = str(os.getenv("READ_342H"))
-pathToBuffalo68h = str(os.getenv("BUFFALO_68H"))
+pathToRead341H = str(os.getenv("READ_341H"))
+pathToCholla = str(os.getenv("CHOLLA_WELLS"))
 pathToWorlandUnit108 = str(os.getenv("WU_108"))
 pathtoEchoUnit2250 = str(os.getenv("ECHO_UNIT_2250"))
 pathToEchoUnit2251 = str(os.getenv("ECHO_UNIT_2251"))
@@ -117,6 +118,25 @@ echoUnit2252Id = joyn.getWellObjectId(
     nameOfWell="ECHO BS UNIT A 2252H"
 )
 
+ancientId = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="Ancient 3-10E 1H"
+)
+
+bisonId = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="Bison 6-2 1H"
+)
+
+read341Id = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="Read 34 1H"
+)
+
+
 # Get User ID for Michael Tanner / Gabe Tatman
 
 userId = joyn.getJoynUser(
@@ -135,9 +155,26 @@ read342HData = king.getHCEFProduction(
     pathToFolder=pathToRead342H,
 )
 
-buffalo68hData = king.getBuffalo68h(
-    pathToFolder=pathToBuffalo68h,
-    daysToLookback=5
+read341HData = king.getHCEFProduction(
+    pathToFolder=pathToRead341H,
+)
+
+buffalo68hData = king.getChollaData(
+    pathToFolder=pathToCholla,
+    daysToLookback=5,
+    sheetName="Buffalo 6-8 1H"
+)
+
+ancientData = king.getChollaData(
+    pathToFolder=pathToCholla,
+    daysToLookback=5,
+    sheetName="Ancient 3-10E 1H"
+)
+
+bisonData = king.getChollaData(
+    pathToFolder=pathToCholla,
+    daysToLookback=5,
+    sheetName="Bison 6-2 1H"
 )
 
 wu108Data = king.getWorlandUnit108Production(
@@ -184,7 +221,6 @@ joyn.putJoynData(
     joynPassword=joynPassword
 )
     
-
 joyn.putJoynData(
     userId=userId,
     rawData=read332HData,
@@ -203,6 +239,14 @@ joyn.putJoynData(
 
 joyn.putJoynData(
     userId=userId,
+    rawData=read341HData,
+    objectId=read341Id,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+joyn.putJoynData(
+    userId=userId,
     rawData=buffalo68hData,
     objectId=buffalo68Id,
     joynUsername=joynUsername,
@@ -213,6 +257,22 @@ joyn.putJoynData(
     userId=userId,
     rawData=wu108Data,
     objectId=wu108Id,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+joyn.putJoynData(
+    userId=userId,
+    rawData=ancientData,
+    objectId=ancientId,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+joyn.putJoynData(
+    userId=userId,
+    rawData=bisonData,
+    objectId=bisonId,
     joynUsername=joynUsername,
     joynPassword=joynPassword
 )

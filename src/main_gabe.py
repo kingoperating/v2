@@ -5,6 +5,7 @@
 
 from kingscripts.operations import greasebook, joyn, combocurve
 from kingscripts.analytics import enverus
+from kingscripts.analytics import king
 
 # Python Packages
 from dotenv import load_dotenv
@@ -63,9 +64,16 @@ nameOfWell = "thurman23v"
 irvinsisters53m1h = "irvinsisters53m1h"
 pshigoda752h = "pshigoda752h"
 itSqlTable = "itSpend"
+pathToBuffalo68h = str(os.getenv("BUFFALO_68H"))
 
 # Working Zone
+data = king.getChollaData(pathToBuffalo68h,5,"Buffalo 6-8 1H")
 
+
+
+
+
+x=5
 # End Working Zone
 
 # Gets Browning 518H Production Data
