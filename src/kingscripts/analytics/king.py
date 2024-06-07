@@ -339,7 +339,7 @@ Getting Buffalo 6-8H data from powerAutomate folder\
     
 """  
 
-def getBuffalo68h(pathToFolder, daysToLookback):
+def getChollaData(pathToFolder, daysToLookback, sheetName = None):
     
     headers = [
         "Date",
@@ -358,7 +358,7 @@ def getBuffalo68h(pathToFolder, daysToLookback):
     # create path to most recent file
     pathToData = os.path.join(pathToFolder, files[-1])
     # read the data
-    buffaloData = pd.read_excel(pathToData, engine="xlrd", header=3)
+    buffaloData = pd.read_excel(pathToData, engine="xlrd", header=3, sheet_name=sheetName)
     
     ## convert Date column to pandas datetime
     buffaloData["Date"] = pd.to_datetime(buffaloData["Date"])
