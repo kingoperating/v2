@@ -16,12 +16,18 @@ GET Function - returns a dataframe given serverName, databaseName, and tableName
     
 """
 
-def getData(server, database, tableName):
+def getData(server, database, tableName, uid=None, password=None):
     # Set up the connection parameters
     server = server
     database = database
-    # Establish the connection with Windows Authentication
-    connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
+    
+    if uid and password is None:
+        # Establish the connection with Windows Authentication
+        connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
+    else:
+        # Establish the connection with SQL Server Authentication
+        connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={uid};PWD={password};'
+    
     connection = pyodbc.connect(connection_string)
     # Create a cursor object to interact with the database
     cursor = connection.cursor()
@@ -52,11 +58,16 @@ PUT Function - replaces entire table with dataframe given serverName, databaseNa
     
 """
 
-def putDataReplace(server, database, data, tableName):
+def putDataReplace(server, database, data, tableName, uid=None, password=None):
     
-    # Set up the connection parameters
-    # Establish the connection with Windows Authentication
-    connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
+    if uid and password is None:
+        # Set up the connection parameters
+        # Establish the connection with Windows Authentication
+        connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
+    else:
+        # Set up the connection parameters
+        # Establish the connection with Windows Authentication
+        connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={uid};PWD={password};'
     
     engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(connection_string))
     
@@ -71,11 +82,14 @@ PUT Function - appends entire table with dataframe given serverName, databaseNam
     
 """
 
-def putDataAppend(server, database, data, tableName):
+def putDataAppend(server, database, data, tableName, uid=None, password=None):
     
-    # Set up the connection parameters
-    # Establish the connection with Windows Authentication
-    connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
+    if uid and password is None:
+        # Establish the connection with Windows Authentication
+        connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
+    else:
+        # Establish the connection with SQL Authentication
+        connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={uid};PWD={password};'
     
     engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(connection_string))
     

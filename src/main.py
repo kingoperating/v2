@@ -29,16 +29,13 @@ SECOND - ENSURE YOUR WORKING DATA DIRECTORY IS SET TO THE CORRECT FOLDER. CURREN
 # Working Directories
 workingDirectoryData = os.getenv("WORKING_DIRECTORY_DATA")
 kocDatawarehouse = os.getenv("KOC_DATAWAREHOUSE")
-masterWellAllocation = kocDatawarehouse + r"\master\masterWellAllocation.xlsx"
-masterWellAllocationData = pd.read_excel(masterWellAllocation)
-
 
 # getting API keys
 enverusApiKey = os.getenv('ENVERUS_API')
 greasebookApi = os.getenv('GREASEBOOK_API_KEY')
 serviceAccount = ServiceAccount.from_file(
-    os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
-comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
+    os.getenv("KING_COMBOCURVE_API_SEC_CODE_LIVE"))
+comboCurveApiKey = os.getenv("KING_COMBOCURVE_API_KEY_PASS_LIVE")
 joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
 ## import ZDSCADA API Username / Password and Company ID
@@ -55,7 +52,8 @@ kingProductionDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
 kingPlanningDatabase = str(os.getenv('SQL_PLANNING_DATABASE'))
 badPumperTable = "prod_bad_pumper_data"
 kingPlanningDataRaw = str(os.getenv("KING_PLANNING_DATA_RAW"))
-kingPlanningData = pd.read_excel(kingPlanningDataRaw)
+sqlMichaelTannerUsername = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_USERNAME'))
+sqlMichaelTannerPassword = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_PASSWORD'))
 
 ## Names of KOC Employees
 michaelTanner = os.getenv("MICHAEL_TANNER_EMAIL")
@@ -115,7 +113,6 @@ pshigoda752h = "pshigoda752h"
 itSqlTable = "itSpend"
 daysToPull = 35
 daysToLookBack = 2
-testFile = r"C:\Users\mtanner\OneDrive - King Operating\KOC Datawarehouse\assetPrettyName.xlsx"
 listOfWells = [
     irvinSisters53m1h,
     pshigoda752h,
@@ -138,6 +135,54 @@ listOfWells = [
 '''
 WORKING ZONE
 '''
+
+data = pd.read_csv(r"C:\Users\Michael Tanner\Downloads\business_associates.csv")
+
+tech.putDataReplace(
+    server=kingLiveServer,
+    database="test",
+    tableName="business_associates",
+    data=data,
+    uid=sqlMichaelTannerUsername,
+    password=sqlMichaelTannerPassword
+)
+
+ko200 = pd.read_excel(r"C:\Users\Michael Tanner\OneDrive - King Operating\KOC Datawarehouse\finance\WolfePak\KO200\KO200_GL.xlsx")
+koand = pd.read_excel(r"C:\Users\Michael Tanner\OneDrive - King Operating\KOC Datawarehouse\finance\WolfePak\KOAND\KOAND_GL.xlsx")
+kobor = pd.read_excel(r"C:\Users\Michael Tanner\OneDrive - King Operating\KOC Datawarehouse\finance\WolfePak\KOBOR\KOBOR_GL.xlsx")
+koeas = pd.read_excel(r"C:\Users\Michael Tanner\OneDrive - King Operating\KOC Datawarehouse\finance\WolfePak\KOEAS\KOEAS_GL.xlsx")
+kogct = pd.read_excel(r"C:\Users\Michael Tanner\OneDrive - King Operating\KOC Datawarehouse\finance\WolfePak\KOGCT\KOGCT_GL.xlsx")
+koprm = pd.read_excel(r"C:\Users\Michael Tanner\OneDrive - King Operating\KOC Datawarehouse\finance\WolfePak\KOPRM\KOPRM_GL.xlsx")
+kosou = pd.read_excel(r"C:\Users\Michael Tanner\OneDrive - King Operating\KOC Datawarehouse\finance\WolfePak\KOSOU\KOSOU_GL.xlsx")
+kowy2 = pd.read_excel(r"C:\Users\Michael Tanner\OneDrive - King Operating\KOC Datawarehouse\finance\WolfePak\KOWY2\KOWY2_GL.xlsx")
+kowym = pd.read_excel(r"C:\Users\Michael Tanner\OneDrive - King Operating\KOC Datawarehouse\finance\WolfePak\KOWYM\KOWYM_GL.xlsx")
+welop = pd.read_excel(r"C:\Users\Michael Tanner\OneDrive - King Operating\KOC Datawarehouse\finance\WolfePak\WELOP\WELOP_GL.xlsx")
+
+## add new column to each dataframe with ko200, koand, kobor, koeas, kogct, koprm, kosou, kowy2, kowym, welop
+ko200["source"] = "ko200"
+koand["source"] = "koand"
+kobor["source"] = "kobor"
+koeas["source"] = "koeas"
+kogct["source"] = "kogct"
+koprm["source"] = "koprm"
+kosou["source"] = "kosou"
+kowy2["source"] = "kowy2"
+kowym["source"] = "kowym"
+welop["source"] = "welop"
+
+print("done loading all data")
+
+data = pd.concat([ko200, koand, kobor, koeas, kogct, koprm, kosou, kowy2, kowym, welop], ignore_index=True)
+
+print("done")
+
+tech.putDataReplace(
+    server=kingLiveServer,
+    database="finance",
+    data=data,
+    tableName="wolfepak_gl"
+)
+
 
 conocoData = king.getConocoEchoUnit(
     pathToFolder=r"C:\Users\mtanner\OneDrive - King Operating\PowerAutomate\ECHO UNIT 2252",
@@ -719,13 +764,6 @@ combocurve.putJoynWellProductionData(
     serviceAccount=serviceAccount
 )
 
-## Update King Planning Ghantt Chart into SQL Server - use putData
-king.updateKingPlanningChart(
-    dataplan=kingPlanningData,
-    serverName=kingLiveServer,
-    databaseName=kingPlanningDatabase,
-    tableName="prod_king_planning_data"
-)
 
 # AFE Stack Miller Ranch C301
 afe.dailyCost(
