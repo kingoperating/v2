@@ -56,6 +56,8 @@ yesDateString = dateYesterday.strftime("%Y-%m-%d")
 todayDateString = dateToday.strftime("%Y-%m-%d")
 eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
 days = 2
+kingTannerUsername = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_USERNAME'))
+kingTannerPassword = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_PASSWORD'))
 
 ### BEGIN PRODUCTION ETL PROCESS ###
 
@@ -72,7 +74,9 @@ tech.putDataReplace(
     server=kingLiveServer,
     database=kingWellsDatabase,
     data=wellData,
-    tableName="header_data"
+    tableName="header_data",
+    uid=kingTannerUsername,
+    password=kingTannerPassword
 )
 
 # Get Historical Daily Well Reading from SQL Server
@@ -80,7 +84,10 @@ tech.putDataReplace(
 historicalDailyWellReading = tech.getData(
     server=kingLiveServer,
     database=kingProductionDatabase,
-    tableName="daily_well_reading"
+    tableName="daily_well_reading",
+    uid=kingTannerUsername,
+    password=kingTannerPassword
+        
 )
 
 print("Length of Historical Daily Well Reading: " + str(len(historicalDailyWellReading)))
@@ -117,7 +124,10 @@ deleteRecords = tech.deleteDuplicateRecords(
 historicalDailyWellReading = tech.getData(
     server=kingLiveServer,
     database=kingProductionDatabase,
-    tableName="daily_well_reading"
+    tableName="daily_well_reading",
+    uid=kingTannerUsername,
+    password=kingTannerPassword
+        
 )
 
 print("Length of Historical Daily Well Reading After Deleting: " + str(len(historicalDailyWellReading)))
@@ -128,7 +138,9 @@ tech.putDataAppend(
     server=kingLiveServer,
     database=kingProductionDatabase,
     data=joynDailyWellReading,
-    tableName="daily_well_reading"
+    tableName="daily_well_reading",
+    uid=kingTannerUsername,
+    password=kingTannerPassword
 )
 
 # Get New Length of Historical Daily Well Reading
@@ -136,7 +148,9 @@ tech.putDataAppend(
 historicalDailyWellReading = tech.getData(
     server=kingLiveServer,
     database=kingProductionDatabase,
-    tableName="daily_well_reading"
+    tableName="daily_well_reading",
+    uid=kingTannerUsername,
+    password=kingTannerPassword
 )
 
 print("Length of Historical Daily Well Reading After Appending: " + str(len(historicalDailyWellReading)))
@@ -146,7 +160,9 @@ print("Length of Historical Daily Well Reading After Appending: " + str(len(hist
 historicalAllocatedProduction = tech.getData(
     server=kingLiveServer,
     database= kingProductionDatabase,
-    tableName= "daily_production"
+    tableName= "daily_production",
+    uid=kingTannerUsername,
+    password=kingTannerPassword
 )
 
 print("Length of Historical Allocated Production: " + str(len(historicalAllocatedProduction)))
@@ -178,7 +194,9 @@ deleteRecords = tech.deleteDuplicateRecords(
 lengthOfWorkingTable = tech.getData(
     server=kingLiveServer,
     database= kingProductionDatabase,
-    tableName="daily_production"
+    tableName="daily_production",
+    uid=kingTannerUsername,
+    password=kingTannerPassword
 )
 
 print("All Historical Record Length After Deleting: " + str(len(lengthOfWorkingTable)))
@@ -188,13 +206,17 @@ tech.putDataAppend(
     server=kingLiveServer,
     database=kingProductionDatabase,
     data=joynProduction,
-    tableName="daily_production"
+    tableName="daily_production",
+    uid=kingTannerUsername,
+    password=kingTannerPassword
 )
 
 historicalAllocatedProduction = tech.getData(
     server=kingLiveServer,
     database=kingProductionDatabase,
-    tableName="daily_production"
+    tableName="daily_production",
+    uid=kingTannerUsername,
+    password=kingTannerPassword
 )
 
 print("All Historical Record Length After Appending: " + str(len(historicalAllocatedProduction)))

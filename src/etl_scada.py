@@ -161,19 +161,19 @@ read341HData = king.getHCEFProduction(
 
 buffalo68hData = king.getChollaData(
     pathToFolder=pathToCholla,
-    daysToLookback=5,
+    daysToLookback=10,
     sheetName="Buffalo 6-8 1H"
 )
 
 ancientData = king.getChollaData(
     pathToFolder=pathToCholla,
-    daysToLookback=5,
+    daysToLookback=10,
     sheetName="Ancient 3-10E 1H"
 )
 
 bisonData = king.getChollaData(
     pathToFolder=pathToCholla,
-    daysToLookback=5,
+    daysToLookback=10,
     sheetName="Bison 6-2 1H"
 )
 
@@ -183,17 +183,17 @@ wu108Data = king.getWorlandUnit108Production(
 
 echoUnit2250Data = king.getConocoEchoUnit(
     pathToFolder=pathtoEchoUnit2250,
-    daysToLookBack=5
+    daysToLookBack=10
 )
 
 echoUnit2251Data = king.getConocoEchoUnit(
     pathToFolder=pathToEchoUnit2251,
-    daysToLookBack=5
+    daysToLookBack=10
 )
 
 echoUnit2252Data = king.getConocoEchoUnit(
     pathToFolder=pathToEchoUnit2252,
-    daysToLookBack=5
+    daysToLookBack=10
 )
 # Put Production Data in JOYN
 

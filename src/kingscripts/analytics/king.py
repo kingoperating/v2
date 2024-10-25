@@ -21,6 +21,8 @@ kingLiveServer = str(os.getenv('SQL_SERVER_KING_DATAWAREHOUSE'))
 kingProductionDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
 kingWellsDatabase = str(os.getenv('SQL_WELLS_DATABASE'))
 kingUsageDatabase = str(os.getenv('SQL_USAGE_DATABASE'))
+kingTannerUsername = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_USERNAME'))
+kingTannerPassword = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_PASSWORD'))
 
 
 
@@ -276,7 +278,7 @@ def getHCEFProduction(pathToFolder):
     # create path to most recent file
     pathToData = os.path.join(pathToFolder, files[-1])
     # read the data
-    readData = pd.read_excel(pathToData, header=2)
+    readData = pd.read_excel(pathToData, header=3)
 
     readData = readData.drop(readData.columns[3], axis=1)
     readData = readData.drop(readData.columns[3], axis=1)
@@ -557,7 +559,10 @@ def updateUsageStatsEtlRuntime(etlStartTime, etlEndTime, function, runtime):
         server=kingLiveServer,
         database=kingUsageDatabase,
         data=usageTableTwo,
-        tableName="usage_function"
+        tableName="usage_function",
+        uid=kingTannerUsername,
+        password=kingTannerPassword
+        
     )
     
     return True
