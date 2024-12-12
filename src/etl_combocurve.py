@@ -58,7 +58,7 @@ combocurve.putJoynWellProductionData(
     allocatedProductionMaster=production,
     comboCurveApi=comboCurveApiKey,
     serviceAccount=serviceAccount,
-    daysToLookback=5,
+    daysToLookback=10,
     headerData=headerData,
 )
 

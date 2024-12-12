@@ -55,13 +55,13 @@ yesDay = int(dateYesterday.strftime("%d"))
 yesDateString = dateYesterday.strftime("%Y-%m-%d")
 todayDateString = dateToday.strftime("%Y-%m-%d")
 eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
-days = 2
+days = 60
 kingTannerUsername = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_USERNAME'))
 kingTannerPassword = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_PASSWORD'))
 
 ### BEGIN PRODUCTION ETL PROCESS ###
 
-print("Beginning Production ETL Process")
+print("Starting etl_joyn")
 
 # Get Well Header Data
 wellData = joyn.getWellHeaderData(
@@ -241,5 +241,4 @@ usageFunction = king.updateUsageStatsEtlRuntime(
     runtime=runtimeSeconds
 )
 
-# Print the runtime in minutes with two decimal places
-print(f"Script execution time: {elapsed_time_minutes:.2f} minutes")
+print("Finished etl_joyn")

@@ -12,6 +12,7 @@ function = "etl_main"
 print("Starting etl_main")
 
 dateNow = dt.datetime.now()
+print("The Start Time is: ", dateNow)
 
 import etl_scada
 import etl_joyn
@@ -29,6 +30,12 @@ usageFunction = king.updateUsageStatsEtlRuntime(
     function=function,
     runtime=runtimeSeconds
 )
+
+dateFinished = dt.datetime.now()
+print("The End Time is: ", dateFinished)
+
+#print time in hours, minutes, and seconds between start and end
+print("The total time to run the ETL is: ", dateFinished - dateNow)
 
 usageStat = king.updateUsageStatsEtl(dateNow)
 

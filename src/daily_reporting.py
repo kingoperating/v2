@@ -21,6 +21,8 @@ import os
 dateToday = dt.datetime.today()
 function = "daily_reporting"
 
+print("Starting daily_reporting")
+
 # Load environment variables from .env file
 
 load_dotenv()
@@ -56,4 +58,6 @@ usageFunction = king.updateUsageStatsEtlRuntime(
     function=function,
     runtime=runtimeSeconds
 )
+
+print("daily_reporting Complete")
 

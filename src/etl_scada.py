@@ -75,6 +75,8 @@ function = "etl_scada"
 
 #webscraper.download_echo()
 
+print("Starting etl_scada")
+
 # Get object IDs for wells
 read332hId = joyn.getWellObjectId(
     joynUsername=joynUsername,
@@ -92,12 +94,6 @@ buffalo68Id = joyn.getWellObjectId(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
     nameOfWell="Buffalo 6-8 1H"
-)
-
-wu108Id = joyn.getWellObjectId(
-    joynUsername=joynUsername,
-    joynPassword=joynPassword,
-    nameOfWell="WU-108"
 )
 
 echoUnit2250Id = joyn.getWellObjectId(
@@ -161,24 +157,20 @@ read341HData = king.getHCEFProduction(
 
 buffalo68hData = king.getChollaData(
     pathToFolder=pathToCholla,
-    daysToLookback=10,
+    daysToLookback=6,
     sheetName="Buffalo 6-8 1H"
 )
 
 ancientData = king.getChollaData(
     pathToFolder=pathToCholla,
-    daysToLookback=10,
+    daysToLookback=6,
     sheetName="Ancient 3-10E 1H"
 )
 
 bisonData = king.getChollaData(
     pathToFolder=pathToCholla,
-    daysToLookback=10,
+    daysToLookback=6,
     sheetName="Bison 6-2 1H"
-)
-
-wu108Data = king.getWorlandUnit108Production(
-    pathToFolder=pathToWorlandUnit108,
 )
 
 echoUnit2250Data = king.getConocoEchoUnit(
@@ -253,13 +245,7 @@ joyn.putJoynData(
     joynPassword=joynPassword
 )
 
-joyn.putJoynData(
-    userId=userId,
-    rawData=wu108Data,
-    objectId=wu108Id,
-    joynUsername=joynUsername,
-    joynPassword=joynPassword
-)
+
 
 joyn.putJoynData(
     userId=userId,
@@ -290,4 +276,4 @@ usageFunction = king.updateUsageStatsEtlRuntime(
     runtime=runtimeSeconds
 )
 
-print("ETL Process Complete")
+print("Ending etl_scada")
