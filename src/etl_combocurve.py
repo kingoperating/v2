@@ -58,8 +58,23 @@ combocurve.putJoynWellProductionData(
     allocatedProductionMaster=production,
     comboCurveApi=comboCurveApiKey,
     serviceAccount=serviceAccount,
-    daysToLookback=10,
+    daysToLookback=20,
     headerData=headerData,
+)
+
+dailyForecastVolume = combocurve.getDailyForecastVolume(
+    projectIdKey="674d0995007c4e12316c7de1",
+    forecastIdKey="674d09ae007c4e12316c90a7",
+    serviceAccount=serviceAccount,
+    comboCurveApi=comboCurveApiKey,
+)
+
+# Update daily_forecast in SQL Server
+tech.putDataReplace(
+    server=kingLiveServer,
+    database=kingProductionDatabase,
+    data = dailyForecastVolume,
+    tableName="daily_forecast",
 )
 
 dateEnd = dt.datetime.today()
@@ -74,3 +89,5 @@ usageFunction = king.updateUsageStatsEtlRuntime(
 )
 
 print("Finished etl_combocurve")
+
+print("test")
