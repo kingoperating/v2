@@ -126,6 +126,18 @@ bisonId = joyn.getWellObjectId(
     nameOfWell="Bison 6-2 1H"
 )
 
+intoTheStormId = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="Into The Storm 1H"
+)
+
+jumboId = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="Jumbo 1H"
+)
+
 read341Id = joyn.getWellObjectId(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
@@ -173,19 +185,31 @@ bisonData = king.getChollaData(
     sheetName="Bison 6-2 1H"
 )
 
+intoTheStormData = king.getChollaData(
+    pathToFolder=pathToCholla,
+    daysToLookback=6,
+    sheetName="Into the Storm 1H"
+)
+
+jumboData = king.getChollaData(
+    pathToFolder=pathToCholla,
+    daysToLookback=6,
+    sheetName="Jumbo 1H"
+)
+
 echoUnit2250Data = king.getConocoEchoUnit(
     pathToFolder=pathtoEchoUnit2250,
-    daysToLookBack=10
+    daysToLookBack=6
 )
 
 echoUnit2251Data = king.getConocoEchoUnit(
     pathToFolder=pathToEchoUnit2251,
-    daysToLookBack=10
+    daysToLookBack=6
 )
 
 echoUnit2252Data = king.getConocoEchoUnit(
     pathToFolder=pathToEchoUnit2252,
-    daysToLookBack=10
+    daysToLookBack=6
 )
 # Put Production Data in JOYN
 
@@ -259,6 +283,22 @@ joyn.putJoynData(
     userId=userId,
     rawData=bisonData,
     objectId=bisonId,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+joyn.putJoynData(
+    userId=userId,
+    rawData=intoTheStormData,
+    objectId=intoTheStormId,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+joyn.putJoynData(
+    userId=userId,
+    rawData=jumboData,
+    objectId=jumboId,
     joynUsername=joynUsername,
     joynPassword=joynPassword
 )

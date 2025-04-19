@@ -63,8 +63,8 @@ combocurve.putJoynWellProductionData(
 )
 
 dailyForecastVolume = combocurve.getDailyForecastVolume(
-    projectIdKey="674d0995007c4e12316c7de1",
-    forecastIdKey="674d09ae007c4e12316c90a7",
+    projectIdKey="67fc327167e724f31dff7826",
+    forecastIdKey="67fc33664f24561cb8cc90a9",
     serviceAccount=serviceAccount,
     comboCurveApi=comboCurveApiKey,
 )
