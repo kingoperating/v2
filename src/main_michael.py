@@ -132,9 +132,38 @@ listOfWells = [
     millerranchc302mh
 ]
 
+pathToEchoUnit2252 = str(os.getenv("ECHO_UNIT_2252"))
+joynUser = str(os.getenv('JOYN_USER'))
+
 '''
 WORKING ZONE
 '''
+userId = joyn.getJoynUser(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameToFind=joynUser
+)
+
+echoUnit2252Id = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="ECHO BS UNIT A 2252H"
+)
+
+print(echoUnit2252Id[1])
+
+echoUnit2252Data = king.getConocoEchoUnit(
+    pathToFolder=pathToEchoUnit2252,
+    daysToLookBack=1
+)
+
+joyn.putJoynData(
+    userId=userId,
+    rawData=echoUnit2252Data,
+    objectId=echoUnit2252Id,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
 
 data = pd.read_csv(r"C:\Users\Michael Tanner\Downloads\business_associates.csv")
 

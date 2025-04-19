@@ -549,9 +549,9 @@ def getWellObjectId(joynUsername, joynPassword, nameOfWell):
             objectId = response["Result"][i]["id"]
             break
     
-    print(objectId)
+    print(nameOfWell)
     
-    return objectId
+    return objectId, nameOfWell
 
 
 """
@@ -642,7 +642,7 @@ def putJoynData(userId, rawData, objectId, joynUsername, joynPassword):
         readings["ReadingDate"] = readingDateClean
         readings["ModifiedBy"] = userId
         readings["CreatedBy"] = userId
-        readings["ObjectID"] = objectId
+        readings["ObjectID"] = objectId[0]
         readings["ReadingNumber"] = r
         readings["CreatedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         readings["ModifiedOn"] = dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
@@ -894,7 +894,7 @@ def putJoynData(userId, rawData, objectId, joynUsername, joynPassword):
         ## POST request to JOYN API
         joynApiPost(sampleData, idToken)
     
-    print("Finished Looping " + str(objectId))
+    print("Finished Looping " + str(objectId[1]))
 
     return sampleData
 
