@@ -13,6 +13,7 @@ from pathlib import Path
 import pandas as pd
 from kingscripts.analytics import tech
 import xlrd as xl
+import pdfplumber
 
 # load .env file
 load_dotenv()
@@ -292,6 +293,81 @@ def getHCEFProduction(pathToFolder):
     readData.columns = headers
     
     return readData
+
+"""
+    
+Get Browning Non-Op Data
+
+"""  
+
+def getBrowningProduction(pathToData, wellName):
+    
+    headers = [
+        "Date",
+        "Oil",
+        "Oil Sold",
+        "Water",
+        "Gas",
+        "Comments"
+    ]
+    
+    # create list of all files in pathToFolder
+    files = os.listdir(pathToData)
+    # get the most recent file
+    files.sort(key=lambda x: os.path.getmtime(os.path.join(pathToData, x)))
+    # create path to most recent file
+    pathToData = os.path.join(pathToData, files[-1])
+    
+    
+    try:
+        # open pdf file
+        with pdfplumber.open(pathToData) as pdf:
+            # get the first page
+            page = pdf.pages[0]
+            # extract the table
+            table = page.extract_table()
+            
+            if not table:
+                return None, "No table found in the PDF."
+         
+            # The first row is the header
+            headers = table[0]
+            data_rows = table[1:]
+            
+            # Define expected column names based on provided data
+            expected_headers = ['Date', 'Well Name', 'API #', 'PIP', 
+                              'Oil Production', 'Gas Production', 
+                              'Water Production', 'Comments']
+            
+            if len(headers) != len(expected_headers):
+                return None, f"Table header mismatch. Expected {expected_headers}, got {headers}"
+            
+            # Create DataFrame from table
+            df = pd.DataFrame(data_rows, columns=headers)
+            
+            # Filter for the specified well name (case-insensitive)
+            filtered_df = df[df['Well Name'].str.contains(wellName, case=False, na=False)]
+
+            if filtered_df.empty:
+                return None, f"No data found for well name: {wellName}"
+            
+            # Create the output DataFrame with requested columns
+            output_df = pd.DataFrame({
+                'Date': filtered_df['Date'],
+                'Oil': filtered_df['Oil Production'],
+                'Oil Sold': filtered_df['Oil Production'],  # Oil Sold is same as Oil
+                'Water': filtered_df['Water Production'],
+                'Gas': filtered_df['Gas Production'],
+                'Comments': filtered_df['Comments']
+            })
+            
+            return output_df, None
+    
+    except FileNotFoundError:
+        return None, f"PDF file not found at: {pathToData}"
+    except Exception as e:
+        return None, f"Error processing PDF: {str(e)}"  
+
 
 """
     

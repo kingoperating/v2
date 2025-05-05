@@ -70,6 +70,7 @@ pathToEchoUnit2251 = str(os.getenv("ECHO_UNIT_2251"))
 pathToEchoUnit2252 = str(os.getenv("ECHO_UNIT_2252"))
 joynUser = str(os.getenv('JOYN_USER'))
 function = "etl_scada"
+daysToLookback = 5  # Number of days to look back for data
 
 ## BEGIN ETL PROCESS
 
@@ -169,47 +170,47 @@ read341HData = king.getHCEFProduction(
 
 buffalo68hData = king.getChollaData(
     pathToFolder=pathToCholla,
-    daysToLookback=6,
+    daysToLookback=daysToLookback,
     sheetName="Buffalo 6-8 1H"
 )
 
 ancientData = king.getChollaData(
     pathToFolder=pathToCholla,
-    daysToLookback=6,
+    daysToLookback=daysToLookback,
     sheetName="Ancient 3-10E 1H"
 )
 
 bisonData = king.getChollaData(
     pathToFolder=pathToCholla,
-    daysToLookback=6,
+    daysToLookback=daysToLookback,
     sheetName="Bison 6-2 1H"
 )
 
 intoTheStormData = king.getChollaData(
     pathToFolder=pathToCholla,
-    daysToLookback=6,
+    daysToLookback=daysToLookback,
     sheetName="Into the Storm 1H"
 )
 
 jumboData = king.getChollaData(
     pathToFolder=pathToCholla,
-    daysToLookback=6,
+    daysToLookback=daysToLookback,
     sheetName="Jumbo 1H"
 )
 
 echoUnit2250Data = king.getConocoEchoUnit(
     pathToFolder=pathtoEchoUnit2250,
-    daysToLookBack=6
+    daysToLookBack=daysToLookback
 )
 
 echoUnit2251Data = king.getConocoEchoUnit(
     pathToFolder=pathToEchoUnit2251,
-    daysToLookBack=6
+    daysToLookBack=daysToLookback
 )
 
 echoUnit2252Data = king.getConocoEchoUnit(
     pathToFolder=pathToEchoUnit2252,
-    daysToLookBack=6
+    daysToLookBack=daysToLookback
 )
 # Put Production Data in JOYN
 
@@ -237,71 +238,71 @@ joyn.putJoynData(
     joynPassword=joynPassword
 )
     
-joyn.putJoynData(
-    userId=userId,
-    rawData=read332HData,
-    objectId=read332hId,
-    joynUsername=joynUsername,
-    joynPassword=joynPassword
-)
+# joyn.putJoynData(
+#     userId=userId,
+#     rawData=read332HData,
+#     objectId=read332hId,
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword
+# )
 
-joyn.putJoynData(
-    userId=userId,
-    rawData=read342HData,
-    objectId=read342Id,
-    joynUsername=joynUsername,
-    joynPassword=joynPassword
-)
+# joyn.putJoynData(
+#     userId=userId,
+#     rawData=read342HData,
+#     objectId=read342Id,
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword
+# )
 
-joyn.putJoynData(
-    userId=userId,
-    rawData=read341HData,
-    objectId=read341Id,
-    joynUsername=joynUsername,
-    joynPassword=joynPassword
-)
+# joyn.putJoynData(
+#     userId=userId,
+#     rawData=read341HData,
+#     objectId=read341Id,
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword
+# )
 
-joyn.putJoynData(
-    userId=userId,
-    rawData=buffalo68hData,
-    objectId=buffalo68Id,
-    joynUsername=joynUsername,
-    joynPassword=joynPassword
-)
+# joyn.putJoynData(
+#     userId=userId,
+#     rawData=buffalo68hData,
+#     objectId=buffalo68Id,
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword
+# )
 
 
 
-joyn.putJoynData(
-    userId=userId,
-    rawData=ancientData,
-    objectId=ancientId,
-    joynUsername=joynUsername,
-    joynPassword=joynPassword
-)
+# joyn.putJoynData(
+#     userId=userId,
+#     rawData=ancientData,
+#     objectId=ancientId,
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword
+# )
 
-joyn.putJoynData(
-    userId=userId,
-    rawData=bisonData,
-    objectId=bisonId,
-    joynUsername=joynUsername,
-    joynPassword=joynPassword
-)
+# joyn.putJoynData(
+#     userId=userId,
+#     rawData=bisonData,
+#     objectId=bisonId,
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword
+# )
 
-joyn.putJoynData(
-    userId=userId,
-    rawData=intoTheStormData,
-    objectId=intoTheStormId,
-    joynUsername=joynUsername,
-    joynPassword=joynPassword
-)
+# joyn.putJoynData(
+#     userId=userId,
+#     rawData=intoTheStormData,
+#     objectId=intoTheStormId,
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword
+# )
 
-joyn.putJoynData(
-    userId=userId,
-    rawData=jumboData,
-    objectId=jumboId,
-    joynUsername=joynUsername,
-    joynPassword=joynPassword
-)
+# joyn.putJoynData(
+#     userId=userId,
+#     rawData=jumboData,
+#     objectId=jumboId,
+#     joynUsername=joynUsername,
+#     joynPassword=joynPassword
+# )
 
 # USAGE STATS
 

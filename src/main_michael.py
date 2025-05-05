@@ -33,8 +33,8 @@ kocDatawarehouse = os.getenv("KOC_DATAWAREHOUSE")
 # getting API keys
 enverusApiKey = os.getenv('ENVERUS_API')
 greasebookApi = os.getenv('GREASEBOOK_API_KEY')
-serviceAccount = ServiceAccount.from_file(
-    os.getenv("KING_COMBOCURVE_API_SEC_CODE_LIVE"))
+# serviceAccount = ServiceAccount.from_file(
+    # os.getenv("KING_COMBOCURVE_API_SEC_CODE_LIVE"))
 comboCurveApiKey = os.getenv("KING_COMBOCURVE_API_KEY_PASS_LIVE")
 joynUsername = str(os.getenv('JOYN_USERNAME'))
 joynPassword = str(os.getenv('JOYN_PASSWORD'))
@@ -134,10 +134,19 @@ listOfWells = [
 
 pathToEchoUnit2252 = str(os.getenv("ECHO_UNIT_2252"))
 joynUser = str(os.getenv('JOYN_USER'))
+pathToBrowning = str(os.getenv("BROWNING"))
 
 '''
 WORKING ZONE
 '''
+
+data = king.getBrowningProduction(
+    pathToData=pathToBrowning, 
+    wellName="Bertha 28-6 # 1H"
+)
+
+x=5
+
 userId = joyn.getJoynUser(
     joynUsername=joynUsername,
     joynPassword=joynPassword,
