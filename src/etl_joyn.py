@@ -55,7 +55,7 @@ yesDay = int(dateYesterday.strftime("%d"))
 yesDateString = dateYesterday.strftime("%Y-%m-%d")
 todayDateString = dateToday.strftime("%Y-%m-%d")
 eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
-days = 5
+days = 4
 kingTannerUsername = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_USERNAME'))
 kingTannerPassword = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_PASSWORD'))
 

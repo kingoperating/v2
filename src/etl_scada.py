@@ -145,6 +145,11 @@ read341Id = joyn.getWellObjectId(
     nameOfWell="Read 34 1H"
 )
 
+bullId = joyn.getWellObjectId(
+    joynUsername=joynUsername,
+    joynPassword=joynPassword,
+    nameOfWell="Bull 10-10 #1H"
+)
 
 # Get User ID for Michael Tanner / Gabe Tatman
 
@@ -212,6 +217,14 @@ echoUnit2252Data = king.getConocoEchoUnit(
     pathToFolder=pathToEchoUnit2252,
     daysToLookBack=daysToLookback
 )
+
+bullData = king.getChollaData(
+    pathToFolder=pathToCholla,
+    daysToLookback=daysToLookback,
+    sheetName="Bull 10-10 1H"
+)
+
+
 # Put Production Data in JOYN
 
 joyn.putJoynData(
@@ -238,71 +251,79 @@ joyn.putJoynData(
     joynPassword=joynPassword
 )
     
-# joyn.putJoynData(
-#     userId=userId,
-#     rawData=read332HData,
-#     objectId=read332hId,
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword
-# )
+joyn.putJoynData(
+    userId=userId,
+    rawData=read332HData,
+    objectId=read332hId,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
 
-# joyn.putJoynData(
-#     userId=userId,
-#     rawData=read342HData,
-#     objectId=read342Id,
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword
-# )
+joyn.putJoynData(
+    userId=userId,
+    rawData=read342HData,
+    objectId=read342Id,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
 
-# joyn.putJoynData(
-#     userId=userId,
-#     rawData=read341HData,
-#     objectId=read341Id,
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword
-# )
+joyn.putJoynData(
+    userId=userId,
+    rawData=read341HData,
+    objectId=read341Id,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
 
-# joyn.putJoynData(
-#     userId=userId,
-#     rawData=buffalo68hData,
-#     objectId=buffalo68Id,
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword
-# )
+joyn.putJoynData(
+    userId=userId,
+    rawData=buffalo68hData,
+    objectId=buffalo68Id,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
 
 
 
-# joyn.putJoynData(
-#     userId=userId,
-#     rawData=ancientData,
-#     objectId=ancientId,
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword
-# )
+joyn.putJoynData(
+    userId=userId,
+    rawData=ancientData,
+    objectId=ancientId,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
 
-# joyn.putJoynData(
-#     userId=userId,
-#     rawData=bisonData,
-#     objectId=bisonId,
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword
-# )
+joyn.putJoynData(
+    userId=userId,
+    rawData=bisonData,
+    objectId=bisonId,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
 
-# joyn.putJoynData(
-#     userId=userId,
-#     rawData=intoTheStormData,
-#     objectId=intoTheStormId,
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword
-# )
+joyn.putJoynData(
+    userId=userId,
+    rawData=intoTheStormData,
+    objectId=intoTheStormId,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
 
-# joyn.putJoynData(
-#     userId=userId,
-#     rawData=jumboData,
-#     objectId=jumboId,
-#     joynUsername=joynUsername,
-#     joynPassword=joynPassword
-# )
+joyn.putJoynData(
+    userId=userId,
+    rawData=jumboData,
+    objectId=jumboId,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
+
+joyn.putJoynData(
+    userId=userId,
+    rawData=bullData,
+    objectId=bullId,
+    joynUsername=joynUsername,
+    joynPassword=joynPassword
+)
 
 # USAGE STATS
 
