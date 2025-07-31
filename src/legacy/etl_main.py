@@ -14,10 +14,8 @@ print("Starting etl_main")
 dateNow = dt.datetime.now()
 print("The Start Time is: ", dateNow)
 
-import etl_scada
 import etl_joyn
-import etl_combocurve
-import daily_reporting
+import v2.src.legacy.daily_reporting as daily_reporting
 
 ## calculate time to run
 dateEnding = dt.datetime.today()

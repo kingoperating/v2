@@ -70,7 +70,7 @@ pathToEchoUnit2251 = str(os.getenv("ECHO_UNIT_2251"))
 pathToEchoUnit2252 = str(os.getenv("ECHO_UNIT_2252"))
 joynUser = str(os.getenv('JOYN_USER'))
 function = "etl_scada"
-daysToLookback = 5  # Number of days to look back for data
+daysToLookback = 4  # Number of days to look back for data
 
 ## BEGIN ETL PROCESS
 

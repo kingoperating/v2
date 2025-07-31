@@ -25,16 +25,11 @@ start_time = time.time()
 # load .env file
 load_dotenv()
 
-#serviceAccount = ServiceAccount.from_file(
-    #os.getenv("COMBOCURVE_API_SEC_CODE_LIVE"))
-comboCurveApiKey = os.getenv("COMBOCURVE_API_KEY_PASS_LIVE")
-joynUsername = str(os.getenv('JOYN_USERNAME'))
-joynPassword = str(os.getenv('JOYN_PASSWORD'))
+joynUsername = "" ## insert with correct username
+joynPassword = "" ## insert with correct password
 function = "etl_joyn"
 
 ## SQL Server Variables - for KOC Datawarehouse 3.0
-kingServerExpress = str(os.getenv('SQL_SERVER'))
-kingDatabaseExpress = str(os.getenv('SQL_KING_DATABASE'))
 kingLiveServer = str(os.getenv('SQL_SERVER_KING_DATAWAREHOUSE'))
 kingProductionDatabase = str(os.getenv('SQL_PRODUCTION_DATABASE'))
 kingWellsDatabase = str(os.getenv('SQL_WELLS_DATABASE'))
@@ -55,9 +50,9 @@ yesDay = int(dateYesterday.strftime("%d"))
 yesDateString = dateYesterday.strftime("%Y-%m-%d")
 todayDateString = dateToday.strftime("%Y-%m-%d")
 eightDayAgoString = dateEightDaysAgo.strftime("%Y-%m-%d")
-days = 4
-kingTannerUsername = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_USERNAME'))
-kingTannerPassword = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_PASSWORD'))
+days = 3
+kingTannerUsername = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_USERNAME')) ## replace with correct username
+kingTannerPassword = str(os.getenv('SQL_SERVER_MICHAEL_TANNER_PASSWORD')) ## replace with correct password
 
 ### BEGIN PRODUCTION ETL PROCESS ###
 
