@@ -14,10 +14,6 @@ import json
 load_dotenv()
 
 
-
-# https://zdscada.com/zdapi/auth/login?password=dPT6SGHyp8BP&username=KingOperating_API&companyId=876
-
-
 def getScadaToken(username, password, companyid):
     
     url = "https://zdscada.com/zdapi/auth/login?password=" + password + "&username=" + username + "&companyId=" + companyid
